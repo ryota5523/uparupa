@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>大野愛実 ファンサイト（非公式）｜日向坂46</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+<header>
+  <span class="badge">日向坂46 五期生</span>
+  <h1>大野愛実</h1>
+  <p class="kana">おおの まなみ</p>
+  <p class="tag">非公式ファンサイト｜活躍の記録をまとめています</p>
+  <nav><a href="index.html" class="on">ホーム</a><a href="profile.html">プロフィール</a><a href="schedule.html">スケジュール</a><a href="news.html">ニュース</a><a href="works.html">ワークス</a><a href="blog.html">ブログ</a></nav>
+</header>
+
+<section id="profile">
+  <h2>プロフィール</h2>
+  <dl>
+    <dt>グループ</dt><dd>日向坂46（五期生）</dd>
+    <dt>加入</dt><dd>2025年3月</dd>
+    <dt>生年月日</dt><dd>2007年5月5日（東京都出身）</dd>
+    <dt>愛称</dt><dd>まなみん</dd>
+    <dt>主な活動</dt><dd>アイドル／ファッション誌専属モデル／俳優</dd>
+    <dt>代表的な出来事</dt><dd>16thシングル「クリフハンガー」表題曲センター</dd>
+  </dl>
+</section>
+
+<section id="history">
+  <h2>活動年表</h2>
+  <div class="chips" id="chips">
+    <button class="chip" data-f="all" aria-pressed="true">すべて</button>
+    <button class="chip" data-f="グループ" aria-pressed="false">グループ</button>
+    <button class="chip" data-f="モデル" aria-pressed="false">モデル</button>
+    <button class="chip" data-f="ドラマ" aria-pressed="false">ドラマ</button>
+    <button class="chip" data-f="雑誌" aria-pressed="false">雑誌</button>
+    <button class="chip" data-f="イベント" aria-pressed="false">イベント</button>
+  </div>
+  <ol class="tl" id="tl"></ol>
+</section>
+
+<section id="links">
+  <h2>リンク</h2>
+  <div class="links">
+    <a href="https://www.hinatazaka46.com/" target="_blank" rel="noopener">日向坂46 公式サイト<small>最新情報・スケジュールはこちら</small></a>
+    <a href="https://www.google.com/search?q=%E5%A4%A7%E9%87%8E%E6%84%9B%E5%AE%9F+%E6%97%A5%E5%90%91%E5%9D%82" target="_blank" rel="noopener">大野愛実 ニュース検索<small>最新の記事をチェック</small></a>
+    <a href="https://x.com/search?q=%E5%A4%A7%E9%87%8E%E6%84%9B%E5%AE%9F&f=live" target="_blank" rel="noopener">Xで話題を見る<small>「大野愛実」の投稿一覧</small></a>
+  </div>
+</section>
+
+<footer>
+  <p>このサイトは有志による非公式ファンサイトです。日向坂46・運営・所属事務所とは一切関係ありません。<br>
+  掲載内容は報道・公式発表をもとにまとめたもので、正確な情報は公式サイトをご確認ください。</p>
+</footer>
+</div>
+
+<script>
+var EVENTS=[
+ {d:"2025-03",c:"グループ",t:"日向坂46 五期生として加入",s:"10人の五期生の一員としてグループに加わりました。"},
+ {d:"2025-05-27",c:"イベント",t:"五期生『おもてなし会』",s:"国立代々木競技場第一体育館で開催。五期生にとって初の単独イベントで、客前での初パフォーマンスでした。"},
+ {d:"2025-08-22",c:"モデル",t:"『CanCam』10月号に初登場",s:"「ジャーマンアイリス」にちなんだ4色のビジュアルで撮影されました。"},
+ {d:"2026-01-28",c:"グループ",t:"16thシングル「クリフハンガー」で表題曲センター",s:"加入から1年未満でセンターに抜擢されました。"},
+ {d:"2026-04",c:"ドラマ",t:"NHK夜ドラ『ラジオスター』に出演",s:"ドラマにも出演し、演技面でも注目を集めました。"},
+ {d:"2026-09-02",c:"雑誌",t:"『週刊少年マガジン』40号の表紙＆巻頭グラビア",s:"夏をテーマにしたグラビアで登場しました。"},
+ {d:"2026-09-23",c:"イベント",t:"青葉坂46オーディション 取材会に登壇",s:"乃木坂46・櫻坂46のメンバーとともに、日向坂46代表として登壇しました。"},
+ {d:"2026-09-26",c:"モデル",t:"Rakuten GirlsAward 2026 AUTUMN/WINTER に出演",s:"幕張メッセのステージでランウェイを披露しました。"},
+ {d:"2026-09-28",c:"雑誌",t:"『B.L.T. 2026年11月号』表紙＆巻頭に登場",s:"テーマは「世界征服」。グラビアで日向坂46への思いも語っています。"}
+];
+var tl=document.getElementById("tl"),cur="all";
+function render(){
+  tl.innerHTML="";
+  EVENTS.filter(function(e){return cur==="all"||e.c===cur}).slice().reverse().forEach(function(e){
+    var li=document.createElement("li");
+    var a=document.createElement("div");a.className="date";a.textContent=e.d;
+    var cat=document.createElement("span");cat.className="cat";cat.textContent=e.c;a.appendChild(cat);
+    var t=document.createElement("div");t.className="ttl";t.textContent=e.t;
+    var s=document.createElement("p");s.className="desc";s.textContent=e.s;
+    li.appendChild(a);li.appendChild(t);li.appendChild(s);tl.appendChild(li);
+  });
+}
+document.getElementById("chips").addEventListener("click",function(ev){
+  var b=ev.target.closest(".chip");if(!b)return;
+  cur=b.getAttribute("data-f");
+  document.querySelectorAll(".chip").forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false")});
+  render();
+});
+render();
+</script>
+</body>
+</html>
