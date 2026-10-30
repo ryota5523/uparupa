@@ -1,14 +1,16 @@
 <!DOCTYPE html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>スケジュール｜大野愛実 ファンサイト（非公式）</title><link rel="stylesheet" href="style.css"></head><body><div class="wrap"><header><span class="badge">日向坂46 五期生</span><h1>スケジュール</h1><p class="kana">大野愛実 非公式ファンサイト</p></header><nav><a href="index.html">ホーム</a><a href="profile.html">プロフィール</a><a href="schedule.html" class="on">スケジュール</a><a href="news.html">ニュース</a><a href="works.html">ワークス</a><a href="blog.html">ブログ</a></nav><section><h2>今後の予定</h2><div id="up"></div></section><section><h2>最近の出来事</h2><div id="past"></div></section><footer><p>このサイトは有志による非公式ファンサイトです。日向坂46・運営・所属事務所とは一切関係ありません。<br>掲載内容は報道・公式発表をもとにまとめたものです。正確な情報は公式サイトをご確認ください。</p></footer></div><script>var E=[
-{d:"2025-05-27",t:"五期生『おもてなし会』（国立代々木競技場第一体育館）"},
-{d:"2025-08-22",t:"『CanCam』10月号／『アップトゥボーイ』vol.354 発売"},
-{d:"2026-01-28",t:"16thシングル「クリフハンガー」発売"},
-{d:"2026-09-02",t:"『週刊少年マガジン』40号 発売（表紙＆巻頭）"},
-{d:"2026-09-26",t:"Rakuten GirlsAward 2026 AUTUMN/WINTER 出演（幕張メッセ）"},
-{d:"2026-09-28",t:"『B.L.T.2026年11月号』発売（表紙＆巻頭）"},
-{d:"2026-09-30",t:"18thシングル「イチャイチャ虫」発売"}];
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>スケジュール｜大野愛実 ファンサイト（非公式）</title><link rel="stylesheet" href="style.css"></head><body><div class="wrap"><header><span class="badge">日向坂46 五期生</span><h1>スケジュール</h1><p class="kana">大野愛実 非公式ファンサイト</p></header><nav><a href="index.html">ホーム</a><a href="profile.html">プロフィール</a><a href="schedule.html" class="on">スケジュール</a><a href="news.html">ニュース</a><a href="works.html">ワークス</a><a href="blog.html">ブログ</a></nav>
+<section><h2>今後の予定</h2><div id="up"></div></section><section><h2>最近の出来事</h2><div id="past"></div>
+<p class="empty" style="margin-top:12px">日向坂46公式サイトのニュースに載っている日付だけをまとめています。予定は <a href="https://www.hinatazaka46.com/" target="_blank" rel="noopener">公式サイト</a> でご確認ください。</p></section>
+<footer><p>このサイトは有志による非公式ファンサイトです。日向坂46・運営・所属事務所とは一切関係ありません。<br>掲載内容は報道・公式発表をもとにまとめたものです。正確な情報は公式サイトをご確認ください。</p></footer></div><script>var E=[
+{d:"2026-03-23",t:"CanCam新専属モデルに就任（公式YouTubeで密着動画を公開）"},
+{d:"2026-08-17",t:"日本マクドナルド『トクニナルド』WEB CM「たんさんおトクなる♪」篇"},
+{d:"2026-08-18",t:"日本マクドナルド『トクニナルド』WEB CM「ポテトがおトクなる♪」篇"},
+{d:"2026-09-02",t:"『週刊少年マガジン』40号 発売（表紙・巻頭）"},
+{d:"2026-09-27",t:"文化放送「おかしば」生出演（10:00〜）"},
+{d:"2026-09-28",t:"『B.L.T.』2026年11月号 発売（表紙・巻頭）"}];
 var today=new Date().toISOString().slice(0,10);
 function fill(id,list,msg){var el=document.getElementById(id);if(!list.length){var p=document.createElement("p");p.className="empty";p.textContent=msg;el.appendChild(p);return}
 list.forEach(function(e){var d=document.createElement("div");d.className="item";var a=document.createElement("div");a.className="date";a.textContent=e.d;var t=document.createElement("div");t.className="ttl";t.textContent=e.t;d.appendChild(a);d.appendChild(t);el.appendChild(d)})}
-fill("up",E.filter(function(e){return e.d>=today}).sort(function(a,b){return a.d<b.d?-1:1}),"登録済みの予定はありません。最新の予定は日向坂46公式サイトのスケジュールでご確認ください。");
+fill("up",E.filter(function(e){return e.d>=today}).sort(function(a,b){return a.d<b.d?-1:1}),"登録されている予定はありません。最新の予定は日向坂46公式サイトでご確認ください。");
 fill("past",E.filter(function(e){return e.d<today}).sort(function(a,b){return a.d<b.d?1:-1}),"まだありません。");</script></body></html>
