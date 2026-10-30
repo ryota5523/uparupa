@@ -67,7 +67,7 @@ body{padding-top:calc(54px + env(safe-area-inset-top,0px));padding-bottom:calc(7
 .appbar b{display:block;font-size:1.02rem;letter-spacing:.14em;color:var(--accent);line-height:1.1}
 .appbar small{display:block;font-size:.66rem;color:var(--sub);letter-spacing:.06em}
 nav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(6,minmax(0,130px));justify-content:center;padding:4px 4px calc(6px + env(safe-area-inset-bottom,0px));background:var(--navbg);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-top:1px solid var(--line)}
-nav a{display:flex;flex-direction:column;align-items:center;gap:1px;text-decoration:none;color:var(--sub);font-size:.6rem;font-weight:700;padding:5px 0 2px;border-top:3px solid transparent;white-space:nowrap}
+nav a{display:flex;flex-direction:column;align-items:center;gap:1px;text-decoration:none;color:var(--sub);font-size:.66rem;letter-spacing:.02em;font-weight:700;padding:5px 0 2px;border-top:3px solid transparent;white-space:nowrap}
 nav a i{font-size:26px;line-height:1.1}
 nav a.on{color:var(--accent);border-top-color:var(--accent)}
 
@@ -76,3 +76,5 @@ nav a.on{color:var(--accent);border-top-color:var(--accent)}
 .facts i{font-size:18px;vertical-align:-.28em;color:var(--accent);margin-right:5px}
 .links a i{font-size:22px;vertical-align:-.3em;color:var(--accent);margin-right:6px}
 nav a.on i{font-variation-settings:"FILL" 1}
+
+.appbar img.logo{height:30px;width:auto;flex:none}
