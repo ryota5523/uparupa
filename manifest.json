@@ -1,0 +1,25 @@
+{
+  "name": "大野愛実 ファンサイト（非公式）",
+  "short_name": "まなみん",
+  "description": "日向坂46 大野愛実さんの非公式ファンサイト",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f2faff",
+  "theme_color": "#2fa4e7",
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
