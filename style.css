@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=block");
 
 :root{--bg:#fff;--card:#fff;--text:#222;--sub:#777;--accent:#e8384f;--accent2:#ffe9ec;--red:#e8384f;--line:#f3dfe2;--soft:#fff6f7;--navbg:rgba(255,255,255,.92);--shadow:0 6px 20px rgba(232,56,79,.10);box-sizing:border-box;color-scheme:light}
 html{scroll-padding-top:70px}
@@ -67,5 +68,11 @@ body{padding-top:calc(54px + env(safe-area-inset-top,0px));padding-bottom:calc(7
 .appbar small{display:block;font-size:.66rem;color:var(--sub);letter-spacing:.06em}
 nav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(6,minmax(0,130px));justify-content:center;padding:4px 4px calc(6px + env(safe-area-inset-bottom,0px));background:var(--navbg);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-top:1px solid var(--line)}
 nav a{display:flex;flex-direction:column;align-items:center;gap:1px;text-decoration:none;color:var(--sub);font-size:.6rem;font-weight:700;padding:5px 0 2px;border-top:3px solid transparent;white-space:nowrap}
-nav a i{font-style:normal;font-size:1.25rem;line-height:1.25}
+nav a i{font-size:26px;line-height:1.1}
 nav a.on{color:var(--accent);border-top-color:var(--accent)}
+
+.ms{font-family:"Material Symbols Rounded";font-weight:400;font-style:normal;font-size:24px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-feature-settings:"liga";font-feature-settings:"liga";-webkit-font-smoothing:antialiased}
+.sticker i,.tile i{font-size:32px;color:var(--accent);margin-bottom:2px}
+.facts i{font-size:18px;vertical-align:-.28em;color:var(--accent);margin-right:5px}
+.links a i{font-size:22px;vertical-align:-.3em;color:var(--accent);margin-right:6px}
+nav a.on i{font-variation-settings:"FILL" 1}
