@@ -80,3 +80,5 @@ nav a.on i{font-variation-settings:"FILL" 1}
 .appbar img.logo{height:30px;width:auto;flex:none}
 
 .sticker .sticker-img{display:block;height:44px;width:auto;margin:-4px auto 2px}
+
+.intro{margin:.5em 0 0;color:var(--sub);font-size:.95rem}
