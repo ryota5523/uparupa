@@ -98,3 +98,11 @@ footer{-webkit-user-select:none;user-select:none;touch-action:manipulation}
 
 .egg.left{left:14px;right:auto}
 h1{-webkit-user-select:none;user-select:none;touch-action:manipulation}
+
+.peek{position:relative;height:0;z-index:-1;pointer-events:none}
+.peek .win{position:absolute;left:62%;bottom:-.12em;width:1.25em;height:1.2em;margin-left:-.625em;overflow:hidden;display:flex;align-items:flex-end;justify-content:center}
+.peek img{width:.95em;height:auto;transform:translateY(105%);animation:peekup .6s cubic-bezier(.3,1.5,.5,1) .05s forwards}
+.peek.out img{animation:peekdown .5s ease-in forwards}
+@keyframes peekup{to{transform:translateY(0)}}
+@keyframes peekdown{from{transform:translateY(0)}to{transform:translateY(105%)}}
+@media (prefers-reduced-motion:reduce){.peek img{animation:none;transform:none}.peek.out img{animation:none;transform:translateY(105%)}}
