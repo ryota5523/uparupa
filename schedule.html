@@ -13,4 +13,4 @@ var today=new Date().toISOString().slice(0,10);
 function fill(id,list,msg){var el=document.getElementById(id);if(!list.length){var p=document.createElement("p");p.className="empty";p.textContent=msg;el.appendChild(p);return}
 list.forEach(function(e){var d=document.createElement("div");d.className="item";var a=document.createElement("div");a.className="date";a.textContent=e.d;var t=document.createElement("div");t.className="ttl";t.textContent=e.t;d.appendChild(a);d.appendChild(t);el.appendChild(d)})}
 fill("up",E.filter(function(e){return e.d>=today}).sort(function(a,b){return a.d<b.d?-1:1}),"登録されている予定はありません。最新の予定は日向坂46公式サイトでご確認ください。");
-fill("past",E.filter(function(e){return e.d<today}).sort(function(a,b){return a.d<b.d?1:-1}),"まだありません。");</script></body></html>
+fill("past",E.filter(function(e){return e.d<today}).sort(function(a,b){return a.d<b.d?1:-1}),"まだありません。");</script><script src="egg.js" defer></script></body></html>
