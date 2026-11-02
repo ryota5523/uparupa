@@ -22,16 +22,16 @@
     if(!h||document.getElementById("egg-bird"))return;
     var p=document.createElement("div");
     p.id="egg-bird";
-    p.className="peek";
+    p.className="peek side";
     p.setAttribute("aria-hidden","true");
     p.style.fontSize=getComputedStyle(h).fontSize;
     p.innerHTML='<div class="win"><img src="bird.png" alt=""></div>';
     h.parentNode.insertBefore(p,h);
-    // 名前の最後の文字の上あたりから出す
+    // 名前の左端の、すぐ左隣から横にひょっこり出す
     var fs=parseFloat(getComputedStyle(h).fontSize),r=document.createRange();
     r.selectNodeContents(h);
-    var x=r.getBoundingClientRect().right-h.getBoundingClientRect().left-fs*0.45;
-    p.firstChild.style.left=x+"px";
+    var x=r.getBoundingClientRect().left-h.getBoundingClientRect().left;
+    p.firstChild.style.left=Math.max(0,x-fs*1.05)+"px";
     setTimeout(function(){hide(p)},3000);
   }
   function watch(el,fn){

@@ -106,3 +106,10 @@ h1{-webkit-user-select:none;user-select:none;touch-action:manipulation}
 @keyframes peekup{to{transform:translateY(0)}}
 @keyframes peekdown{from{transform:translateY(0)}to{transform:translateY(105%)}}
 @media (prefers-reduced-motion:reduce){.peek img{animation:none;transform:none}.peek.out img{animation:none;transform:translateY(105%)}}
+
+.peek.side .win{bottom:auto;top:.1em;margin-left:0;width:1.1em;height:1em;align-items:center;justify-content:flex-end}
+.peek.side img{width:.95em;transform:translateX(105%);animation:peekin .6s cubic-bezier(.3,1.5,.5,1) .05s forwards}
+.peek.side.out img{animation:peekout .5s ease-in forwards}
+@keyframes peekin{to{transform:translateX(0)}}
+@keyframes peekout{from{transform:translateX(0)}to{transform:translateX(105%)}}
+@media (prefers-reduced-motion:reduce){.peek.side img{animation:none;transform:none}.peek.side.out img{animation:none;transform:translateX(105%)}}
