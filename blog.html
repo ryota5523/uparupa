@@ -8,10 +8,32 @@
 </div>
 <h3>Latest Posts</h3><div id="p"></div>
 <p class="empty" style="margin-top:12px">記事のタイトルと日付だけを載せています。本文と写真は公式サイトでご覧ください。最新の一覧は上の「ブログ一覧」が確実です。</p></section>
-<footer><p>このサイトは有志による非公式ファンサイトです。日向坂46・運営・所属事務所とは一切関係ありません。<br>掲載内容は報道・公式発表をもとにまとめたものです。正確な情報は公式サイトをご確認ください。</p></footer></div><script>var P=[
-{d:"2026.10.8",t:"23:59",u:"https://www.hinatazaka46.com/s/official/diary/member/list?ima=0000&ct=38"},
-{d:"2026.9.29",t:"催眠術にかかってた",u:"https://www.hinatazaka46.com/s/official/diary/member/list?ima=0000&ct=38"},
-{d:"2026.9.5",t:"俺の課題はまだ、終わってねぇーっ！！",u:"https://www.hinatazaka46.com/s/official/diary/member/list?ima=0000&ct=38"},
-{d:"2026.9.1",t:"東京都からきました。高校2年生17歳。大野愛実です。",u:"https://www.hinatazaka46.com/s/official/diary/detail/70813?ima=0000&cd=member"},
-{d:"2026.8.18",t:"ワタシの名前は何ですか？",u:"https://www.hinatazaka46.com/s/official/diary/member/list?ima=0000&ct=38"}];
-var el=document.getElementById("p");P.forEach(function(x){var d=document.createElement("div");d.className="item";var a=document.createElement("div");a.className="date";a.textContent=x.d;var l=document.createElement("a");l.href=x.u;l.target="_blank";l.rel="noopener";l.textContent=x.t;d.appendChild(a);d.appendChild(l);el.appendChild(d)});</script><script src="egg.js" defer></script></body></html>
+<footer><p>このサイトは有志による非公式ファンサイトです。日向坂46・運営・所属事務所とは一切関係ありません。<br>掲載内容は報道・公式発表をもとにまとめたものです。正確な情報は公式サイトをご確認ください。</p></footer></div><script>
+(function(){
+  const API = "https://manami-site-worker.yellowworker.workers.dev/api/blogs";
+  const el = document.getElementById("p");
+  fetch(API).then(r => {
+    if (!r.ok) throw new Error("API error");
+    return r.json();
+  }).then(data => {
+    if (!data.ok || !Array.isArray(data.items) || !data.items.length) throw new Error("記事がありません");
+    data.items.forEach(item => {
+      const d = document.createElement("div");
+      d.className = "item";
+      const date = document.createElement("div");
+      date.className = "date";
+      date.textContent = (item.published_at || "").replace(/-/g, ".");
+      const link = document.createElement("a");
+      link.href = item.url;
+      link.target = "_blank";
+      link.rel = "noopener";
+      link.textContent = item.title;
+      d.appendChild(date);
+      d.appendChild(link);
+      el.appendChild(d);
+    });
+  }).catch(() => {
+    el.textContent = "ブログを読み込めませんでした。公式ブログ一覧をご確認ください。";
+  });
+})();
+</script><script src="egg.js" defer></script></body></html>
