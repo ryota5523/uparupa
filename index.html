@@ -58,7 +58,7 @@ var EVENTS=[
 var tl=document.getElementById("tl"),cur="all";
 function render(){
   tl.innerHTML="";
-  EVENTS.filter(function(e){return cur==="all"||e.c===cur}).slice().reverse().forEach(function(e){
+  EVENTS.filter(function(e){return cur==="all"||e.c===cur}).sort(function(a,b){return a.d<b.d?-1:(a.d>b.d?1:0)}).forEach(function(e){
     var li=document.createElement("li");
     var a=document.createElement("div");a.className="date";a.textContent=e.d;
     var cat=document.createElement("span");cat.className="cat";cat.textContent=e.c;a.appendChild(cat);
