@@ -25,13 +25,15 @@
     p.className="peek side";
     p.setAttribute("aria-hidden","true");
     p.style.fontSize=getComputedStyle(h).fontSize;
-    p.innerHTML='<div class="win"><img src="bird.png" alt=""></div>';
+    p.innerHTML='<span class="say">わーい！！</span><div class="win"><img src="bird.png" alt=""></div>';
     h.parentNode.insertBefore(p,h);
     // 名前の左端の、すぐ左隣から横にひょっこり出す
     var fs=parseFloat(getComputedStyle(h).fontSize),r=document.createRange();
     r.selectNodeContents(h);
     var x=r.getBoundingClientRect().left-h.getBoundingClientRect().left;
-    p.firstChild.style.left=Math.max(0,x-fs*1.05)+"px";
+    var lx=Math.max(0,x-fs*1.05)+"px";
+    p.querySelector(".win").style.left=lx;
+    p.querySelector(".say").style.left=lx;
     setTimeout(function(){hide(p)},3000);
   }
   function watch(el,fn){
