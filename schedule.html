@@ -2,15 +2,49 @@
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Schedule｜大野愛実 ファンサイト（非公式）</title><link rel="stylesheet" href="style.css"><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#e8384f"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="まなみん"><meta name="apple-mobile-web-app-status-bar-style" content="default"></head><body><div class="appbar"><a href="index.html"><img src="logo.png" alt="" class="logo"><span><b>MANAMI</b><small>大野愛実 ファンサイト（非公式）</small></span></a></div><div class="wrap"><header><span class="badge">日向坂46 五期生</span><h1>Schedule</h1><p class="kana">スケジュール</p></header><nav><a href="index.html"><i class="ms">home</i>Home</a><a href="profile.html"><i class="ms">person</i>Profile</a><a href="schedule.html" class="on"><i class="ms">calendar_month</i>Schedule</a><a href="news.html"><i class="ms">newspaper</i>News</a><a href="works.html"><i class="ms">movie</i>Works</a><a href="blog.html"><i class="ms">edit_note</i>Blog</a></nav>
 <section><h2>Upcoming</h2><div id="up"></div></section><section><h2>Recent</h2><div id="past"></div>
 <p class="empty" style="margin-top:12px">日向坂46公式サイトのニュースに載っている日付だけをまとめています。予定は <a href="https://www.hinatazaka46.com/" target="_blank" rel="noopener">公式サイト</a> でご確認ください。</p></section>
-<footer><p>このサイトは有志による非公式ファンサイトです。日向坂46・運営・所属事務所とは一切関係ありません。<br>掲載内容は報道・公式発表をもとにまとめたものです。正確な情報は公式サイトをご確認ください。</p></footer></div><script>var E=[
-{d:"2026-03-23",t:"CanCam新専属モデルに就任（公式YouTubeで密着動画を公開）"},
-{d:"2026-08-17",t:"日本マクドナルド『トクニナルド』WEB CM「たんさんおトクなる♪」篇"},
-{d:"2026-08-18",t:"日本マクドナルド『トクニナルド』WEB CM「ポテトがおトクなる♪」篇"},
-{d:"2026-09-02",t:"『週刊少年マガジン』40号 発売（表紙・巻頭）"},
-{d:"2026-09-27",t:"文化放送「おかしば」生出演（10:00〜）"},
-{d:"2026-09-28",t:"『B.L.T.』2026年11月号 発売（表紙・巻頭）"}];
-var today=new Date().toISOString().slice(0,10);
-function fill(id,list,msg){var el=document.getElementById(id);if(!list.length){var p=document.createElement("p");p.className="empty";p.textContent=msg;el.appendChild(p);return}
-list.forEach(function(e){var d=document.createElement("div");d.className="item";var a=document.createElement("div");a.className="date";a.textContent=e.d;var t=document.createElement("div");t.className="ttl";t.textContent=e.t;d.appendChild(a);d.appendChild(t);el.appendChild(d)})}
-fill("up",E.filter(function(e){return e.d>=today}).sort(function(a,b){return a.d<b.d?-1:1}),"登録されている予定はありません。最新の予定は日向坂46公式サイトでご確認ください。");
-fill("past",E.filter(function(e){return e.d<today}).sort(function(a,b){return a.d<b.d?1:-1}),"まだありません。");</script><script src="egg.js" defer></script></body></html>
+<footer><p>このサイトは有志による非公式ファンサイトです。日向坂46・運営・所属事務所とは一切関係ありません。<br>掲載内容は報道・公式発表をもとにまとめたものです。正確な情報は公式サイトをご確認ください。</p></footer></div><script>
+(function(){
+  const API = "https://manami-site-worker.yellowworker.workers.dev/api/schedules";
+  const up = document.getElementById("up");
+  const past = document.getElementById("past");
+  const today = new Date().toLocaleDateString("en-CA", {timeZone:"Asia/Tokyo"});
+  function render(target, items, emptyText) {
+    if (!items.length) {
+      const p = document.createElement("p");
+      p.className = "empty";
+      p.textContent = emptyText;
+      target.appendChild(p);
+      return;
+    }
+    items.forEach(item => {
+      const d = document.createElement("div");
+      d.className = "item";
+      const date = document.createElement("div");
+      date.className = "date";
+      date.textContent = (item.event_date || "").replace(/-/g, ".");
+      const title = document.createElement("div");
+      title.className = "ttl";
+      title.textContent = item.title;
+      d.appendChild(date);
+      d.appendChild(title);
+      if (item.url) {
+        d.style.cursor = "pointer";
+        d.addEventListener("click", () => window.open(item.url, "_blank", "noopener"));
+      }
+      target.appendChild(d);
+    });
+  }
+  fetch(API).then(r => {
+    if (!r.ok) throw new Error("API error");
+    return r.json();
+  }).then(data => {
+    if (!data.ok || !Array.isArray(data.items)) throw new Error("データを取得できません");
+    const upcoming = data.items.filter(x => x.event_date >= today).sort((a,b) => a.event_date.localeCompare(b.event_date));
+    const recent = data.items.filter(x => x.event_date < today).sort((a,b) => b.event_date.localeCompare(a.event_date));
+    render(up, upcoming, "登録されている予定はありません。");
+    render(past, recent, "過去の予定はありません。");
+  }).catch(() => {
+    up.textContent = "スケジュールを読み込めませんでした。";
+  });
+})();
+</script><script src="egg.js" defer></script></body></html>
