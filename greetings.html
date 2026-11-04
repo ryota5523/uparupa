@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Greeting｜大野愛実 ファンサイト（非公式）</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="favicon.ico" sizes="any">
+<meta name="theme-color" content="#e8384f">
+<style>
+.greeting-intro{color:var(--sub);font-size:.92rem;margin:-4px 0 18px}
+.greeting-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px}
+.greeting-card{overflow:hidden;border:1px solid var(--line);border-radius:18px;background:#fff;box-shadow:var(--shadow)}
+.greeting-card button{display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in}
+.greeting-card img{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:contain;background:#fff6f7}
+.greeting-meta{padding:10px 13px 13px}
+.greeting-date{font-weight:700;color:var(--accent)}
+.greeting-number{font-size:.78rem;color:var(--sub);margin-left:7px}
+.greeting-empty{padding:24px 12px;text-align:center;color:var(--sub);background:var(--soft);border-radius:14px}
+.greeting-modal{position:fixed;inset:0;z-index:100;background:rgba(20,12,14,.88);display:none;align-items:center;justify-content:center;padding:18px}
+.greeting-modal.open{display:flex}
+.greeting-modal img{max-width:100%;max-height:88vh;object-fit:contain;border-radius:8px}
+.greeting-modal button{position:absolute;right:16px;top:16px;border:1px solid #fff;color:#fff;background:rgba(0,0,0,.35);border-radius:99px;padding:8px 14px;font:inherit}
+.greeting-status{font-size:.85rem;color:var(--sub);margin-top:12px}
+</style>
+</head>
+<body>
+<div class="appbar"><a href="index.html"><img src="logo.png" alt="" class="logo"><span><b>MANAMI</b><small>大野愛実 ファンサイト（非公式）</small></span></a></div>
+<div class="wrap">
+<header><span class="badge">日向坂46 五期生</span><h1>Greeting</h1><p class="kana">グリーティングカード</p><p class="intro">大野愛実ちゃんのグリーティングカードを、保存した順にまとめています。</p></header>
+<nav>
+<a href="index.html"><i class="ms">home</i>Home</a>
+<a href="profile.html"><i class="ms">person</i>Profile</a>
+<a href="schedule.html"><i class="ms">calendar_month</i>Schedule</a>
+<a href="news.html"><i class="ms">newspaper</i>News</a>
+<a href="works.html"><i class="ms">movie</i>Works</a>
+<a href="blog.html"><i class="ms">edit_note</i>Blog</a>
+</nav>
+<section>
+<h2>Greeting Card Archive</h2>
+<p class="greeting-intro">カードをタップすると大きく表示できます。</p>
+<div id="greeting-list" class="greeting-grid"><div class="greeting-empty">カードを読み込んでいます…</div></div>
+<p id="greeting-status" class="greeting-status"></p>
+</section>
+<footer><p>このサイトは有志による非公式ファンサイトです。日向坂46・運営・所属事務所とは一切関係ありません。<br>カード画像の権利は各権利者に帰属します。</p></footer>
+</div>
+<div class="greeting-modal" id="greeting-modal" role="dialog" aria-modal="true" aria-label="グリーティングカード拡大表示">
+<button type="button" id="greeting-close">閉じる ✕</button><img id="greeting-large" alt="大野愛実 グリーティングカード">
+</div>
+<script>
+(function(){
+  const API="https://manami-site-worker.yellowworker.workers.dev";
+  const list=document.getElementById("greeting-list");
+  const status=document.getElementById("greeting-status");
+  const modal=document.getElementById("greeting-modal");
+  const large=document.getElementById("greeting-large");
+  function dateLabel(value){
+    if(!value)return "日付不明";
+    const m=String(value).match(/^(\\d{4})-(\\d{2})/);
+    return m ? m[1]+"年"+Number(m[2])+"月" : String(value);
+  }
+  function showImage(src){
+    large.src=src;modal.classList.add("open");document.body.style.overflow="hidden";
+  }
+  function closeImage(){
+    modal.classList.remove("open");large.src="";document.body.style.overflow="";
+  }
+  document.getElementById("greeting-close").addEventListener("click",closeImage);
+  modal.addEventListener("click",e=>{if(e.target===modal)closeImage();});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape")closeImage();});
+  fetch(API+"/api/greetings").then(r=>{
+    if(!r.ok)throw new Error("API status "+r.status);
+    return r.json();
+  }).then(data=>{
+    const items=data.items||data.greetings||data.results||[];
+    if(!data.ok || !Array.isArray(items))throw new Error("API response format invalid");
+    if(!items.length){
+      list.innerHTML='<div class="greeting-empty">保存されたカードはまだありません。</div>';
+      return;
+    }
+    items.sort((a,b)=>String(b.published_at||"").localeCompare(String(a.published_at||"")));
+    list.innerHTML="";
+    items.forEach((item,index)=>{
+      if(!item.object_key)return;
+      const src=API+"/api/greeting/image?key="+encodeURIComponent(item.object_key);
+      const card=document.createElement("article");card.className="greeting-card";
+      const button=document.createElement("button");button.type="button";button.setAttribute("aria-label","カードを拡大表示");
+      const img=document.createElement("img");img.src=src;img.alt="大野愛実 グリーティングカード "+dateLabel(item.published_at);img.loading="lazy";
+      img.onerror=()=>{img.alt="画像を読み込めませんでした";img.style.minHeight="180px";};
+      button.appendChild(img);button.addEventListener("click",()=>showImage(src));
+      const meta=document.createElement("div");meta.className="greeting-meta";
+      const date=document.createElement("div");date.className="greeting-date";date.textContent=dateLabel(item.published_at);
+      const number=document.createElement("span");number.className="greeting-number";number.textContent="No. "+(items.length-index);
+      date.appendChild(number);meta.appendChild(date);card.appendChild(button);card.appendChild(meta);list.appendChild(card);
+    });
+    status.textContent=items.length+"枚のカードを保存しています。";
+  }).catch(error=>{
+    list.innerHTML='<div class="greeting-empty">カードを読み込めませんでした。少し時間をおいて再読み込みしてください。</div>';
+    status.textContent="取得エラー："+error.message;
+  });
+})();
+</script>
+<script src="egg.js" defer></script>
+</body>
+</html>
