@@ -1,5 +1,14 @@
 <!DOCTYPE html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>大野愛実 ファンサイト（非公式）｜日向坂46</title><link rel="stylesheet" href="style.css"><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#e8384f"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="まなみん"><meta name="apple-mobile-web-app-status-bar-style" content="default"></head><body><div class="appbar"><a href="index.html"><img src="logo.png" alt="" class="logo"><span><b>MANAMI</b><small>大野愛実 ファンサイト（非公式）</small></span></a></div><div class="wrap">
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>大野愛実 ファンサイト（非公式）｜日向坂46</title><link rel="stylesheet" href="style.css"><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#e8384f"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="まなみん"><meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+#greeting-page-modal{position:fixed;inset:0;z-index:9999;background:rgba(24,15,18,.68);display:none;align-items:center;justify-content:center;padding:clamp(8px,3vw,28px);box-sizing:border-box}
+#greeting-page-modal.open{display:flex}
+#greeting-page-panel{position:relative;width:min(100%,1050px);height:min(92vh,900px);background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 18px 70px rgba(0,0,0,.3)}
+#greeting-page-frame{width:100%;height:100%;border:0;background:#fff}
+#greeting-page-close{position:absolute;right:12px;top:12px;z-index:2;border:0;border-radius:999px;background:#e8384f;color:white;font-size:15px;font-weight:700;padding:10px 16px;box-shadow:0 2px 10px #0003;cursor:pointer}
+@media(max-width:600px){#greeting-page-modal{padding:0}#greeting-page-panel{width:100%;height:100%;border-radius:0}#greeting-page-close{top:calc(env(safe-area-inset-top) + 10px);right:12px}}
+</style>
+</head><body><div class="appbar"><a href="index.html"><img src="logo.png" alt="" class="logo"><span><b>MANAMI</b><small>大野愛実 ファンサイト（非公式）</small></span></a></div><div class="wrap">
 <header><span class="badge">日向坂46 五期生</span><p class="kana">おおの まなみ</p><h1>大野愛実</h1><p class="tag">負けない！泣かない！実らせたい！</p>
 <p class="intro">東京都出身<span id="age">19</span>歳 大野愛実ちゃんのファンサイトです</p></header>
 <nav><a href="index.html" class="on"><i class="ms">home</i>Home</a><a href="profile.html"><i class="ms">person</i>Profile</a><a href="schedule.html"><i class="ms">calendar_month</i>Schedule</a><a href="news.html"><i class="ms">newspaper</i>News</a><a href="works.html"><i class="ms">movie</i>Works</a><a href="blog.html"><i class="ms">edit_note</i>Blog</a></nav>
@@ -27,7 +36,7 @@
   </div>
   <ol class="tl" id="tl"></ol>
 </section>
-<section><h2>Menu</h2><div class="tiles"><a class="tile" href="profile.html"><i class="ms">person</i><b>Profile</b><small>もっと知る</small></a><a class="tile" href="schedule.html"><i class="ms">calendar_month</i><b>Schedule</b><small>出来事・予定</small></a><a class="tile" href="news.html"><i class="ms">newspaper</i><b>News</b><small>最近の記事</small></a><a class="tile" href="works.html"><i class="ms">movie</i><b>Works</b><small>楽曲・雑誌・出演</small></a><a class="tile" href="blog.html"><i class="ms">edit_note</i><b>Blog</b><small>運営だより</small></a><a class="tile" href="greetings.html"><i class="ms">photo_library</i><b>Greeting</b><small>グリーティングカード</small></a></div></section>
+<section><h2>Menu</h2><div class="tiles"><a class="tile" href="profile.html"><i class="ms">person</i><b>Profile</b><small>もっと知る</small></a><a class="tile" href="schedule.html"><i class="ms">calendar_month</i><b>Schedule</b><small>出来事・予定</small></a><a class="tile" href="news.html"><i class="ms">newspaper</i><b>News</b><small>最近の記事</small></a><a class="tile" href="works.html"><i class="ms">movie</i><b>Works</b><small>楽曲・雑誌・出演</small></a><a class="tile" href="blog.html"><i class="ms">edit_note</i><b>Blog</b><small>運営だより</small></a><a class="tile" href="greetings.html" id="open-greeting"><i class="ms">photo_library</i><b>Greeting</b><small>グリーティングカード</small></a></div></section>
 <section id="app"><h2>Install</h2>
 <p>ホーム画面に追加すると、アイコンから全画面で開けます。公式サイトへのリンクは、アプリ内のブラウザで開きます。</p>
 <dl><dt>iPhone</dt><dd>Safariで開き、共有ボタン →「ホーム画面に追加」</dd><dt>Android</dt><dd>Chromeで開き、右上のメニュー →「ホーム画面に追加」</dd></dl></section>
@@ -74,4 +83,37 @@ document.getElementById("chips").addEventListener("click",function(ev){
   render();
 });
 render();
-</script><script>(function(){var n=new Date(),a=n.getFullYear()-2007-((n.getMonth()<4||(n.getMonth()==4&&n.getDate()<5))?1:0),e=document.getElementById("age");if(e)e.textContent=a})();</script><script src="egg.js" defer></script></body></html>
+</script><script>(function(){var n=new Date(),a=n.getFullYear()-2007-((n.getMonth()<4||(n.getMonth()==4&&n.getDate()<5))?1:0),e=document.getElementById("age");if(e)e.textContent=a})();</script><script src="egg.js" defer></script>
+<div id="greeting-page-modal" aria-hidden="true">
+  <div id="greeting-page-panel" role="dialog" aria-modal="true" aria-label="Greetingカード一覧">
+    <button id="greeting-page-close" type="button">閉じる ✕</button>
+    <iframe id="greeting-page-frame" title="Greetingカード一覧" loading="lazy"></iframe>
+  </div>
+</div>
+
+<script>
+(function(){
+  var openLink=document.getElementById("open-greeting");
+  var modal=document.getElementById("greeting-page-modal");
+  var frame=document.getElementById("greeting-page-frame");
+  var close=document.getElementById("greeting-page-close");
+  if(!openLink||!modal||!frame||!close)return;
+  function openModal(event){
+    event.preventDefault();
+    if(!frame.src)frame.src="greetings.html";
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden","false");
+    document.body.style.overflow="hidden";
+  }
+  function closeModal(){
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden","true");
+    document.body.style.overflow="";
+  }
+  openLink.addEventListener("click",openModal);
+  close.addEventListener("click",closeModal);
+  modal.addEventListener("click",function(event){if(event.target===modal)closeModal();});
+  document.addEventListener("keydown",function(event){if(event.key==="Escape")closeModal();});
+})();
+</script>
+</body></html>
