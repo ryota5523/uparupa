@@ -170,7 +170,7 @@
     const p=posts[0],d=safeDate(p.published_at);
     featured.innerHTML="";
     const src=articleImage(p);
-    if(src){const img=document.createElement("img");img.className="feature-image";img.src=src;img.alt="ブログ記事の写真";img.loading="lazy";featured.appendChild(img);}
+    if(src){const img=document.createElement("img");img.className="feature-image";img.src=src;img.alt="ブログ記事の写真";img.loading="lazy";img.referrerPolicy="no-referrer";img.onerror=()=>{img.remove();};featured.appendChild(img);}
     const body=document.createElement("div");body.className="feature-body";
     const label=document.createElement("span");label.className="feature-label";label.textContent="✦ LATEST POST";
     const date=document.createElement("div");date.className="feature-date";date.textContent=d.full;
@@ -195,8 +195,9 @@
       const a=document.createElement("a");a.className="blog-card";a.href=safeUrl(p.url);a.target="_blank";a.rel="noopener";
       const day=document.createElement("span");day.className="thumb";
       const image=articleImage(p);
-      if(image){const img=document.createElement("img");img.src=image;img.alt="";img.loading="lazy";day.appendChild(img);}
-      else{const fallback=document.createElement("span");fallback.className="thumb-date";const mo=document.createElement("span");mo.className="month";mo.textContent=d.month;const da=document.createElement("span");da.className="day";da.textContent=d.day;fallback.append(mo,da);day.appendChild(fallback);}
+      const showDateTile=()=>{day.innerHTML="";const fallback=document.createElement("span");fallback.className="thumb-date";const mo=document.createElement("span");mo.className="month";mo.textContent=d.month;const da=document.createElement("span");da.className="day";da.textContent=d.day;fallback.append(mo,da);day.appendChild(fallback);};
+      if(image){const img=document.createElement("img");img.src=image;img.alt="";img.loading="lazy";img.referrerPolicy="no-referrer";img.onerror=showDateTile;day.appendChild(img);}
+      else{showDateTile();}
       const copy=document.createElement("span");copy.className="card-copy";
       const date=document.createElement("span");date.className="card-date";date.textContent=d.full;
       const title=document.createElement("span");title.className="card-title";title.textContent=p.title||"タイトル未設定";
