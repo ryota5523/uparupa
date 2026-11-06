@@ -143,8 +143,8 @@
           try{
             const u=new URL(src);
             return u.hostname==="cdn.hinatazaka46.com"
-              && /\\/diary\\/official\\/member\\//i.test(u.pathname)
-              && /\\.(jpe?g|png|webp)$/i.test(u.pathname)
+              && /\/diary\/official\/member\//i.test(u.pathname)
+              && /\.(jpe?g|png|webp)$/i.test(u.pathname)
               && !/(logo|icon|avatar|banner|header)/i.test(u.pathname);
           }catch(e){return false;}
         });
