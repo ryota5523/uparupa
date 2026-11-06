@@ -115,7 +115,7 @@ input.addEventListener('change',()=>{
  if(!file.type.startsWith('image/')){say('画像ファイルを選んでね。','error');return;}
  if(file.size>15*1024*1024){say('画像は15MB以下にしてね。','error');return;}
  revokeAssets();imageUrl=URL.createObjectURL(file);image=new Image();
- image.onload=()=>{preview.replaceChildren();const p=document.createElement('img');p.src=imageUrl;p.alt='選択した写真';preview.append(p);placeBtn.disabled=false;downloadBtn.disabled=true;clearBtn.disabled=false;floatingPhoto.src=imageUrl;easyHint.style.display='none';say('写真を読み込んだよ。かんたん撮影でも使えるよ。','success');};
+ image.onload=()=>{preview.replaceChildren();const p=document.createElement('img');p.src=imageUrl;p.alt='選択した写真';preview.append(p);placeBtn.disabled=false;downloadBtn.disabled=true;clearBtn.disabled=false;floatingPhoto.src=imageUrl;floatingPhoto.style.display='block';easyHint.style.display='none';captureBtn.disabled=!cameraStream;say('写真を読み込んだよ。かんたん撮影でも使えるよ。','success');};
  image.onerror=()=>say('画像を読み込めなかったみたい。別の画像を試してね。','error');
  image.src=imageUrl;
 });
@@ -173,11 +173,26 @@ placeBtn.addEventListener('click',async()=>{
 
 function applyFloatingPhoto(){floatingPhoto.style.left=(50+photoX)+'%';floatingPhoto.style.top=(50+photoY)+'%';floatingPhoto.style.width=photoScale+'%';floatingPhoto.style.transform='translate(-50%,-50%) rotate('+photoRotation+'deg)';}
 easyOpenBtn.addEventListener('click',async()=>{
- if(!image){say('先に写真を選んでね。','error');return;}
- if(!navigator.mediaDevices?.getUserMedia){say('このブラウザではカメラを使えません。Safariで開いてね。','error');return;}
  easyCamera.classList.add('open');easyCamera.setAttribute('aria-hidden','false');
- try{cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:cameraFacing},audio:false});cameraVideo.srcObject=cameraStream;await cameraVideo.play();captureBtn.disabled=false;}
- catch(e){say('カメラを起動できませんでした。Safariのカメラ許可とHTTPS接続を確認してね。','error');easyCamera.classList.remove('open');}
+ captureBtn.disabled=!image;
+ floatingPhoto.style.display=image?'block':'none';
+ easyHint.style.display=image?'none':'block';
+ if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+  say('この画面ではカメラを起動できません。Safariでページを開き直してね。','error');
+  easyHint.textContent='カメラを使うにはSafariで開いてね';
+  return;
+ }
+ try{
+  cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:cameraFacing},audio:false});
+  cameraVideo.srcObject=cameraStream;
+  await cameraVideo.play();
+  if(image)captureBtn.disabled=false;
+  say('カメラが起動したよ。写真を重ねて撮影してね。','success');
+ }catch(e){
+  console.error('Camera start failed:',e);
+  easyHint.textContent='カメラを使えません。Safariの設定でカメラを許可してね。';
+  say('カメラを起動できませんでした。ブラウザのカメラ許可を確認してね。','error');
+ }
 });
 function closeEasyCamera(){if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}cameraVideo.srcObject=null;easyCamera.classList.remove('open');easyCamera.setAttribute('aria-hidden','true');}
 easyCloseBtn.addEventListener('click',closeEasyCamera);
