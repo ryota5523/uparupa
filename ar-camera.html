@@ -57,9 +57,10 @@
 </section>
 <a id="arQuickLook" rel="ar" href="#"><img id="quickLookImage" alt="ARモデルを開く"></a>
 </main>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
 <script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
-import { USDZExporter } from 'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/exporters/USDZExporter.js';
+import * as THREE from 'three';
+import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
 
 const input=document.getElementById('photoInput');
 const preview=document.getElementById('preview');
