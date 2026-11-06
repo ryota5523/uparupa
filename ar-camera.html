@@ -157,7 +157,7 @@ async function createAcrylicArtwork(sourceImage){
  const canvas=document.createElement('canvas');canvas.width=w+pad*2;canvas.height=h+pad*2;
  const ctx=canvas.getContext('2d');
  const mask=document.createElement('canvas');mask.width=w;mask.height=h;
- const m=mask.getContext('2d');m.drawImage(sourceImage,0,0,w,h);m.globalCompositeOperation='source-in';m.fillStyle='#ffffff';m.fillRect(0,0,w,h);
+ const m=mask.getContext('2d');m.drawImage(sourceImage,0,0,w,h);m.globalCompositeOperation='source-in';m.fillStyle='#f7b6c3';m.fillRect(0,0,w,h);
  const radius=7;
  for(let a=0;a<Math.PI*2;a+=Math.PI/8){ctx.drawImage(mask,pad+Math.cos(a)*radius,pad+Math.sin(a)*radius,w,h);}
  ctx.drawImage(sourceImage,pad,pad,w,h);
@@ -168,7 +168,7 @@ cutoutBtn.addEventListener('click',async()=>{
  busy=true;cutoutBtn.disabled=true;placeBtn.disabled=true;savePhotoBtn.disabled=true;
  say('AIが人物を切り抜いています。初回はAIモデルの準備に少し時間がかかるよ…');
  try{
-  const mod=await import('https://esm.sh/@imgly/background-removal@1.7.0?bundle');
+  const mod=await import('https://esm.sh/@imgly/background-removal@1.7.0?bundle&deps=onnxruntime-web@1.21.0-dev.20250206-d981b153d3');
   const removeBackground=mod.default||mod;
   const transparentBlob=await removeBackground(imageUrl,{
    model:'isnet_quint8',device:'cpu',
