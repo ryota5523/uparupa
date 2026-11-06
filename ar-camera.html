@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#e8384f"><title>MANAMIN AR CAMERA｜大野愛実ファンサイト</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.camera-wrap{max-width:920px;margin:auto;padding:18px 14px 110px}.cam-head{text-align:center;padding:10px 0 18px}.eyebrow{font-size:.72rem;letter-spacing:.18em;color:var(--accent);font-weight:900}.cam-head h1{font-size:clamp(2rem,8vw,3.2rem);margin:4px 0}.cam-head p,.hint{color:var(--sub);font-size:.85rem;margin:0}
+.cam-panel{background:#fff;border:1px solid var(--line);border-radius:20px;padding:14px;margin:14px 0;box-shadow:var(--shadow)}.mode-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mode-tabs button,.action-btn,.tool-btn{font:inherit;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--text);padding:10px 12px;font-weight:700;cursor:pointer}.mode-tabs button.active,.primary{background:var(--accent)!important;color:white!important;border-color:var(--accent)!important}
+.camera-layout{display:grid;gap:14px}.stage{position:relative;width:100%;aspect-ratio:3/4;max-height:72vh;min-height:280px;background:#191919;border-radius:16px;overflow:hidden;touch-action:none;isolation:isolate}.stage video,.stage .photo-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.stage video{display:none}.stage.live video{display:block}.stage .photo-bg{display:none}.stage.photo .photo-bg{display:block}.empty-stage{position:absolute;inset:0;display:grid;place-content:center;text-align:center;color:#fffd;padding:24px;font-size:.9rem;pointer-events:none}.stage.has-source .empty-stage{display:none}
+.overlay{position:absolute;left:50%;top:50%;width:38%;max-height:80%;object-fit:contain;transform:translate(-50%,-50%);touch-action:none;user-select:none;-webkit-user-drag:none;cursor:grab;filter:drop-shadow(0 5px 8px #0004);z-index:3}.overlay.selected{outline:1px dashed white;outline-offset:4px}
+.stage-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.action-btn{flex:1;min-width:calc(50% - 8px)}.file-label{display:flex;flex:1;min-width:130px;align-items:center;justify-content:center;border:1px dashed #e7aab4;border-radius:12px;padding:10px;color:var(--accent);font-weight:700;background:var(--soft);cursor:pointer}.file-label input{display:none}.asset-list{display:flex;gap:9px;overflow-x:auto;padding:6px 0}.asset-thumb{width:72px;height:88px;flex:0 0 72px;border:1px solid var(--line);border-radius:10px;background:#fff;display:grid;place-items:center;overflow:hidden;cursor:pointer}.asset-thumb img{width:100%;height:100%;object-fit:contain}.asset-thumb span{font-size:.68rem;color:var(--sub);text-align:center;padding:4px}.control-row{display:flex;gap:8px;align-items:center;margin-top:10px}.control-row label{font-size:.8rem;color:var(--sub);font-weight:700}.control-row input{flex:1;min-width:80px;accent-color:var(--accent)}#result{display:none;width:100%;border-radius:12px;margin-top:12px}.hint{line-height:1.7;margin-top:8px}.back-link{display:inline-block;color:var(--accent);font-weight:700;text-decoration:none;margin:4px 0 10px}
+@media(min-width:760px){.camera-layout{grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);align-items:start}.camera-layout .cam-panel{margin:0 0 14px}.stage{max-height:760px}}
+</style></head>
+<body>
+<div class="appbar"><a href="index.html"><span style="font-size:1.5rem;color:var(--accent)">♡</span><span><b>MANAMI</b><small>大野愛実 ファンサイト（非公式）</small></span></a></div>
+<main class="camera-wrap">
+<a class="back-link" href="index.html">← HOMEに戻る</a>
+<div class="cam-head"><div class="eyebrow">OSHIKATSU PHOTO STUDIO</div><h1>MANAMIN CAMERA</h1><p>まなみんと一緒に、おでかけ写真を撮ろう。</p></div>
+<div class="cam-panel"><div class="mode-tabs"><button class="active" id="arMode">📷 ARカメラ</button><button id="editMode">🖼️ 写真を編集</button></div><p class="hint" id="modeHint">カメラ映像に生写真や透過PNGを重ねて撮影できます。</p></div>
+<div class="camera-layout">
+<section class="cam-panel">
+<div class="stage" id="stage"><video id="video" autoplay playsinline muted></video><img class="photo-bg" id="photoBg" alt="編集する写真"><div class="empty-stage">カメラを起動するか、背景写真を読み込んでね ♡</div></div>
+<div class="stage-tools"><button class="action-btn primary" id="startCamera">カメラを起動</button><button class="action-btn" id="switchCamera">前後カメラ切替</button></div>
+<div class="stage-tools"><label class="file-label">＋ 生写真・透過PNG<input id="assetInput" type="file" accept="image/*" multiple></label><label class="file-label">背景写真を選ぶ<input id="backgroundInput" type="file" accept="image/*"></label></div>
+<div class="stage-tools"><button class="action-btn primary" id="capture">撮影・保存</button><button class="action-btn" id="clearOverlays">素材をすべて消す</button></div>
+<img id="result" alt="撮影結果"><p class="hint">素材をタップして追加。写真をドラッグして位置を調整できます。選択中の素材は下の操作で大きさ・角度を変えられます。</p>
+</section>
+<section class="cam-panel">
+<strong>使う素材</strong><div class="asset-list" id="assetList"><div class="hint">ここに画像が表示されます</div></div>
+<div class="control-row"><label for="scale">サイズ</label><input id="scale" type="range" min="10" max="150" value="38"></div>
+<div class="control-row"><label for="rotate">回転</label><input id="rotate" type="range" min="-180" max="180" value="0"></div>
+<div class="stage-tools"><button class="tool-btn" id="removeSelected">選択素材を削除</button><button class="tool-btn" id="resetSelected">位置・角度を戻す</button></div>
+<p class="hint">※最初は自分の端末に保存してある生写真・背景透過画像を読み込んでね。追加した素材はこのページを開いている間だけ保持されます。</p>
+<div class="cam-panel" style="padding:12px;margin-top:16px;box-shadow:none"><strong>撮影のヒント</strong><p class="hint">明るい場所で、ぬいぐるみやアクスタの近くに素材を配置するとかわいく撮れます。画像を複数追加すれば、生写真と透過画像を同時に重ねられます。</p></div>
+</section>
+</div>
+</main>
+<nav><a href="index.html"><i class="ms">home</i>Home</a><a href="profile.html"><i class="ms">person</i>Profile</a><a href="schedule.html"><i class="ms">calendar_month</i>Schedule</a><a href="news.html"><i class="ms">newspaper</i>News</a><a href="works.html"><i class="ms">movie</i>Works</a><a href="blog.html"><i class="ms">edit_note</i>Blog</a></nav>
+<script>
+(function(){
+const stage=document.getElementById('stage'),video=document.getElementById('video'),photoBg=document.getElementById('photoBg'),assetInput=document.getElementById('assetInput'),backgroundInput=document.getElementById('backgroundInput'),assetList=document.getElementById('assetList'),scale=document.getElementById('scale'),rotate=document.getElementById('rotate'),result=document.getElementById('result');
+let stream=null,facing='environment',mode='ar',assets=[],selected=null,drag=null;
+function stopCamera(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}video.srcObject=null;stage.classList.remove('live')}
+async function startCamera(){if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){alert('このブラウザではカメラを利用できません。HTTPSのページをSafariまたはChromeで開いてください。');return}try{stopCamera();stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:facing},width:{ideal:1920},height:{ideal:1080}}});video.srcObject=stream;await video.play();stage.classList.add('live');stage.classList.remove('photo');stage.classList.add('has-source');}catch(e){alert('カメラを起動できませんでした。ブラウザのカメラ使用許可とHTTPS接続を確認してください。')}} 
+function chooseMode(next){mode=next;document.getElementById('arMode').classList.toggle('active',mode==='ar');document.getElementById('editMode').classList.toggle('active',mode==='edit');document.getElementById('modeHint').textContent=mode==='ar'?'カメラ映像に生写真や透過PNGを重ねて撮影できます。':'背景写真を読み込んで、素材を重ねて編集・保存できます。';if(mode==='edit'){stopCamera();backgroundInput.parentElement.style.display='flex'}else{stage.classList.remove('photo');photoBg.removeAttribute('src')}}
+document.getElementById('arMode').onclick=()=>chooseMode('ar');document.getElementById('editMode').onclick=()=>chooseMode('edit');
+document.getElementById('startCamera').onclick=()=>{chooseMode('ar');startCamera()};document.getElementById('switchCamera').onclick=()=>{facing=facing==='environment'?'user':'environment';if(stream)startCamera()};
+function select(el){document.querySelectorAll('.overlay').forEach(x=>x.classList.remove('selected'));selected=el;if(el){el.classList.add('selected');scale.value=el.dataset.size;rotate.value=el.dataset.angle}}
+function addAsset(file){if(!file.type.startsWith('image/'))return;const url=URL.createObjectURL(file),img=document.createElement('img');img.src=url;img.className='overlay';img.draggable=false;img.dataset.size='38';img.dataset.angle='0';img.style.width='38%';stage.appendChild(img);assets.push({file,url,img});stage.classList.add('has-source');select(img);renderAssets()}
+function renderAssets(){assetList.innerHTML='';if(!assets.length){assetList.innerHTML='<div class="hint">ここに画像が表示されます</div>';return}assets.forEach((a,i)=>{const b=document.createElement('button');b.className='asset-thumb';b.type='button';const im=document.createElement('img');im.src=a.url;b.appendChild(im);b.title='素材 '+(i+1);b.onclick=()=>select(a.img);assetList.appendChild(b)})}
+assetInput.onchange=e=>{Array.from(e.target.files||[]).forEach(addAsset);assetInput.value=''};
+backgroundInput.onchange=e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const u=URL.createObjectURL(f);photoBg.src=u;stage.classList.remove('live');stage.classList.add('photo','has-source');stopCamera();chooseMode('edit');photoBg.src=u;backgroundInput.value=''};
+stage.addEventListener('pointerdown',e=>{const el=e.target.closest('.overlay');if(!el)return;select(el);const r=stage.getBoundingClientRect();drag={el,x:e.clientX,y:e.clientY,left:parseFloat(el.style.left||'50%'),top:parseFloat(el.style.top||'50%'),w:r.width,h:r.height};el.setPointerCapture(e.pointerId)});
+stage.addEventListener('pointermove',e=>{if(!drag)return;const dx=(e.clientX-drag.x)/drag.w*100,dy=(e.clientY-drag.y)/drag.h*100;drag.el.style.left=(parseFloat(drag.el.style.left||'50%')+dx)+'%';drag.el.style.top=(parseFloat(drag.el.style.top||'50%')+dy)+'%';drag.x=e.clientX;drag.y=e.clientY});
+stage.addEventListener('pointerup',()=>drag=null);stage.addEventListener('pointercancel',()=>drag=null);
+scale.oninput=()=>{if(selected){selected.dataset.size=scale.value;selected.style.width=scale.value+'%'}};
+rotate.oninput=()=>{if(selected){selected.dataset.angle=rotate.value;selected.style.transform='translate(-50%,-50%) rotate('+rotate.value+'deg)'}};
+document.getElementById('removeSelected').onclick=()=>{if(!selected)return;const a=assets.find(x=>x.img===selected);if(a){URL.revokeObjectURL(a.url);assets=assets.filter(x=>x!==a)}selected.remove();selected=null;renderAssets()};
+document.getElementById('resetSelected').onclick=()=>{if(!selected)return;selected.style.left='50%';selected.style.top='50%';selected.style.width='38%';selected.style.transform='translate(-50%,-50%)';selected.dataset.size='38';selected.dataset.angle='0';select(selected)};
+document.getElementById('clearOverlays').onclick=()=>{assets.forEach(a=>{URL.revokeObjectURL(a.url);a.img.remove()});assets=[];selected=null;renderAssets()};
+function loadImage(src){return new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=src})}
+document.getElementById('capture').onclick=async()=>{const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;const canvas=document.createElement('canvas');canvas.width=w*2;canvas.height=h*2;const ctx=canvas.getContext('2d');ctx.scale(2,2);if(stage.classList.contains('live')&&video.videoWidth){const vw=video.videoWidth,vh=video.videoHeight,s=Math.max(w/vw,h/vh),dw=vw*s,dh=vh*s;ctx.drawImage(video,(w-dw)/2,(h-dh)/2,dw,dh)}else if(photoBg.src){const im=await loadImage(photoBg.src);const s=Math.max(w/im.width,h/im.height),dw=im.width*s,dh=im.height*s;ctx.drawImage(im,(w-dw)/2,(h-dh)/2,dw,dh)}else{alert('先にカメラを起動するか、背景写真を読み込んでね。');return}
+for(const a of assets){const im=await loadImage(a.url),el=a.img;const rect=el.getBoundingClientRect(),sr=stage.getBoundingClientRect(),cx=rect.left-sr.left+rect.width/2,cy=rect.top-sr.top+rect.height/2;ctx.save();ctx.translate(cx,cy);ctx.rotate((Number(el.dataset.angle)||0)*Math.PI/180);const dw=rect.width,dh=dw*im.height/im.width;ctx.drawImage(im,-dw/2,-dh/2,dw,dh);ctx.restore()}
+canvas.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob);result.src=url;result.style.display='block';const link=document.createElement('a');link.href=url;link.download='manamin-oshikatsu-'+new Date().toISOString().slice(0,10)+'.png';link.click()},'image/png')};
+window.addEventListener('pagehide',stopCamera);
+})();
+</script>
+</body></html>
