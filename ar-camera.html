@@ -178,7 +178,7 @@ cutoutBtn.addEventListener('click',async()=>{
    throw new Error('AI切り抜きライブラリの関数を読み込めませんでした。ページを再読み込みしてね。');
   }
   const transparentBlob=await removeBackground(imageUrl,{
-   model:'isnet_quint8',device:'cpu',
+   model:'isnet',device:'cpu',
    output:{format:'image/png',type:'foreground'},
    progress:(key,current,total)=>{if(total)say('AIモデルを準備中… '+Math.round(current/total*100)+'%');}
   });
@@ -209,15 +209,9 @@ function buildScene(THREE){
  texture.needsUpdate=true;
  const material=new THREE.MeshStandardMaterial({map:texture,transparent:true,alphaTest:0.015,side:THREE.DoubleSide,roughness:1,metalness:0});
  const geometry=new THREE.PlaneGeometry(w,h);
- const acrylic=new THREE.MeshStandardMaterial({color:0xf7b6c3,transparent:true,opacity:0.82,roughness:0.22,metalness:0.08});
- const base=new THREE.Mesh(new THREE.BoxGeometry(Math.max(0.09,w*0.38),0.018,0.075),acrylic);
- base.name='AcrylicStandBase';base.position.set(0,0.012,0.018);scene.add(base);
- const leftFoot=new THREE.Mesh(new THREE.BoxGeometry(Math.max(0.018,w*0.055),0.075,0.035),acrylic);
- leftFoot.name='AcrylicStandSupportLeft';leftFoot.position.set(-w*0.12,0.045,0.012);scene.add(leftFoot);
- const rightFoot=leftFoot.clone();rightFoot.name='AcrylicStandSupportRight';rightFoot.position.x=w*0.12;scene.add(rightFoot);
  const card=new THREE.Mesh(geometry,material);
  card.name='ManaminPhoto';
- card.position.set(0,h/2+0.07,0);
+ card.position.set(0,0,0);
  card.rotation.y=THREE.MathUtils.degToRad(Number(angleInput.value));
  scene.add(card);
  return scene;
