@@ -35,15 +35,16 @@
 <div class="appbar"><a href="index.html"><span style="font-size:1.5rem;color:var(--accent)">♡</span><span><b>MANAMI</b><small>大野愛実 ファンサイト（非公式）</small></span></a></div>
 <main class="ar-wrap">
 <a class="ar-back" href="index.html">← HOMEに戻る</a>
-<header class="ar-head"><div class="ar-kicker">AUGMENTED REALITY EXPERIENCE</div><h1>MANAMIN <span style="color:var(--ar-pink)">AR</span></h1><p>写真を、いつもの部屋に。<br>現実の空間にまなみんのフォトカードを配置しよう。</p></header>
+<header class="ar-head"><div class="ar-kicker">AUGMENTED REALITY EXPERIENCE</div><h1>MANAMIN <span style="color:var(--ar-pink)">AR</span></h1><p>写真からアクスタを作って、いつもの部屋に。<br>人物を切り抜いて、現実の空間に飾ろう。</p></header>
 <div class="ar-layout">
 <section class="ar-card">
 <h2>① 写真を選ぶ</h2>
 <label class="ar-file-label" for="photoInput">♡ 写真・切り抜き画像を選択</label>
 <input class="ar-file" id="photoInput" type="file" accept="image/*">
+<div class="ar-buttons" style="margin:10px 0"><button class="ar-btn primary" id="cutoutBtn" type="button" disabled>✂ AIで人物を切り抜く</button></div>
 <div class="ar-preview" id="preview"><div class="ar-empty"><span class="symbol">✧</span>画像を選ぶとここに表示されるよ</div></div>
 <div class="ar-buttons"><button class="ar-btn" id="clearBtn" type="button" disabled>画像をクリア</button><button class="ar-btn" id="downloadBtn" type="button" disabled>ARデータを保存</button><button class="ar-btn" id="savePhotoBtn" type="button" disabled>写真アプリに保存</button></div>
-<p class="ar-note">背景透過PNGなら、切り抜き部分だけを空間に浮かべられるよ。通常の写真もフォトパネルとして配置できます。</p>
+<p class="ar-note">AI切り抜きは端末内で処理します。初回は約40MBのAIモデルをダウンロードします。写真はサーバーに送信しません。</p>
 </section>
 <section class="ar-card">
 <h2>② 空間に置くサイズ</h2>
@@ -78,6 +79,7 @@ const placeBtn=document.getElementById('placeBtn');
 const downloadBtn=document.getElementById('downloadBtn');
 const clearBtn=document.getElementById('clearBtn');
 const savePhotoBtn=document.getElementById('savePhotoBtn');
+const cutoutBtn=document.getElementById('cutoutBtn');
 const savedLibrary=document.getElementById('savedLibrary');
 const DB_NAME='manamin-ar-local';
 const STORE_NAME='standees';
@@ -133,7 +135,7 @@ const sizeValue=document.getElementById('sizeValue');
 const angleValue=document.getElementById('angleValue');
 const quickLink=document.getElementById('arQuickLook');
 const quickImage=document.getElementById('quickLookImage');
-let image=null, imageUrl=null, usdzUrl=null, busy=false;
+let image=null, imageUrl=null, usdzUrl=null, busy=false, isCutout=false;
 
 function say(message,type=''){status.textContent=message;status.className='ar-status'+(type?' '+type:'');}
 function updateControls(){sizeValue.textContent=(Number(sizeInput.value))+' cm';angleValue.textContent=angleInput.value+'°';}
@@ -144,11 +146,51 @@ function showImageFile(file,save=true){
  if(!file.type.startsWith('image/')){say('画像ファイルを選んでね。','error');return;}
  if(file.size>15*1024*1024){say('画像は15MB以下にしてね。','error');return;}
  revokeAssets();imageUrl=URL.createObjectURL(file);image=new Image();
- image.onload=()=>{preview.replaceChildren();const p=document.createElement('img');p.src=imageUrl;p.alt='選択した写真';preview.append(p);placeBtn.disabled=false;downloadBtn.disabled=true;clearBtn.disabled=false;savePhotoBtn.disabled=false;say('写真を読み込んだよ。サイズを決めて、空間に配置してみよう。','success');if(save)saveToLocalLibrary(file);};
+ image.onload=()=>{preview.replaceChildren();const p=document.createElement('img');p.src=imageUrl;p.alt='選択した写真';preview.append(p);placeBtn.disabled=false;downloadBtn.disabled=true;clearBtn.disabled=false;savePhotoBtn.disabled=false;cutoutBtn.disabled=false;isCutout=(file.type==='image/png'&&file.name.toLowerCase().includes('cutout'));say(isCutout?'切り抜き画像を読み込んだよ。アクスタにしてみよう。':'写真を読み込んだよ。AI切り抜きでアクスタにできるよ。','success');if(save)saveToLocalLibrary(file);};
  image.onerror=()=>say('画像を読み込めなかったみたい。別の画像を試してね。','error');
  image.src=imageUrl;
 }
-input.addEventListener('change',()=>{const file=input.files?.[0];if(file)showImageFile(file,true);});
+input.addEventListener('change',()=>{const file=input.files?.[0];if(file){isCutout=false;showImageFile(file,true);}});
+
+async function createAcrylicArtwork(sourceImage){
+ const pad=18,w=sourceImage.naturalWidth,h=sourceImage.naturalHeight;
+ const canvas=document.createElement('canvas');canvas.width=w+pad*2;canvas.height=h+pad*2;
+ const ctx=canvas.getContext('2d');
+ const mask=document.createElement('canvas');mask.width=w;mask.height=h;
+ const m=mask.getContext('2d');m.drawImage(sourceImage,0,0,w,h);m.globalCompositeOperation='source-in';m.fillStyle='#ffffff';m.fillRect(0,0,w,h);
+ const radius=7;
+ for(let a=0;a<Math.PI*2;a+=Math.PI/8){ctx.drawImage(mask,pad+Math.cos(a)*radius,pad+Math.sin(a)*radius,w,h);}
+ ctx.drawImage(sourceImage,pad,pad,w,h);
+ return await new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('PNGの生成に失敗しました')),'image/png'));
+}
+cutoutBtn.addEventListener('click',async()=>{
+ if(!image||busy||isCutout)return;
+ busy=true;cutoutBtn.disabled=true;placeBtn.disabled=true;savePhotoBtn.disabled=true;
+ say('AIが人物を切り抜いています。初回はAIモデルの準備に少し時間がかかるよ…');
+ try{
+  const mod=await import('https://esm.sh/@imgly/background-removal@1.7.0?bundle');
+  const removeBackground=mod.default||mod;
+  const transparentBlob=await removeBackground(imageUrl,{
+   model:'isnet_quint8',device:'cpu',
+   output:{format:'image/png',type:'foreground'},
+   progress:(key,current,total)=>{if(total)say('AIモデルを準備中… '+Math.round(current/total*100)+'%');}
+  });
+  const tempUrl=URL.createObjectURL(transparentBlob),cutImage=new Image();
+  await new Promise((resolve,reject)=>{cutImage.onload=resolve;cutImage.onerror=reject;cutImage.src=tempUrl;});
+  const acrylicBlob=await createAcrylicArtwork(cutImage);URL.revokeObjectURL(tempUrl);
+  const cutFile=new File([acrylicBlob],'manamin-cutout.png',{type:'image/png'});
+  revokeAssets();imageUrl=URL.createObjectURL(cutFile);image=new Image();
+  await new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=reject;image.src=imageUrl;});
+  preview.replaceChildren();const p=document.createElement('img');p.src=imageUrl;p.alt='背景を切り抜いたアクスタ画像';preview.append(p);
+  isCutout=true;placeBtn.disabled=false;savePhotoBtn.disabled=false;downloadBtn.disabled=true;
+  await saveToLocalLibrary(cutFile);
+  say('人物を切り抜いて、アクリル風の縁取りを付けたよ！このままARに配置できます。','success');
+ }catch(err){
+  console.error('Background removal failed:',err);
+  say('AI切り抜きに失敗しました。通信環境を確認するか、背景透過PNGを選んでね。詳細：'+(err?.message||'不明なエラー'),'error');
+ }finally{busy=false;cutoutBtn.disabled=!image||isCutout;placeBtn.disabled=!image;savePhotoBtn.disabled=!image;}
+});
+
 
 function buildScene(THREE){
  const scene=new THREE.Scene();
@@ -160,9 +202,15 @@ function buildScene(THREE){
  texture.needsUpdate=true;
  const material=new THREE.MeshStandardMaterial({map:texture,transparent:true,alphaTest:0.015,side:THREE.DoubleSide,roughness:1,metalness:0});
  const geometry=new THREE.PlaneGeometry(w,h);
+ const acrylic=new THREE.MeshStandardMaterial({color:0xf7b6c3,transparent:true,opacity:0.82,roughness:0.22,metalness:0.08});
+ const base=new THREE.Mesh(new THREE.BoxGeometry(Math.max(0.09,w*0.38),0.018,0.075),acrylic);
+ base.name='AcrylicStandBase';base.position.set(0,0.012,0.018);scene.add(base);
+ const leftFoot=new THREE.Mesh(new THREE.BoxGeometry(Math.max(0.018,w*0.055),0.075,0.035),acrylic);
+ leftFoot.name='AcrylicStandSupportLeft';leftFoot.position.set(-w*0.12,0.045,0.012);scene.add(leftFoot);
+ const rightFoot=leftFoot.clone();rightFoot.name='AcrylicStandSupportRight';rightFoot.position.x=w*0.12;scene.add(rightFoot);
  const card=new THREE.Mesh(geometry,material);
  card.name='ManaminPhoto';
- card.position.set(0,h/2,0);
+ card.position.set(0,h/2+0.07,0);
  card.rotation.y=THREE.MathUtils.degToRad(Number(angleInput.value));
  scene.add(card);
  return scene;
@@ -219,7 +267,7 @@ savePhotoBtn.addEventListener('click',async()=>{
  }catch(err){if(err?.name!=='AbortError'){console.error(err);say('画像を書き出せませんでした。','error');}}
 });
 renderLocalLibrary();
-clearBtn.addEventListener('click',()=>{revokeAssets();image=null;input.value='';preview.innerHTML='<div class="ar-empty"><span class="symbol">✧</span>画像を選ぶとここに表示されるよ</div>';placeBtn.disabled=true;downloadBtn.disabled=true;clearBtn.disabled=true;savePhotoBtn.disabled=true;say('画像をクリアしました。');});
+clearBtn.addEventListener('click',()=>{revokeAssets();image=null;input.value='';preview.innerHTML='<div class="ar-empty"><span class="symbol">✧</span>画像を選ぶとここに表示されるよ</div>';placeBtn.disabled=true;downloadBtn.disabled=true;clearBtn.disabled=true;savePhotoBtn.disabled=true;cutoutBtn.disabled=true;isCutout=false;say('画像をクリアしました。');});
 </script>
 </body>
 </html>
