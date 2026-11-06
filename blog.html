@@ -1,39 +1,184 @@
 <!DOCTYPE html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Blog｜大野愛実 ファンサイト（非公式）</title><link rel="stylesheet" href="style.css"><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#e8384f"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="まなみん"><meta name="apple-mobile-web-app-status-bar-style" content="default"></head><body><div class="appbar"><a href="index.html"><img src="logo.png" alt="" class="logo"><span><b>MANAMI</b><small>大野愛実 ファンサイト（非公式）</small></span></a></div><div class="wrap"><header><span class="badge">日向坂46 五期生</span><h1>Blog</h1><p class="kana">ブログ</p></header><nav><a href="index.html"><i class="ms">home</i>Home</a><a href="profile.html"><i class="ms">person</i>Profile</a><a href="schedule.html"><i class="ms">calendar_month</i>Schedule</a><a href="news.html"><i class="ms">newspaper</i>News</a><a href="works.html"><i class="ms">movie</i>Works</a><a href="blog.html" class="on"><i class="ms">edit_note</i>Blog</a></nav>
-<section><h2>Official Blog</h2>
-<p>日向坂46公式サイトのブログです。記事はこちらから公式サイトで読めます。</p>
-<div class="links">
-<a href="https://www.hinatazaka46.com/s/official/diary/member/list?ima=0000&amp;ct=38" target="_blank" rel="noopener"><i class="ms">menu_book</i>ブログ一覧<small>大野愛実の記事（公式サイト）</small></a>
-<a href="https://www.hinatazaka46.com/s/official/artist/38?ima=0000&amp;link=ROBO004" target="_blank" rel="noopener"><i class="ms">local_florist</i>メンバーページ<small>公式プロフィール・最新ニュース</small></a>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Blog｜大野愛実 ファンサイト（非公式）</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#c91532">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="まなみん">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{--blog-red:#c91532;--blog-red-dark:#8f1028;--blog-red-soft:#fff0f2;--blog-ink:#292326;--blog-muted:#8a7b80}
+.blog-head{position:relative;overflow:hidden;margin:22px 0 18px;padding:clamp(24px,6vw,42px);border-radius:26px;background:linear-gradient(125deg,#9f102b 0%,#d51e3d 58%,#ef5366 100%);color:#fff;box-shadow:0 16px 36px rgba(160,16,43,.2)}
+.blog-head:before,.blog-head:after{content:"";position:absolute;border:1px solid rgba(255,255,255,.18);border-radius:50%;pointer-events:none}
+.blog-head:before{width:260px;height:260px;right:-72px;top:-115px}
+.blog-head:after{width:190px;height:190px;right:12px;top:-76px}
+.blog-head .en{font-size:.68rem;font-weight:900;letter-spacing:.24em;opacity:.82}
+.blog-head h2{display:block;margin:10px 0 4px;font-size:clamp(2rem,8vw,3.5rem);letter-spacing:.04em;line-height:1.1}
+.blog-head h2:before{display:none}
+.blog-head p{margin:8px 0 0;color:rgba(255,255,255,.88);font-size:.9rem}
+.blog-head .head-bottom{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-top:22px}
+.blog-head .head-note{font-size:.72rem;letter-spacing:.12em;opacity:.78}
+.blog-head .head-mark{font-size:2.2rem;line-height:1;opacity:.85}
+.blog-links{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 26px}
+.blog-links a{display:block;padding:13px 14px;border:1px solid #f0d9de;border-radius:16px;background:#fff;color:var(--blog-ink);text-decoration:none;font-weight:800;box-shadow:0 5px 16px rgba(125,20,40,.05)}
+.blog-links a i{color:var(--blog-red);font-size:21px;vertical-align:-.25em;margin-right:5px}
+.blog-links small{display:block;margin-top:3px;color:var(--blog-muted);font-size:.72rem;font-weight:500}
+.blog-section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:30px 0 12px}
+.blog-section-title h2{margin:0;font-size:1.18rem}
+.blog-section-title h2:before{background:var(--blog-red)}
+.blog-section-title span{font-size:.68rem;letter-spacing:.16em;color:var(--blog-red);font-weight:900}
+.blog-feature{position:relative;overflow:hidden;padding:22px;border:1px solid #f0d5db;border-radius:22px;background:linear-gradient(145deg,#fff 0%,#fff6f7 100%);box-shadow:0 8px 24px rgba(120,20,40,.06)}
+.blog-feature .feature-label{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;background:var(--blog-red);color:white;font-size:.67rem;font-weight:900;letter-spacing:.12em}
+.blog-feature .feature-date{margin-top:16px;color:var(--blog-red);font-size:.78rem;font-weight:900;letter-spacing:.08em}
+.blog-feature a{display:block;margin-top:5px;color:var(--blog-ink);font-size:1.22rem;font-weight:900;line-height:1.55;text-decoration:none}
+.blog-feature a:after{content:" ↗";color:var(--blog-red);white-space:nowrap}
+.blog-feature .feature-foot{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:12px;border-top:1px solid #f0dfe2;color:var(--blog-muted);font-size:.75rem}
+.blog-feature .feature-count{font-size:1.7rem;font-weight:900;color:rgba(201,21,50,.16);letter-spacing:-.05em}
+.blog-tools{display:grid;grid-template-columns:minmax(0,1fr) minmax(120px,.65fr);gap:9px;margin:14px 0}
+.blog-search{width:100%;min-width:0;padding:12px 14px;border:1px solid #eadde0;border-radius:13px;background:#fff;color:var(--blog-ink);font:inherit;font-size:.88rem;outline:none}
+.blog-search:focus{border-color:var(--blog-red);box-shadow:0 0 0 3px rgba(201,21,50,.09)}
+.blog-select{width:100%;padding:12px 10px;border:1px solid #eadde0;border-radius:13px;background:#fff;color:var(--blog-ink);font:inherit;font-size:.82rem}
+.blog-results{display:flex;justify-content:space-between;align-items:center;margin:10px 2px;color:var(--blog-muted);font-size:.77rem}
+.blog-results strong{color:var(--blog-red)}
+.blog-list{display:grid;gap:10px}
+.blog-card{position:relative;display:grid;grid-template-columns:58px minmax(0,1fr) 22px;gap:12px;align-items:center;padding:15px 14px;border:1px solid #f0e1e4;border-radius:17px;background:#fff;text-decoration:none;color:var(--blog-ink);transition:transform .18s,border-color .18s,box-shadow .18s}
+.blog-card:active{transform:scale(.99)}
+.blog-card:hover{border-color:#e8aab5;box-shadow:0 7px 18px rgba(140,20,45,.07)}
+.blog-card .daybox{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:55px;border-radius:12px;background:var(--blog-red-soft);color:var(--blog-red)}
+.blog-card .daybox .month{font-size:.62rem;font-weight:900;letter-spacing:.06em}
+.blog-card .daybox .day{font-size:1.35rem;font-weight:900;line-height:1.15}
+.blog-card .card-copy{min-width:0}
+.blog-card .card-date{font-size:.7rem;color:var(--blog-muted);letter-spacing:.04em}
+.blog-card .card-title{display:-webkit-box;margin-top:3px;overflow:hidden;color:var(--blog-ink);font-size:.92rem;font-weight:800;line-height:1.55;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.blog-card .arrow{color:var(--blog-red);font-size:1.15rem}
+.blog-empty{padding:22px 16px;border:1px dashed #e9cbd1;border-radius:16px;background:#fff9fa;color:var(--blog-muted);text-align:center;font-size:.88rem}
+.blog-footnote{margin:16px 2px 0;color:var(--blog-muted);font-size:.76rem;line-height:1.8}
+.blog-loading{padding:22px;text-align:center;color:var(--blog-muted)}
+@media(max-width:520px){.blog-links{grid-template-columns:1fr 1fr}.blog-tools{grid-template-columns:1fr}.blog-card{grid-template-columns:52px minmax(0,1fr) 18px;padding:13px 11px;gap:10px}.blog-head .head-bottom{margin-top:18px}}
+</style>
+</head>
+<body>
+<div class="appbar"><a href="index.html"><img src="logo.png" alt="" class="logo"><span><b>MANAMI</b><small>大野愛実 ファンサイト（非公式）</small></span></a></div>
+<div class="wrap">
+<header><span class="badge">日向坂46 五期生</span><h1>Blog</h1><p class="kana">ブログ</p></header>
+<nav>
+<a href="index.html"><i class="ms">home</i>Home</a>
+<a href="profile.html"><i class="ms">person</i>Profile</a>
+<a href="schedule.html"><i class="ms">calendar_month</i>Schedule</a>
+<a href="news.html"><i class="ms">newspaper</i>News</a>
+<a href="works.html"><i class="ms">movie</i>Works</a>
+<a href="blog.html" class="on"><i class="ms">edit_note</i>Blog</a>
+</nav>
+
+<div class="blog-head">
+<div class="en">MANAMI OHNO / OFFICIAL BLOG ARCHIVE</div>
+<h2>Manami's<br>Journal.</h2>
+<p>言葉をたどって、まなみんの毎日に会いにいこう。</p>
+<div class="head-bottom"><span class="head-note">赤をひとさじ。日々の記録を、ひとつずつ。</span><span class="head-mark">♥</span></div>
 </div>
-<h3>Latest Posts</h3><div id="p"></div>
-<p class="empty" style="margin-top:12px">記事のタイトルと日付だけを載せています。本文と写真は公式サイトでご覧ください。最新の一覧は上の「ブログ一覧」が確実です。</p></section>
-<footer><p>このサイトは有志による非公式ファンサイトです。日向坂46・運営・所属事務所とは一切関係ありません。<br>掲載内容は報道・公式発表をもとにまとめたものです。正確な情報は公式サイトをご確認ください。</p></footer></div><script>
+
+<div class="blog-links">
+<a href="https://www.hinatazaka46.com/s/official/diary/member/list?ima=0000&amp;ct=38" target="_blank" rel="noopener"><i class="ms">menu_book</i>公式ブログ一覧<small>大野愛実の記事を読む</small></a>
+<a href="https://www.hinatazaka46.com/s/official/artist/38?ima=0000&amp;link=ROBO004" target="_blank" rel="noopener"><i class="ms">person</i>メンバーページ<small>公式プロフィール・最新情報</small></a>
+</div>
+
+<div class="blog-section-title"><h2>Latest Letter</h2><span>FEATURED</span></div>
+<div id="featured" class="blog-feature"><div class="blog-loading">最新の記事を探しています…</div></div>
+
+<div class="blog-section-title"><h2>Blog Archive</h2><span>STORIES</span></div>
+<div class="blog-tools">
+<input id="blog-search" class="blog-search" type="search" placeholder="記事タイトルで検索…" aria-label="記事タイトルで検索">
+<select id="blog-month" class="blog-select" aria-label="年月で絞り込み"><option value="all">すべての年月</option></select>
+</div>
+<div class="blog-results"><span id="blog-result-count">記事を読み込み中</span><span>NEWEST FIRST</span></div>
+<div id="blog-list" class="blog-list"><div class="blog-loading">ブログを読み込んでいます…</div></div>
+<p class="blog-footnote">記事の本文・写真は日向坂46公式サイトでご覧ください。タイトルをタップすると公式ブログが開きます。</p>
+
+<footer><p>このサイトは有志による非公式ファンサイトです。日向坂46・運営・所属事務所とは一切関係ありません。<br>掲載内容は報道・公式発表をもとにまとめたものです。正確な情報は公式サイトをご確認ください。</p></footer>
+</div>
+<script>
 (function(){
-  const API = "https://manami-site-worker.yellowworker.workers.dev/api/blogs";
-  const el = document.getElementById("p");
-  fetch(API).then(r => {
-    if (!r.ok) throw new Error("API error");
-    return r.json();
-  }).then(data => {
-    if (!data.ok || !Array.isArray(data.items) || !data.items.length) throw new Error("記事がありません");
-    data.items.forEach(item => {
-      const d = document.createElement("div");
-      d.className = "item";
-      const date = document.createElement("div");
-      date.className = "date";
-      date.textContent = (item.published_at || "").replace(/-/g, ".");
-      const link = document.createElement("a");
-      link.href = item.url;
-      link.target = "_blank";
-      link.rel = "noopener";
-      link.textContent = item.title;
-      d.appendChild(date);
-      d.appendChild(link);
-      el.appendChild(d);
+  const API="https://manami-site-worker.yellowworker.workers.dev/api/blogs";
+  const list=document.getElementById("blog-list");
+  const featured=document.getElementById("featured");
+  const search=document.getElementById("blog-search");
+  const month=document.getElementById("blog-month");
+  const count=document.getElementById("blog-result-count");
+  let posts=[];
+  function safeDate(value){
+    const s=String(value||"");
+    const m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if(!m)return {key:"unknown",full:s||"日付不明",month:"--",day:"--"};
+    return {key:m[1]+"-"+String(m[2]).padStart(2,"0"),full:m[1]+"."+String(m[2]).padStart(2,"0")+"."+String(m[3]).padStart(2,"0"),month:m[2]+"月",day:String(Number(m[3]))};
+  }
+  function safeUrl(value){
+    try{const u=new URL(value);return u.protocol==="https:"?u.href:"https://www.hinatazaka46.com/s/official/diary/member/list?ima=0000&ct=38";}
+    catch(e){return "https://www.hinatazaka46.com/s/official/diary/member/list?ima=0000&ct=38";}
+  }
+  function renderFeatured(){
+    if(!posts.length){featured.innerHTML='<div class="blog-empty">記事はまだ見つかりませんでした。公式ブログ一覧からチェックしてね。</div>';return;}
+    const p=posts[0],d=safeDate(p.published_at);
+    featured.innerHTML="";
+    const label=document.createElement("span");label.className="feature-label";label.textContent="✦ LATEST POST";
+    const date=document.createElement("div");date.className="feature-date";date.textContent=d.full;
+    const a=document.createElement("a");a.href=safeUrl(p.url);a.target="_blank";a.rel="noopener";a.textContent=p.title||"タイトル未設定";
+    const foot=document.createElement("div");foot.className="feature-foot";
+    const note=document.createElement("span");note.textContent="公式ブログで続きを読む";
+    const number=document.createElement("span");number.className="feature-count";number.textContent="01";
+    foot.append(note,number);featured.append(label,date,a,foot);
+  }
+  function renderList(){
+    const q=search.value.trim().toLocaleLowerCase();
+    const selected=month.value;
+    const filtered=posts.filter(p=>{
+      const d=safeDate(p.published_at);
+      return (!q||String(p.title||"").toLocaleLowerCase().includes(q))&&(selected==="all"||d.key===selected);
     });
-  }).catch(() => {
-    el.textContent = "ブログを読み込めませんでした。公式ブログ一覧をご確認ください。";
-  });
+    count.innerHTML='<strong>'+filtered.length+'</strong> 件の記事';
+    list.innerHTML="";
+    if(!filtered.length){const empty=document.createElement("div");empty.className="blog-empty";empty.textContent="該当する記事が見つからなかったよ。検索ワードを変えてみてね。";list.appendChild(empty);return;}
+    filtered.forEach(p=>{
+      const d=safeDate(p.published_at);
+      const a=document.createElement("a");a.className="blog-card";a.href=safeUrl(p.url);a.target="_blank";a.rel="noopener";
+      const day=document.createElement("span");day.className="daybox";
+      const mo=document.createElement("span");mo.className="month";mo.textContent=d.month;
+      const da=document.createElement("span");da.className="day";da.textContent=d.day;
+      day.append(mo,da);
+      const copy=document.createElement("span");copy.className="card-copy";
+      const date=document.createElement("span");date.className="card-date";date.textContent=d.full;
+      const title=document.createElement("span");title.className="card-title";title.textContent=p.title||"タイトル未設定";
+      copy.append(date,title);
+      const arrow=document.createElement("span");arrow.className="arrow";arrow.textContent="↗";
+      a.append(day,copy,arrow);list.appendChild(a);
+    });
+  }
+  function setupMonths(){
+    const months=[...new Set(posts.map(p=>safeDate(p.published_at).key).filter(k=>k!=="unknown"))].sort().reverse();
+    months.forEach(key=>{const o=document.createElement("option");o.value=key;o.textContent=key.replace("-","年")+"月";month.appendChild(o);});
+  }
+  search.addEventListener("input",renderList);
+  month.addEventListener("change",renderList);
+  fetch(API).then(r=>{if(!r.ok)throw new Error("API error");return r.json();})
+    .then(data=>{
+      if(!data.ok||!Array.isArray(data.items))throw new Error("Invalid response");
+      posts=data.items.slice().sort((a,b)=>String(b.published_at||"").localeCompare(String(a.published_at||"")));
+      setupMonths();renderFeatured();renderList();
+    })
+    .catch(()=>{
+      featured.innerHTML='<div class="blog-empty">最新記事を読み込めませんでした。</div>';
+      list.innerHTML='<div class="blog-empty">ブログを読み込めませんでした。上の「公式ブログ一覧」からご覧ください。</div>';
+      count.textContent="読み込みエラー";
+    });
 })();
-</script><script src="egg.js" defer></script></body></html>
+</script>
+<script src="egg.js" defer></script>
+</body>
+</html>
