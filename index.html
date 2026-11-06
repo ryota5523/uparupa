@@ -7,12 +7,36 @@
 #greeting-page-frame{width:100%;height:100%;border:0;background:#fff}
 #greeting-page-close{position:absolute;right:12px;top:12px;z-index:2;border:0;border-radius:999px;background:#e8384f;color:white;font-size:15px;font-weight:700;padding:10px 16px;box-shadow:0 2px 10px #0003;cursor:pointer}
 @media(max-width:600px){#greeting-page-modal{padding:0}#greeting-page-panel{width:100%;height:100%;border-radius:0}#greeting-page-close{top:calc(env(safe-area-inset-top) + 10px);right:12px}}
+
+<style>
+.home-daily{background:linear-gradient(145deg,#fff1f3,#fff);border:1px solid #f4d8dd;border-radius:22px;padding:clamp(18px,3vw,28px);margin:22px 0;box-shadow:0 8px 28px rgba(130,40,60,.07)}
+.home-eyebrow{font-size:.72rem;letter-spacing:.16em;color:#c94b63;font-weight:800}
+.home-daily h2{margin:6px 0 4px;font-size:1.45rem}
+.home-daily .daily-date{font-size:.8rem;color:#987b82;margin-bottom:14px}
+.daily-content{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:18px;align-items:center}
+.daily-content img{width:100%;max-height:340px;object-fit:contain;border-radius:14px;background:#fff}
+.daily-copy{min-width:0}.daily-copy h3{margin:0 0 8px;font-size:1.1rem}.daily-copy p{color:var(--sub);line-height:1.8}
+.home-section{margin:30px 0}.home-section>h2{margin-bottom:6px}
+.home-sub{font-size:.86rem;color:var(--sub);margin:0 0 14px}
+.home-list{display:grid;gap:10px}
+.home-row{padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.home-row .date{font-size:.8rem;color:var(--accent);font-weight:700}
+.home-row a{font-weight:700;text-decoration:none}
+.home-empty{padding:18px;border-radius:14px;background:var(--soft);color:var(--sub);font-size:.9rem}
+@media(max-width:640px){.daily-content{grid-template-columns:1fr}.daily-content img{max-height:280px}}
+</style>
 </style>
 </head><body><div class="appbar"><a href="index.html"><img src="logo.png" alt="" class="logo"><span><b>MANAMI</b><small>大野愛実 ファンサイト（非公式）</small></span></a></div><div class="wrap">
 <header><span class="badge">日向坂46 五期生</span><p class="kana">おおの まなみ</p><h1>大野愛実</h1><p class="tag">負けない！泣かない！実らせたい！</p>
 <p class="intro">東京都出身<span id="age">19</span>歳 大野愛実ちゃんのファンサイトです</p></header>
 <nav><a href="index.html" class="on"><i class="ms">home</i>Home</a><a href="profile.html"><i class="ms">person</i>Profile</a><a href="schedule.html"><i class="ms">calendar_month</i>Schedule</a><a href="news.html"><i class="ms">newspaper</i>News</a><a href="works.html"><i class="ms">movie</i>Works</a><a href="blog.html"><i class="ms">edit_note</i>Blog</a></nav>
-<section class="movie"><h2>はじめまして、大野 愛実です。</h2><div class="video"><iframe src="https://www.youtube.com/embed/JA9ML18irK0" title="YouTube video player" loading="lazy" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div></section>
+<section class="home-daily" id="today-manami">
+  <div class="home-eyebrow">TODAY'S MANAMIN</div><h2>今日のまなみん</h2>
+  <div class="daily-date" id="daily-date"></div>
+  <div id="daily-content" class="daily-content"><div class="home-empty">今日のまなみんを準備中…</div></div>
+</section>
+<section class="home-section" id="pickup-video"><div class="home-eyebrow">PICK UP VIDEO</div><h2>おすすめ動画</h2>
+<div class="movie"><h3>はじめまして、大野 愛実です。</h3><div class="video"><iframe src="https://www.youtube.com/embed/JA9ML18irK0" title="YouTube video player" loading="lazy" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div></div>
 <section class="hero">
   <span class="pill">PICK UP</span>
   <h2>クリフハンガー</h2>
@@ -25,6 +49,9 @@
     <a href="works.html">ワークスを見る</a>
   </div>
 </section>
+</section>
+<section class="home-section" id="this-week"><div class="home-eyebrow">THIS WEEK</div><h2>今週の出演情報</h2><p class="home-sub">今週の出演予定を掲載します。</p><div id="home-weekly" class="home-list"><div class="home-empty">出演情報はまだ登録されていません。</div></div></section>
+<section class="home-section" id="meet-greet"><div class="home-eyebrow">MEET & GREET</div><h2>ミーグリ開催日</h2><p class="home-sub">開催日だけをシンプルにお知らせ。</p><div id="home-meet" class="home-list"><div class="home-empty">開催日が登録されると、ここに表示されます。</div></div></section>
 <section id="history"><h2>History</h2>
   <div class="chips" id="chips">
     <button class="chip" data-f="all" aria-pressed="true">All</button>
@@ -83,7 +110,46 @@ document.getElementById("chips").addEventListener("click",function(ev){
   render();
 });
 render();
-</script><script>(function(){var n=new Date(),a=n.getFullYear()-2007-((n.getMonth()<4||(n.getMonth()==4&&n.getDate()<5))?1:0),e=document.getElementById("age");if(e)e.textContent=a})();</script><script src="egg.js" defer></script>
+</script><script>(function(){var n=new Date(),a=n.getFullYear()-2007-((n.getMonth()<4||(n.getMonth()==4&&n.getDate()<5))?1:0),e=document.getElementById("age");if(e)e.textContent=a})();</script>
+<script>
+(function(){
+ const API="https://manami-site-worker.yellowworker.workers.dev";
+ const target=document.getElementById("daily-content");
+ const dateEl=document.getElementById("daily-date");
+ const now=new Date();
+ const key=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0");
+ dateEl.textContent=now.getFullYear()+"年"+(now.getMonth()+1)+"月"+now.getDate()+"日";
+ function safe(s){return String(s||"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));}
+ Promise.all([
+  fetch(API+"/api/blogs").then(r=>r.ok?r.json():Promise.reject()).catch(()=>({items:[]})),
+  fetch(API+"/api/greetings").then(r=>r.ok?r.json():Promise.reject()).catch(()=>({items:[]}))
+ ]).then(([blogs,greetings])=>{
+  const posts=blogs.items||[];
+  const cards=greetings.items||greetings.greetings||greetings.results||[];
+  cards.sort((a,b)=>String(b.published_at||"").localeCompare(String(a.published_at||"")));
+  const mode=(Math.floor(new Date(key+"T00:00:00").getTime()/86400000)%3);
+  if(mode===0&&cards.length){
+   const card=cards[Math.floor(new Date(key+"T00:00:00").getTime()/86400000)%cards.length];
+   const src=API+"/api/greeting/image?key="+encodeURIComponent(card.object_key);
+   target.innerHTML='<img src="'+src+'" alt="大野愛実 グリーティングカード"><div class="daily-copy"><h3>今日の一枚</h3><p>'+safe(String(card.published_at||"").slice(0,7).replace("-","年")+"月")+'のグリーティングカード。</p><a href="greetings.html">カード一覧を見る →</a></div>';
+  }else if(mode===1&&posts.length){
+   const post=posts[Math.floor(new Date(key+"T00:00:00").getTime()/86400000)%posts.length];
+   target.innerHTML='<div class="daily-copy"><h3>今日読みたいブログ</h3><p>'+safe(post.published_at||"")+'</p><p>'+safe(post.title)+'</p><a href="'+safe(post.url)+'" target="_blank" rel="noopener">公式ブログを読む →</a></div>';
+  }else if(cards.length){
+   const card=cards[Math.floor(new Date(key+"T00:00:00").getTime()/86400000)%cards.length];
+   const src=API+"/api/greeting/image?key="+encodeURIComponent(card.object_key);
+   target.innerHTML='<img src="'+src+'" alt="大野愛実 グリーティングカード"><div class="daily-copy"><h3>今日の一枚</h3><p>過去のグリーティングカードをピックアップ。</p><a href="greetings.html">カード一覧を見る →</a></div>';
+  }else if(posts.length){
+   const post=posts[Math.floor(new Date(key+"T00:00:00").getTime()/86400000)%posts.length];
+   target.innerHTML='<div class="daily-copy"><h3>今日読みたいブログ</h3><p>'+safe(post.published_at||"")+'</p><p>'+safe(post.title)+'</p><a href="'+safe(post.url)+'" target="_blank" rel="noopener">公式ブログを読む →</a></div>';
+  }else{
+   target.innerHTML='<div class="home-empty">今日のピックアップは準備中です。ブログやカードが追加されると、日替わりで表示されます。</div>';
+  }
+ });
+})();
+</script>
+
+<script src="egg.js" defer></script>
 <div id="greeting-page-modal" aria-hidden="true">
   <div id="greeting-page-panel" role="dialog" aria-modal="true" aria-label="Greetingカード一覧">
     <button id="greeting-page-close" type="button">閉じる ✕</button>
