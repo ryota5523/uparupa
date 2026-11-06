@@ -169,7 +169,14 @@ cutoutBtn.addEventListener('click',async()=>{
  say('AIが人物を切り抜いています。初回はAIモデルの準備に少し時間がかかるよ…');
  try{
   const mod=await import('https://esm.sh/@imgly/background-removal@1.7.0?bundle&deps=onnxruntime-web@1.21.0-dev.20250206-d981b153d3');
-  const removeBackground=mod.default||mod;
+  // esm.shでは名前付きexportで公開されるため、defaultではなく関数を優先して取得する
+  const removeBackground=
+   (typeof mod.removeBackground==='function'&&mod.removeBackground) ||
+   (typeof mod.default?.removeBackground==='function'&&mod.default.removeBackground) ||
+   (typeof mod.default==='function'&&mod.default);
+  if(typeof removeBackground!=='function'){
+   throw new Error('AI切り抜きライブラリの関数を読み込めませんでした。ページを再読み込みしてね。');
+  }
   const transparentBlob=await removeBackground(imageUrl,{
    model:'isnet_quint8',device:'cpu',
    output:{format:'image/png',type:'foreground'},
