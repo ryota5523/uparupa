@@ -178,7 +178,7 @@ cutoutBtn.addEventListener('click',async()=>{
    throw new Error('AI切り抜きライブラリの関数を読み込めませんでした。ページを再読み込みしてね。');
   }
   const transparentBlob=await removeBackground(imageUrl,{
-   model:'isnet_quint8',device:'cpu',
+   model:'isnet_fp16',device:'cpu',
    output:{format:'image/png',type:'foreground'},
    progress:(key,current,total)=>{if(total)say('AIモデルを準備中… '+Math.round(current/total*100)+'%');}
   });
