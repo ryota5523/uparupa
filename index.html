@@ -18,7 +18,7 @@
 .daily-copy{min-width:0}.daily-copy h3{margin:0 0 8px;font-size:1.1rem}.daily-copy p{color:var(--sub);line-height:1.8}
 .home-section{margin:30px 0}.home-section>h2{margin-bottom:6px}
 .home-sub{font-size:.86rem;color:var(--sub);margin:0 0 14px}
-.home-list{display:grid;gap:10px}
+.home-list{display:grid;gap:10px}.home-schedule-group{margin-top:18px}.home-schedule-group h3{font-size:1rem;margin:0 0 4px}.home-schedule-group+.home-schedule-group{padding-top:18px;border-top:1px solid var(--line)}.home-row .date{display:block;margin-bottom:3px}
 .home-row{padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:#fff}
 .home-row .date{font-size:.8rem;color:var(--accent);font-weight:700}
 .home-row a{font-weight:700;text-decoration:none}
@@ -50,8 +50,11 @@
   </div>
 </section>
 </section>
-<section class="home-section" id="this-week"><div class="home-eyebrow">THIS WEEK</div><h2>今週の出演情報</h2><p class="home-sub">今週の出演予定を掲載します。</p><div id="home-weekly" class="home-list"><div class="home-empty">出演情報はまだ登録されていません。</div></div></section>
-<section class="home-section" id="meet-greet"><div class="home-eyebrow">MEET & GREET</div><h2>ミーグリ開催日</h2><p class="home-sub">開催日だけをシンプルにお知らせ。</p><div id="home-meet" class="home-list"><div class="home-empty">開催日が登録されると、ここに表示されます。</div></div></section>
+<section class="home-section" id="home-schedule">
+  <div class="home-eyebrow">SCHEDULE</div><h2>出演情報・ミーグリ</h2>
+  <div class="home-schedule-group"><h3>今週の出演情報</h3><p class="home-sub">今週（月曜〜日曜）の予定</p><div id="home-weekly" class="home-list"><div class="home-empty">出演情報を読み込み中…</div></div></div>
+  <div class="home-schedule-group"><h3>ミーグリ開催日</h3><p class="home-sub">開催日一覧</p><div id="home-meet" class="home-list"><div class="home-empty">開催日を読み込み中…</div></div></div>
+</section>
 <section id="history"><h2>History</h2>
   <div class="chips" id="chips">
     <button class="chip" data-f="all" aria-pressed="true">All</button>
@@ -180,6 +183,41 @@ render();
   close.addEventListener("click",closeModal);
   modal.addEventListener("click",function(event){if(event.target===modal)closeModal();});
   document.addEventListener("keydown",function(event){if(event.key==="Escape")closeModal();});
+})();
+</script>
+<script>
+(function(){
+  const API="https://manami-site-worker.yellowworker.workers.dev/api/schedules";
+  const weekly=document.getElementById("home-weekly");
+  const meet=document.getElementById("home-meet");
+  if(!weekly||!meet)return;
+  const meetDates=["2026-10-04","2026-10-11","2026-10-18","2026-10-25","2026-11-01","2026-12-06"];
+  const today=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Tokyo"}));
+  const dateKey=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  const todayKey=dateKey(today);
+  const monday=new Date(today);monday.setDate(today.getDate()-((today.getDay()+6)%7));monday.setHours(0,0,0,0);
+  const sunday=new Date(monday);sunday.setDate(monday.getDate()+6);
+  const start=dateKey(monday),end=dateKey(sunday);
+  const fmt=s=>{const d=new Date(s+"T00:00:00+09:00");return (d.getMonth()+1)+"/"+d.getDate()+"（"+["日","月","火","水","木","金","土"][d.getDay()]+"）";};
+  function row(target,date,title,url){
+    const el=document.createElement("div");el.className="home-row";
+    const dt=document.createElement("div");dt.className="date";dt.textContent=fmt(date);
+    const name=document.createElement(url?"a":"div");name.textContent=title;
+    if(url){name.href=url;name.target="_blank";name.rel="noopener";}
+    el.append(dt,name);target.appendChild(el);
+  }
+  function empty(target,message){target.innerHTML='<div class="home-empty">'+message+'</div>';}
+  fetch(API).then(r=>r.ok?r.json():Promise.reject()).then(data=>{
+    const items=Array.isArray(data.items)?data.items:[];
+    const thisWeek=items.filter(x=>x.event_date>=start&&x.event_date<=end).sort((a,b)=>a.event_date.localeCompare(b.event_date));
+    weekly.innerHTML="";
+    if(thisWeek.length)thisWeek.forEach(x=>row(weekly,x.event_date,x.title,x.url));
+    else empty(weekly,"今週の出演予定はありません。");
+  }).catch(()=>empty(weekly,"出演情報を読み込めませんでした。"));
+  const upcoming=meetDates.filter(d=>d>=todayKey).sort();
+  meet.innerHTML="";
+  if(upcoming.length)upcoming.forEach(d=>row(meet,d,"ミート＆グリート",null));
+  else empty(meet,"今後の開催予定はありません。");
 })();
 </script>
 </body></html>
