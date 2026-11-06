@@ -22,6 +22,13 @@
 .ar-note{font-size:.78rem;color:var(--sub);line-height:1.7;margin:10px 0 0}.ar-back{display:inline-block;color:var(--ar-pink);font-weight:800;text-decoration:none;margin:2px 0 12px}
 #arQuickLook{position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none}
 @media(min-width:720px){.ar-layout{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}.ar-layout .ar-card{margin:0 0 14px}}
+
+.ar-library{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px}
+.ar-saved{border:1px solid var(--line);border-radius:14px;padding:8px;background:#fff;min-width:0}
+.ar-saved img{width:100%;height:116px;object-fit:contain;background:#fff6f7;border-radius:9px;display:block}
+.ar-saved-name{font-size:.75rem;font-weight:800;overflow-wrap:anywhere;margin:6px 0}
+.ar-saved-actions{display:flex;gap:5px}.ar-saved-actions button{flex:1;min-width:0;padding:7px 4px;border:1px solid var(--line);border-radius:8px;background:#fff;font:inherit;font-size:.7rem;font-weight:800;color:var(--text)}
+.ar-empty-library{font-size:.82rem;color:var(--sub);padding:12px 2px;line-height:1.7}
 </style>
 </head>
 <body>
@@ -35,7 +42,7 @@
 <label class="ar-file-label" for="photoInput">♡ 写真・切り抜き画像を選択</label>
 <input class="ar-file" id="photoInput" type="file" accept="image/*">
 <div class="ar-preview" id="preview"><div class="ar-empty"><span class="symbol">✧</span>画像を選ぶとここに表示されるよ</div></div>
-<div class="ar-buttons"><button class="ar-btn" id="clearBtn" type="button" disabled>画像をクリア</button><button class="ar-btn" id="downloadBtn" type="button" disabled>ARデータを保存</button></div>
+<div class="ar-buttons"><button class="ar-btn" id="clearBtn" type="button" disabled>画像をクリア</button><button class="ar-btn" id="downloadBtn" type="button" disabled>ARデータを保存</button><button class="ar-btn" id="savePhotoBtn" type="button" disabled>写真アプリに保存</button></div>
 <p class="ar-note">背景透過PNGなら、切り抜き部分だけを空間に浮かべられるよ。通常の写真もフォトパネルとして配置できます。</p>
 </section>
 <section class="ar-card">
@@ -70,6 +77,56 @@ const status=document.getElementById('status');
 const placeBtn=document.getElementById('placeBtn');
 const downloadBtn=document.getElementById('downloadBtn');
 const clearBtn=document.getElementById('clearBtn');
+const savePhotoBtn=document.getElementById('savePhotoBtn');
+const savedLibrary=document.getElementById('savedLibrary');
+const DB_NAME='manamin-ar-local';
+const STORE_NAME='standees';
+
+function openLocalDB(){
+ return new Promise((resolve,reject)=>{
+  const req=indexedDB.open(DB_NAME,1);
+  req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains(STORE_NAME))db.createObjectStore(STORE_NAME,{keyPath:'id'});};
+  req.onsuccess=()=>resolve(req.result);
+  req.onerror=()=>reject(req.error);
+ });
+}
+async function saveToLocalLibrary(file){
+ try{
+  const db=await openLocalDB();
+  const record={id:(crypto.randomUUID?crypto.randomUUID():String(Date.now())),name:file.name||'マイアクスタ',blob:file,createdAt:Date.now(),type:file.type||'image/png'};
+  await new Promise((resolve,reject)=>{const tx=db.transaction(STORE_NAME,'readwrite');tx.objectStore(STORE_NAME).put(record);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});
+  db.close();await renderLocalLibrary();
+  say('この端末のマイアクスタに保存したよ。画像はサーバーに送っていません。','success');
+ }catch(err){console.error(err);say('端末内への保存ができませんでした。ブラウザの空き容量を確認してね。','error');}
+}
+async function getLocalRecords(){
+ const db=await openLocalDB();
+ const records=await new Promise((resolve,reject)=>{const tx=db.transaction(STORE_NAME,'readonly');const req=tx.objectStore(STORE_NAME).getAll();req.onsuccess=()=>resolve(req.result||[]);req.onerror=()=>reject(req.error);});
+ db.close();return records.sort((a,b)=>b.createdAt-a.createdAt);
+}
+async function renderLocalLibrary(){
+ try{
+  const records=await getLocalRecords();savedLibrary.replaceChildren();
+  if(!records.length){const empty=document.createElement('div');empty.className='ar-empty-library';empty.textContent='保存したアクスタはまだありません。写真を選ぶとここに追加されます。';savedLibrary.append(empty);return;}
+  for(const record of records){
+   const card=document.createElement('article');card.className='ar-saved';
+   const img=document.createElement('img');img.alt=record.name;const url=URL.createObjectURL(record.blob);img.src=url;img.onload=()=>URL.revokeObjectURL(url);
+   const name=document.createElement('div');name.className='ar-saved-name';name.textContent=record.name;
+   const actions=document.createElement('div');actions.className='ar-saved-actions';
+   const use=document.createElement('button');use.type='button';use.textContent='使う';use.addEventListener('click',()=>loadSavedRecord(record));
+   const del=document.createElement('button');del.type='button';del.textContent='削除';del.addEventListener('click',()=>deleteLocalRecord(record.id));
+   actions.append(use,del);card.append(img,name,actions);savedLibrary.append(card);
+  }
+ }catch(err){console.error(err);savedLibrary.textContent='このブラウザでは端末内保存を利用できません。';}
+}
+function loadSavedRecord(record){
+ const file=new File([record.blob],record.name,{type:record.type||record.blob.type||'image/png'});
+ showImageFile(file,false);
+}
+async function deleteLocalRecord(id){
+ try{const db=await openLocalDB();await new Promise((resolve,reject)=>{const tx=db.transaction(STORE_NAME,'readwrite');tx.objectStore(STORE_NAME).delete(id);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});db.close();await renderLocalLibrary();}
+ catch(err){console.error(err);say('削除できませんでした。','error');}
+}
 const sizeInput=document.getElementById('sizeInput');
 const angleInput=document.getElementById('angleInput');
 const sizeValue=document.getElementById('sizeValue');
@@ -83,15 +140,15 @@ function updateControls(){sizeValue.textContent=(Number(sizeInput.value))+' cm';
 sizeInput.addEventListener('input',updateControls);angleInput.addEventListener('input',updateControls);updateControls();
 
 function revokeAssets(){if(imageUrl)URL.revokeObjectURL(imageUrl);if(usdzUrl)URL.revokeObjectURL(usdzUrl);imageUrl=null;usdzUrl=null;quickLink.href='#';}
-input.addEventListener('change',()=>{
- const file=input.files?.[0];if(!file)return;
+function showImageFile(file,save=true){
  if(!file.type.startsWith('image/')){say('画像ファイルを選んでね。','error');return;}
  if(file.size>15*1024*1024){say('画像は15MB以下にしてね。','error');return;}
  revokeAssets();imageUrl=URL.createObjectURL(file);image=new Image();
- image.onload=()=>{preview.replaceChildren();const p=document.createElement('img');p.src=imageUrl;p.alt='選択した写真';preview.append(p);placeBtn.disabled=false;downloadBtn.disabled=true;clearBtn.disabled=false;say('写真を読み込んだよ。サイズを決めて、空間に配置してみよう。','success');};
+ image.onload=()=>{preview.replaceChildren();const p=document.createElement('img');p.src=imageUrl;p.alt='選択した写真';preview.append(p);placeBtn.disabled=false;downloadBtn.disabled=true;clearBtn.disabled=false;savePhotoBtn.disabled=false;say('写真を読み込んだよ。サイズを決めて、空間に配置してみよう。','success');if(save)saveToLocalLibrary(file);};
  image.onerror=()=>say('画像を読み込めなかったみたい。別の画像を試してね。','error');
  image.src=imageUrl;
-});
+}
+input.addEventListener('change',()=>{const file=input.files?.[0];if(file)showImageFile(file,true);});
 
 function buildScene(THREE){
  const scene=new THREE.Scene();
@@ -146,7 +203,23 @@ placeBtn.addEventListener('click',async()=>{
 
 function saveUsdz(){if(!usdzUrl)return;const a=document.createElement('a');a.href=usdzUrl;a.download='manamin-photo-ar.usdz';document.body.append(a);a.click();a.remove();}
 downloadBtn.addEventListener('click',saveUsdz);
-clearBtn.addEventListener('click',()=>{revokeAssets();image=null;input.value='';preview.innerHTML='<div class="ar-empty"><span class="symbol">✧</span>画像を選ぶとここに表示されるよ</div>';placeBtn.disabled=true;downloadBtn.disabled=true;clearBtn.disabled=true;say('画像をクリアしました。');});
+savePhotoBtn.addEventListener('click',async()=>{
+ if(!image||!imageUrl)return;
+ try{
+  const response=await fetch(imageUrl);const blob=await response.blob();
+  const ext=blob.type.includes('png')?'png':blob.type.includes('webp')?'webp':'jpg';
+  const file=new File([blob],'manamin-standee.'+ext,{type:blob.type||'image/png'});
+  if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+   await navigator.share({files:[file],title:'マイアクスタ'});
+   say('共有メニューから「画像を保存」を選んでね。','success');
+  }else{
+   const a=document.createElement('a');a.href=imageUrl;a.download=file.name;document.body.append(a);a.click();a.remove();
+   say('画像を書き出しました。端末の共有メニューから写真に保存してね。','success');
+  }
+ }catch(err){if(err?.name!=='AbortError'){console.error(err);say('画像を書き出せませんでした。','error');}}
+});
+renderLocalLibrary();
+clearBtn.addEventListener('click',()=>{revokeAssets();image=null;input.value='';preview.innerHTML='<div class="ar-empty"><span class="symbol">✧</span>画像を選ぶとここに表示されるよ</div>';placeBtn.disabled=true;downloadBtn.disabled=true;clearBtn.disabled=true;savePhotoBtn.disabled=true;say('画像をクリアしました。');});
 </script>
 </body>
 </html>
