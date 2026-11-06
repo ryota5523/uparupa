@@ -1,69 +1,146 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#e8384f"><title>MANAMIN AR CAMERA｜大野愛実ファンサイト</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#e8384f">
+<title>MANAMIN REAL AR｜大野愛実ファンサイト</title>
 <link rel="stylesheet" href="style.css">
 <style>
-.camera-wrap{max-width:920px;margin:auto;padding:18px 14px 110px}.cam-head{text-align:center;padding:10px 0 18px}.eyebrow{font-size:.72rem;letter-spacing:.18em;color:var(--accent);font-weight:900}.cam-head h1{font-size:clamp(2rem,8vw,3.2rem);margin:4px 0}.cam-head p,.hint{color:var(--sub);font-size:.85rem;margin:0}
-.cam-panel{background:#fff;border:1px solid var(--line);border-radius:20px;padding:14px;margin:14px 0;box-shadow:var(--shadow)}.mode-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mode-tabs button,.action-btn,.tool-btn{font:inherit;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--text);padding:10px 12px;font-weight:700;cursor:pointer}.mode-tabs button.active,.primary{background:var(--accent)!important;color:white!important;border-color:var(--accent)!important}
-.camera-layout{display:grid;gap:14px}.stage{position:relative;width:100%;aspect-ratio:3/4;max-height:72vh;min-height:280px;background:#191919;border-radius:16px;overflow:hidden;touch-action:none;isolation:isolate}.stage video,.stage .photo-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.stage video{display:none}.stage.live video{display:block}.stage .photo-bg{display:none}.stage.photo .photo-bg{display:block}.empty-stage{position:absolute;inset:0;display:grid;place-content:center;text-align:center;color:#fffd;padding:24px;font-size:.9rem;pointer-events:none}.stage.has-source .empty-stage{display:none}
-.overlay{position:absolute;left:50%;top:50%;width:38%;max-height:80%;object-fit:contain;transform:translate(-50%,-50%);touch-action:none;user-select:none;-webkit-user-drag:none;cursor:grab;filter:drop-shadow(0 5px 8px #0004);z-index:3}.overlay.selected{outline:1px dashed white;outline-offset:4px}
-.stage-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.action-btn{flex:1;min-width:calc(50% - 8px)}.file-label{display:flex;flex:1;min-width:130px;align-items:center;justify-content:center;border:1px dashed #e7aab4;border-radius:12px;padding:10px;color:var(--accent);font-weight:700;background:var(--soft);cursor:pointer}.file-label input{display:none}.asset-list{display:flex;gap:9px;overflow-x:auto;padding:6px 0}.asset-thumb{width:72px;height:88px;flex:0 0 72px;border:1px solid var(--line);border-radius:10px;background:#fff;display:grid;place-items:center;overflow:hidden;cursor:pointer}.asset-thumb img{width:100%;height:100%;object-fit:contain}.asset-thumb span{font-size:.68rem;color:var(--sub);text-align:center;padding:4px}.control-row{display:flex;gap:8px;align-items:center;margin-top:10px}.control-row label{font-size:.8rem;color:var(--sub);font-weight:700}.control-row input{flex:1;min-width:80px;accent-color:var(--accent)}#result{display:none;width:100%;border-radius:12px;margin-top:12px}.hint{line-height:1.7;margin-top:8px}.back-link{display:inline-block;color:var(--accent);font-weight:700;text-decoration:none;margin:4px 0 10px}
-@media(min-width:760px){.camera-layout{grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);align-items:start}.camera-layout .cam-panel{margin:0 0 14px}.stage{max-height:760px}}
-</style></head>
+:root{--ar-pink:#e8384f}
+.ar-wrap{max-width:920px;margin:auto;padding:18px 14px calc(100px + env(safe-area-inset-bottom))}
+.ar-head{text-align:center;padding:12px 0 20px}.ar-kicker{font-size:.7rem;letter-spacing:.2em;color:var(--ar-pink);font-weight:900}.ar-head h1{font-size:clamp(2rem,8vw,3rem);margin:5px 0}.ar-head p{color:var(--sub);font-size:.9rem;line-height:1.7;margin:0}
+.ar-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:16px;margin:14px 0;box-shadow:var(--shadow)}
+.ar-card h2{font-size:1.05rem;margin:0 0 10px}.ar-preview{min-height:260px;border-radius:16px;background:radial-gradient(circle at 50% 35%,#fff 0,#fff2f4 60%,#f8e7eb 100%);display:grid;place-items:center;overflow:hidden;position:relative}
+.ar-preview img{max-width:78%;max-height:340px;object-fit:contain;filter:drop-shadow(0 12px 14px #6c283222)}
+.ar-empty{text-align:center;color:#a17d85;padding:28px}.ar-empty .symbol{font-size:3rem;display:block;color:#df9aa7}
+.ar-buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.ar-btn{appearance:none;border:1px solid var(--line);border-radius:13px;background:#fff;color:var(--text);padding:12px 14px;font:inherit;font-weight:800;cursor:pointer;flex:1;min-width:130px}.ar-btn.primary{background:var(--ar-pink);border-color:var(--ar-pink);color:#fff}.ar-btn:disabled{opacity:.42;cursor:not-allowed}
+.ar-file{display:none}.ar-file-label{display:flex;align-items:center;justify-content:center;gap:8px;border:1px dashed #e5a2ae;border-radius:14px;background:#fff7f8;padding:15px;color:var(--ar-pink);font-weight:800;cursor:pointer}
+.ar-control{display:grid;grid-template-columns:75px 1fr 46px;gap:10px;align-items:center;margin:14px 0}.ar-control label{font-size:.82rem;font-weight:700;color:var(--sub)}.ar-control input{width:100%;accent-color:var(--ar-pink)}.ar-control output{text-align:right;font-variant-numeric:tabular-nums;font-size:.82rem}
+.ar-status{border-radius:13px;background:#fff5f6;padding:12px 14px;color:#87505b;font-size:.83rem;line-height:1.65;margin-top:12px}.ar-status.error{background:#fff0ec;color:#a33d2d}.ar-status.success{background:#eff9f2;color:#27663d}
+.ar-steps{display:grid;gap:10px}.ar-step{display:flex;gap:12px;align-items:flex-start;font-size:.86rem;line-height:1.65}.ar-num{width:25px;height:25px;border-radius:50%;background:#fde8ec;color:var(--ar-pink);display:grid;place-items:center;font-weight:900;flex:none}
+.ar-note{font-size:.78rem;color:var(--sub);line-height:1.7;margin:10px 0 0}.ar-back{display:inline-block;color:var(--ar-pink);font-weight:800;text-decoration:none;margin:2px 0 12px}
+#arQuickLook{position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none}
+@media(min-width:720px){.ar-layout{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}.ar-layout .ar-card{margin:0 0 14px}}
+</style>
+</head>
 <body>
 <div class="appbar"><a href="index.html"><span style="font-size:1.5rem;color:var(--accent)">♡</span><span><b>MANAMI</b><small>大野愛実 ファンサイト（非公式）</small></span></a></div>
-<main class="camera-wrap">
-<a class="back-link" href="index.html">← HOMEに戻る</a>
-<div class="cam-head"><div class="eyebrow">OSHIKATSU PHOTO STUDIO</div><h1>MANAMIN CAMERA</h1><p>まなみんと一緒に、おでかけ写真を撮ろう。</p></div>
-<div class="cam-panel"><div class="mode-tabs"><button class="active" id="arMode">📷 ARカメラ</button><button id="editMode">🖼️ 写真を編集</button></div><p class="hint" id="modeHint">カメラ映像に生写真や透過PNGを重ねて撮影できます。</p></div>
-<div class="camera-layout">
-<section class="cam-panel">
-<div class="stage" id="stage"><video id="video" autoplay playsinline muted></video><img class="photo-bg" id="photoBg" alt="編集する写真"><div class="empty-stage">カメラを起動するか、背景写真を読み込んでね ♡</div></div>
-<div class="stage-tools"><button class="action-btn primary" id="startCamera">カメラを起動</button><button class="action-btn" id="switchCamera">前後カメラ切替</button></div>
-<div class="stage-tools"><label class="file-label">＋ 生写真・透過PNG<input id="assetInput" type="file" accept="image/*" multiple></label><label class="file-label">背景写真を選ぶ<input id="backgroundInput" type="file" accept="image/*"></label></div>
-<div class="stage-tools"><button class="action-btn primary" id="capture">撮影・保存</button><button class="action-btn" id="clearOverlays">素材をすべて消す</button></div>
-<img id="result" alt="撮影結果"><p class="hint">素材をタップして追加。写真をドラッグして位置を調整できます。選択中の素材は下の操作で大きさ・角度を変えられます。</p>
+<main class="ar-wrap">
+<a class="ar-back" href="index.html">← HOMEに戻る</a>
+<header class="ar-head"><div class="ar-kicker">AUGMENTED REALITY EXPERIENCE</div><h1>MANAMIN <span style="color:var(--ar-pink)">AR</span></h1><p>写真を、いつもの部屋に。<br>現実の空間にまなみんのフォトカードを配置しよう。</p></header>
+<div class="ar-layout">
+<section class="ar-card">
+<h2>① 写真を選ぶ</h2>
+<label class="ar-file-label" for="photoInput">♡ 写真・切り抜き画像を選択</label>
+<input class="ar-file" id="photoInput" type="file" accept="image/*" capture="environment">
+<div class="ar-preview" id="preview"><div class="ar-empty"><span class="symbol">✧</span>画像を選ぶとここに表示されるよ</div></div>
+<div class="ar-buttons"><button class="ar-btn" id="clearBtn" type="button" disabled>画像をクリア</button><button class="ar-btn" id="downloadBtn" type="button" disabled>ARデータを保存</button></div>
+<p class="ar-note">背景透過PNGなら、切り抜き部分だけを空間に浮かべられるよ。通常の写真もフォトパネルとして配置できます。</p>
 </section>
-<section class="cam-panel">
-<strong>使う素材</strong><div class="asset-list" id="assetList"><div class="hint">ここに画像が表示されます</div></div>
-<div class="control-row"><label for="scale">サイズ</label><input id="scale" type="range" min="10" max="150" value="38"></div>
-<div class="control-row"><label for="rotate">回転</label><input id="rotate" type="range" min="-180" max="180" value="0"></div>
-<div class="stage-tools"><button class="tool-btn" id="removeSelected">選択素材を削除</button><button class="tool-btn" id="resetSelected">位置・角度を戻す</button></div>
-<p class="hint">※最初は自分の端末に保存してある生写真・背景透過画像を読み込んでね。追加した素材はこのページを開いている間だけ保持されます。</p>
-<div class="cam-panel" style="padding:12px;margin-top:16px;box-shadow:none"><strong>撮影のヒント</strong><p class="hint">明るい場所で、ぬいぐるみやアクスタの近くに素材を配置するとかわいく撮れます。画像を複数追加すれば、生写真と透過画像を同時に重ねられます。</p></div>
+<section class="ar-card">
+<h2>② 空間に置くサイズ</h2>
+<div class="ar-control"><label for="sizeInput">高さ</label><input id="sizeInput" type="range" min="12" max="80" value="32"><output id="sizeValue">32 cm</output></div>
+<div class="ar-control"><label for="angleInput">向き</label><input id="angleInput" type="range" min="-45" max="45" value="0"><output id="angleValue">0°</output></div>
+<button class="ar-btn primary" id="placeBtn" type="button" disabled>♡ 現実の空間に配置する</button>
+<div class="ar-status" id="status" role="status">iPhoneのSafariで使うと、AppleのAR Quick Lookが起動します。写真を選んでから配置ボタンを押してね。</div>
 </section>
 </div>
+<section class="ar-card">
+<h2>③ ARの使い方</h2>
+<div class="ar-steps">
+<div class="ar-step"><span class="ar-num">1</span><span>写真を選ぶ。公式写真でも、自分で用意した切り抜きPNGでもOK。</span></div>
+<div class="ar-step"><span class="ar-num">2</span><span>「現実の空間に配置する」を押して、カメラへのアクセスを許可。</span></div>
+<div class="ar-step"><span class="ar-num">3</span><span>机や床に端末を向けて、認識された場所にフォトカードを配置。指で移動・拡大縮小できます。</span></div>
+</div>
+<p class="ar-note">このページは画像からUSDZ形式のARモデルを端末内で生成し、iPhoneではApple AR Quick Lookに渡します。写真はサーバーへアップロードしません。Android・PCではARデータを保存して対応アプリで開いてください。</p>
+</section>
+<a id="arQuickLook" rel="ar" href="#"><img id="quickLookImage" alt="ARモデルを開く"></a>
 </main>
-<nav><a href="index.html"><i class="ms">home</i>Home</a><a href="profile.html"><i class="ms">person</i>Profile</a><a href="schedule.html"><i class="ms">calendar_month</i>Schedule</a><a href="news.html"><i class="ms">newspaper</i>News</a><a href="works.html"><i class="ms">movie</i>Works</a><a href="blog.html"><i class="ms">edit_note</i>Blog</a></nav>
-<script>
-(function(){
-const stage=document.getElementById('stage'),video=document.getElementById('video'),photoBg=document.getElementById('photoBg'),assetInput=document.getElementById('assetInput'),backgroundInput=document.getElementById('backgroundInput'),assetList=document.getElementById('assetList'),scale=document.getElementById('scale'),rotate=document.getElementById('rotate'),result=document.getElementById('result');
-let stream=null,facing='environment',mode='ar',assets=[],selected=null,drag=null;
-function stopCamera(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}video.srcObject=null;stage.classList.remove('live')}
-async function startCamera(){if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){alert('このブラウザではカメラを利用できません。HTTPSのページをSafariまたはChromeで開いてください。');return}try{stopCamera();stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:facing},width:{ideal:1920},height:{ideal:1080}}});video.srcObject=stream;await video.play();stage.classList.add('live');stage.classList.remove('photo');stage.classList.add('has-source');}catch(e){alert('カメラを起動できませんでした。ブラウザのカメラ使用許可とHTTPS接続を確認してください。')}} 
-function chooseMode(next){mode=next;document.getElementById('arMode').classList.toggle('active',mode==='ar');document.getElementById('editMode').classList.toggle('active',mode==='edit');document.getElementById('modeHint').textContent=mode==='ar'?'カメラ映像に生写真や透過PNGを重ねて撮影できます。':'背景写真を読み込んで、素材を重ねて編集・保存できます。';if(mode==='edit'){stopCamera();backgroundInput.parentElement.style.display='flex'}else{stage.classList.remove('photo');photoBg.removeAttribute('src')}}
-document.getElementById('arMode').onclick=()=>chooseMode('ar');document.getElementById('editMode').onclick=()=>chooseMode('edit');
-document.getElementById('startCamera').onclick=()=>{chooseMode('ar');startCamera()};document.getElementById('switchCamera').onclick=()=>{facing=facing==='environment'?'user':'environment';if(stream)startCamera()};
-function select(el){document.querySelectorAll('.overlay').forEach(x=>x.classList.remove('selected'));selected=el;if(el){el.classList.add('selected');scale.value=el.dataset.size;rotate.value=el.dataset.angle}}
-function addAsset(file){if(!file.type.startsWith('image/'))return;const url=URL.createObjectURL(file),img=document.createElement('img');img.src=url;img.className='overlay';img.draggable=false;img.dataset.size='38';img.dataset.angle='0';img.style.width='38%';stage.appendChild(img);assets.push({file,url,img});stage.classList.add('has-source');select(img);renderAssets()}
-function renderAssets(){assetList.innerHTML='';if(!assets.length){assetList.innerHTML='<div class="hint">ここに画像が表示されます</div>';return}assets.forEach((a,i)=>{const b=document.createElement('button');b.className='asset-thumb';b.type='button';const im=document.createElement('img');im.src=a.url;b.appendChild(im);b.title='素材 '+(i+1);b.onclick=()=>select(a.img);assetList.appendChild(b)})}
-assetInput.onchange=e=>{Array.from(e.target.files||[]).forEach(addAsset);assetInput.value=''};
-backgroundInput.onchange=e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const u=URL.createObjectURL(f);photoBg.src=u;stage.classList.remove('live');stage.classList.add('photo','has-source');stopCamera();chooseMode('edit');photoBg.src=u;backgroundInput.value=''};
-stage.addEventListener('pointerdown',e=>{const el=e.target.closest('.overlay');if(!el)return;select(el);const r=stage.getBoundingClientRect();drag={el,x:e.clientX,y:e.clientY,left:parseFloat(el.style.left||'50%'),top:parseFloat(el.style.top||'50%'),w:r.width,h:r.height};el.setPointerCapture(e.pointerId)});
-stage.addEventListener('pointermove',e=>{if(!drag)return;const dx=(e.clientX-drag.x)/drag.w*100,dy=(e.clientY-drag.y)/drag.h*100;drag.el.style.left=(parseFloat(drag.el.style.left||'50%')+dx)+'%';drag.el.style.top=(parseFloat(drag.el.style.top||'50%')+dy)+'%';drag.x=e.clientX;drag.y=e.clientY});
-stage.addEventListener('pointerup',()=>drag=null);stage.addEventListener('pointercancel',()=>drag=null);
-scale.oninput=()=>{if(selected){selected.dataset.size=scale.value;selected.style.width=scale.value+'%'}};
-rotate.oninput=()=>{if(selected){selected.dataset.angle=rotate.value;selected.style.transform='translate(-50%,-50%) rotate('+rotate.value+'deg)'}};
-document.getElementById('removeSelected').onclick=()=>{if(!selected)return;const a=assets.find(x=>x.img===selected);if(a){URL.revokeObjectURL(a.url);assets=assets.filter(x=>x!==a)}selected.remove();selected=null;renderAssets()};
-document.getElementById('resetSelected').onclick=()=>{if(!selected)return;selected.style.left='50%';selected.style.top='50%';selected.style.width='38%';selected.style.transform='translate(-50%,-50%)';selected.dataset.size='38';selected.dataset.angle='0';select(selected)};
-document.getElementById('clearOverlays').onclick=()=>{assets.forEach(a=>{URL.revokeObjectURL(a.url);a.img.remove()});assets=[];selected=null;renderAssets()};
-function loadImage(src){return new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=src})}
-document.getElementById('capture').onclick=async()=>{const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;const canvas=document.createElement('canvas');canvas.width=w*2;canvas.height=h*2;const ctx=canvas.getContext('2d');ctx.scale(2,2);if(stage.classList.contains('live')&&video.videoWidth){const vw=video.videoWidth,vh=video.videoHeight,s=Math.max(w/vw,h/vh),dw=vw*s,dh=vh*s;ctx.drawImage(video,(w-dw)/2,(h-dh)/2,dw,dh)}else if(photoBg.src){const im=await loadImage(photoBg.src);const s=Math.max(w/im.width,h/im.height),dw=im.width*s,dh=im.height*s;ctx.drawImage(im,(w-dw)/2,(h-dh)/2,dw,dh)}else{alert('先にカメラを起動するか、背景写真を読み込んでね。');return}
-for(const a of assets){const im=await loadImage(a.url),el=a.img;const rect=el.getBoundingClientRect(),sr=stage.getBoundingClientRect(),cx=rect.left-sr.left+rect.width/2,cy=rect.top-sr.top+rect.height/2;ctx.save();ctx.translate(cx,cy);ctx.rotate((Number(el.dataset.angle)||0)*Math.PI/180);const dw=rect.width,dh=dw*im.height/im.width;ctx.drawImage(im,-dw/2,-dh/2,dw,dh);ctx.restore()}
-canvas.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob);result.src=url;result.style.display='block';const link=document.createElement('a');link.href=url;link.download='manamin-oshikatsu-'+new Date().toISOString().slice(0,10)+'.png';link.click()},'image/png')};
-window.addEventListener('pagehide',stopCamera);
-})();
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
+import { USDZExporter } from 'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/exporters/USDZExporter.js';
+
+const input=document.getElementById('photoInput');
+const preview=document.getElementById('preview');
+const status=document.getElementById('status');
+const placeBtn=document.getElementById('placeBtn');
+const downloadBtn=document.getElementById('downloadBtn');
+const clearBtn=document.getElementById('clearBtn');
+const sizeInput=document.getElementById('sizeInput');
+const angleInput=document.getElementById('angleInput');
+const sizeValue=document.getElementById('sizeValue');
+const angleValue=document.getElementById('angleValue');
+const quickLink=document.getElementById('arQuickLook');
+const quickImage=document.getElementById('quickLookImage');
+let image=null, imageUrl=null, usdzUrl=null, busy=false;
+
+function say(message,type=''){status.textContent=message;status.className='ar-status'+(type?' '+type:'');}
+function updateControls(){sizeValue.textContent=(Number(sizeInput.value))+' cm';angleValue.textContent=angleInput.value+'°';}
+sizeInput.addEventListener('input',updateControls);angleInput.addEventListener('input',updateControls);updateControls();
+
+function revokeAssets(){if(imageUrl)URL.revokeObjectURL(imageUrl);if(usdzUrl)URL.revokeObjectURL(usdzUrl);imageUrl=null;usdzUrl=null;quickLink.href='#';}
+input.addEventListener('change',()=>{
+ const file=input.files?.[0];if(!file)return;
+ if(!file.type.startsWith('image/')){say('画像ファイルを選んでね。','error');return;}
+ if(file.size>15*1024*1024){say('画像は15MB以下にしてね。','error');return;}
+ revokeAssets();imageUrl=URL.createObjectURL(file);image=new Image();
+ image.onload=()=>{preview.replaceChildren();const p=document.createElement('img');p.src=imageUrl;p.alt='選択した写真';preview.append(p);placeBtn.disabled=false;downloadBtn.disabled=true;clearBtn.disabled=false;say('写真を読み込んだよ。サイズを決めて、空間に配置してみよう。','success');};
+ image.onerror=()=>say('画像を読み込めなかったみたい。別の画像を試してね。','error');
+ image.src=imageUrl;
+});
+
+function buildScene(){
+ const scene=new THREE.Scene();
+ const h=Number(sizeInput.value)/100;
+ const ratio=image.naturalWidth/image.naturalHeight;
+ const w=h*ratio;
+ const texture=new THREE.Texture(image);
+ texture.colorSpace=THREE.SRGBColorSpace;
+ texture.needsUpdate=true;
+ const material=new THREE.MeshStandardMaterial({map:texture,transparent:true,alphaTest:0.015,side:THREE.DoubleSide,roughness:1,metalness:0});
+ const geometry=new THREE.PlaneGeometry(w,h);
+ const card=new THREE.Mesh(geometry,material);
+ card.name='ManaminPhoto';
+ card.position.set(0,h/2,0);
+ card.rotation.y=THREE.MathUtils.degToRad(Number(angleInput.value));
+ scene.add(card);
+ return scene;
+}
+async function makeUsdz(){
+ if(!image||busy)return null;
+ busy=true;placeBtn.disabled=true;downloadBtn.disabled=true;
+ say('AR用の立体データを作成中…画像の大きさによって少し時間がかかります。');
+ try{
+  const scene=buildScene();
+  const exporter=new USDZExporter();
+  const data=await exporter.parseAsync(scene,{quickLookCompatible:true,maxTextureSize:2048,includeAnchoringProperties:true,ar:{anchoring:{type:'plane'},planeAnchoring:{alignment:'horizontal'}}});
+  const blob=new Blob([data],{type:'model/vnd.usdz+zip'});
+  if(usdzUrl)URL.revokeObjectURL(usdzUrl);
+  usdzUrl=URL.createObjectURL(blob);
+  quickLink.href=usdzUrl;
+  quickImage.src=imageUrl;
+  downloadBtn.disabled=false;
+  say('ARデータができました。iPhoneなら「現実の空間に配置する」、それ以外は「ARデータを保存」を使ってね。','success');
+  return usdzUrl;
+ }catch(error){console.error(error);say('ARデータを作れませんでした。別の画像で試してね。','error');return null;}
+ finally{busy=false;placeBtn.disabled=!image;}
+}
+placeBtn.addEventListener('click',async()=>{
+ if(!image||busy)return;
+ const url=await makeUsdz();if(!url)return;
+ const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+ if(isIOS){
+  say('AR Quick Lookを開きます。床や机に端末を向けてね。');
+  quickLink.click();
+ }else{
+  say('この端末ではiPhoneのAR Quick Lookを起動できないため、ARデータを保存します。','success');
+  saveUsdz();
+ }
+});
+function saveUsdz(){if(!usdzUrl)return;const a=document.createElement('a');a.href=usdzUrl;a.download='manamin-photo-ar.usdz';document.body.append(a);a.click();a.remove();}
+downloadBtn.addEventListener('click',saveUsdz);
+clearBtn.addEventListener('click',()=>{revokeAssets();image=null;input.value='';preview.innerHTML='<div class="ar-empty"><span class="symbol">✧</span>画像を選ぶとここに表示されるよ</div>';placeBtn.disabled=true;downloadBtn.disabled=true;clearBtn.disabled=true;say('画像をクリアしました。');});
 </script>
-</body></html>
+</body>
+</html>
