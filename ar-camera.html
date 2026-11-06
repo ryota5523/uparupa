@@ -15,7 +15,7 @@
 .ar-preview img{max-width:78%;max-height:340px;object-fit:contain;filter:drop-shadow(0 12px 14px #6c283222)}
 .ar-empty{text-align:center;color:#a17d85;padding:28px}.ar-empty .symbol{font-size:3rem;display:block;color:#df9aa7}
 .ar-buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.ar-btn{appearance:none;border:1px solid var(--line);border-radius:13px;background:#fff;color:var(--text);padding:12px 14px;font:inherit;font-weight:800;cursor:pointer;flex:1;min-width:130px}.ar-btn.primary{background:var(--ar-pink);border-color:var(--ar-pink);color:#fff}.ar-btn:disabled{opacity:.42;cursor:not-allowed}
-.ar-file{display:none}.ar-file-label{display:flex;align-items:center;justify-content:center;gap:8px;border:1px dashed #e5a2ae;border-radius:14px;background:#fff7f8;padding:15px;color:var(--ar-pink);font-weight:800;cursor:pointer}
+.ar-file{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}.ar-file-label{display:flex;align-items:center;justify-content:center;gap:8px;border:1px dashed #e5a2ae;border-radius:14px;background:#fff7f8;padding:15px;color:var(--ar-pink);font-weight:800;cursor:pointer}
 .ar-control{display:grid;grid-template-columns:75px 1fr 46px;gap:10px;align-items:center;margin:14px 0}.ar-control label{font-size:.82rem;font-weight:700;color:var(--sub)}.ar-control input{width:100%;accent-color:var(--ar-pink)}.ar-control output{text-align:right;font-variant-numeric:tabular-nums;font-size:.82rem}
 .ar-status{border-radius:13px;background:#fff5f6;padding:12px 14px;color:#87505b;font-size:.83rem;line-height:1.65;margin-top:12px}.ar-status.error{background:#fff0ec;color:#a33d2d}.ar-status.success{background:#eff9f2;color:#27663d}
 .ar-steps{display:grid;gap:10px}.ar-step{display:flex;gap:12px;align-items:flex-start;font-size:.86rem;line-height:1.65}.ar-num{width:25px;height:25px;border-radius:50%;background:#fde8ec;color:var(--ar-pink);display:grid;place-items:center;font-weight:900;flex:none}
@@ -33,7 +33,7 @@
 <section class="ar-card">
 <h2>① 写真を選ぶ</h2>
 <label class="ar-file-label" for="photoInput">♡ 写真・切り抜き画像を選択</label>
-<input class="ar-file" id="photoInput" type="file" accept="image/*" capture="environment">
+<input class="ar-file" id="photoInput" type="file" accept="image/*">
 <div class="ar-preview" id="preview"><div class="ar-empty"><span class="symbol">✧</span>画像を選ぶとここに表示されるよ</div></div>
 <div class="ar-buttons"><button class="ar-btn" id="clearBtn" type="button" disabled>画像をクリア</button><button class="ar-btn" id="downloadBtn" type="button" disabled>ARデータを保存</button></div>
 <p class="ar-note">背景透過PNGなら、切り抜き部分だけを空間に浮かべられるよ。通常の写真もフォトパネルとして配置できます。</p>
@@ -58,10 +58,7 @@
 <a id="arQuickLook" rel="ar" href="#"><img id="quickLookImage" alt="ARモデルを開く"></a>
 </main>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
-<script type="module">
-import * as THREE from 'three';
-import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-
+<script>
 const input=document.getElementById('photoInput');
 const preview=document.getElementById('preview');
 const status=document.getElementById('status');
@@ -113,6 +110,8 @@ async function makeUsdz(){
  busy=true;placeBtn.disabled=true;downloadBtn.disabled=true;
  say('AR用の立体データを作成中…画像の大きさによって少し時間がかかります。');
  try{
+  const THREE=await import('three');
+  const {USDZExporter}=await import('three/addons/exporters/USDZExporter.js');
   const scene=buildScene();
   const exporter=new USDZExporter();
   const data=await exporter.parseAsync(scene,{quickLookCompatible:true,maxTextureSize:2048,includeAnchoringProperties:true,ar:{anchoring:{type:'plane'},planeAnchoring:{alignment:'horizontal'}}});
