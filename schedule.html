@@ -1,50 +1,159 @@
 <!DOCTYPE html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Schedule｜大野愛実 ファンサイト（非公式）</title><link rel="stylesheet" href="style.css"><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#e8384f"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="まなみん"><meta name="apple-mobile-web-app-status-bar-style" content="default"></head><body><div class="appbar"><a href="index.html"><img src="logo.png" alt="" class="logo"><span><b>MANAMI</b><small>大野愛実 ファンサイト（非公式）</small></span></a></div><div class="wrap"><header><span class="badge">日向坂46 五期生</span><h1>Schedule</h1><p class="kana">スケジュール</p></header><nav><a href="index.html"><i class="ms">home</i>Home</a><a href="profile.html"><i class="ms">person</i>Profile</a><a href="schedule.html" class="on"><i class="ms">calendar_month</i>Schedule</a><a href="news.html"><i class="ms">newspaper</i>News</a><a href="works.html"><i class="ms">movie</i>Works</a><a href="blog.html"><i class="ms">edit_note</i>Blog</a></nav>
-<section><h2>Upcoming</h2><div id="up"></div></section><section><h2>Recent</h2><div id="past"></div>
-<p class="empty" style="margin-top:12px">日向坂46公式サイトのニュースに載っている日付だけをまとめています。予定は <a href="https://www.hinatazaka46.com/" target="_blank" rel="noopener">公式サイト</a> でご確認ください。</p></section>
-<footer><p>このサイトは有志による非公式ファンサイトです。日向坂46・運営・所属事務所とは一切関係ありません。<br>掲載内容は報道・公式発表をもとにまとめたものです。正確な情報は公式サイトをご確認ください。</p></footer></div><script>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Schedule｜大野愛実 ファンサイト（非公式）</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#e8384f">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="まなみん">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+.schedule-page{margin:20px 0 34px}
+.calendar-shell{background:#fff;border:1px solid #f0d9dd;border-radius:22px;padding:clamp(14px,3vw,22px);box-shadow:0 8px 28px rgba(130,40,60,.06)}
+.calendar-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px}
+.calendar-kicker{font-size:.68rem;letter-spacing:.18em;font-weight:800;color:#bd334b}
+.calendar-month{font-size:1.35rem;font-weight:800;margin:3px 0 0;color:#33272a}
+.calendar-controls{display:flex;align-items:center;gap:7px}
+.calendar-controls button,.today-button{border:1px solid #ead5d9;background:#fff;color:#63343e;border-radius:999px;min-width:36px;height:36px;font-size:1rem;cursor:pointer}
+.calendar-controls .today-button{padding:0 12px;font-size:.75rem;font-weight:700}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.calendar-weekday{text-align:center;color:#9b858a;font-size:.72rem;font-weight:700;padding:7px 0}
+.calendar-day{position:relative;min-height:54px;border:1px solid transparent;border-radius:12px;background:#fff8f9;color:#382c30;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:8px 2px 5px;gap:5px;cursor:pointer;font:inherit}
+.calendar-day.outside{background:transparent;color:#c9bdc0}
+.calendar-day.today{border-color:#e5a5b0;background:#fff1f3}
+.calendar-day.selected{background:#c92e49;color:#fff;border-color:#c92e49}
+.calendar-day .day-num{font-size:.88rem;font-weight:700;line-height:1.2}
+.calendar-day .dots{display:flex;gap:3px;min-height:5px;align-items:center;justify-content:center}
+.calendar-day .dot{width:5px;height:5px;border-radius:50%;background:#d64a61}
+.calendar-day.selected .dot{background:#fff}
+.calendar-legend{display:flex;gap:14px;flex-wrap:wrap;margin:13px 2px 0;color:#88777b;font-size:.72rem}
+.calendar-legend span{display:inline-flex;align-items:center;gap:5px}
+.calendar-legend i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#d64a61}
+.selected-panel{margin-top:16px;padding:16px;border-radius:16px;background:#fff5f6;border:1px solid #f3dce0}
+.selected-heading{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.selected-heading h3{font-size:1rem;margin:0;color:#482b32}
+.selected-heading small{font-size:.7rem;color:#a07e85;letter-spacing:.08em}
+.schedule-event{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-top:1px solid #f0dfe2}
+.schedule-event:first-of-type{border-top:0}
+.event-mark{flex:0 0 auto;width:5px;min-height:34px;border-radius:8px;background:#c92e49}
+.event-copy{min-width:0}
+.event-copy strong{display:block;font-size:.9rem;line-height:1.5;color:#3d2b30}
+.event-copy a{color:inherit;text-decoration:none}
+.event-copy small{display:block;color:#9b7d84;font-size:.72rem;margin-top:3px}
+.no-events{color:#987f85;font-size:.84rem;padding:8px 0}
+.schedule-footnote{font-size:.75rem;line-height:1.7;color:#95848a;margin:14px 2px 0}
+@media(max-width:420px){.calendar-day{min-height:47px;border-radius:9px;padding-top:7px}.calendar-grid{gap:3px}.calendar-day .day-num{font-size:.82rem}.calendar-month{font-size:1.2rem}}
+</style>
+</head>
+<body>
+<div class="appbar"><a href="index.html"><img src="logo.png" alt="" class="logo"><span><b>MANAMI</b><small>大野愛実 ファンサイト（非公式）</small></span></a></div>
+<div class="wrap">
+<header><span class="badge">日向坂46 五期生</span><h1>Schedule</h1><p class="kana">スケジュール</p></header>
+<nav>
+<a href="index.html"><i class="ms">home</i>Home</a>
+<a href="profile.html"><i class="ms">person</i>Profile</a>
+<a href="schedule.html" class="on"><i class="ms">calendar_month</i>Schedule</a>
+<a href="news.html"><i class="ms">newspaper</i>News</a>
+<a href="works.html"><i class="ms">movie</i>Works</a>
+<a href="blog.html"><i class="ms">edit_note</i>Blog</a>
+</nav>
+<section class="schedule-page">
+<div class="calendar-shell">
+<div class="calendar-top">
+<div><div class="calendar-kicker">MANAMI'S CALENDAR</div><div class="calendar-month" id="calendar-month">読み込み中…</div></div>
+<div class="calendar-controls">
+<button type="button" id="prev-month" aria-label="前の月">‹</button>
+<button type="button" class="today-button" id="go-today">今日</button>
+<button type="button" id="next-month" aria-label="次の月">›</button>
+</div>
+</div>
+<div class="calendar-grid" id="calendar-weekdays">
+<div class="calendar-weekday">日</div><div class="calendar-weekday">月</div><div class="calendar-weekday">火</div><div class="calendar-weekday">水</div><div class="calendar-weekday">木</div><div class="calendar-weekday">金</div><div class="calendar-weekday">土</div>
+</div>
+<div class="calendar-grid" id="calendar-days" aria-label="月間カレンダー"></div>
+<div class="calendar-legend"><span><i></i>予定あり</span><span>日付をタップすると詳細を表示</span></div>
+<div class="selected-panel">
+<div class="selected-heading"><h3 id="selected-date">日付を選択</h3><small>DAY'S SCHEDULE</small></div>
+<div id="selected-events"><div class="no-events">スケジュールを読み込んでいます…</div></div>
+</div>
+</div>
+<p class="schedule-footnote">予定は登録されている情報を表示しています。変更・追加があった場合は、日向坂46公式サイトもあわせてご確認ください。</p>
+</section>
+<footer><p>このサイトは有志による非公式ファンサイトです。日向坂46・運営・所属事務所とは一切関係ありません。<br>掲載内容は報道・公式発表をもとにまとめたものです。正確な情報は公式サイトをご確認ください。</p></footer>
+</div>
+<script>
 (function(){
-  const API = "https://manami-site-worker.yellowworker.workers.dev/api/schedules";
-  const up = document.getElementById("up");
-  const past = document.getElementById("past");
-  const today = new Date().toLocaleDateString("en-CA", {timeZone:"Asia/Tokyo"});
-  function render(target, items, emptyText) {
-    if (!items.length) {
-      const p = document.createElement("p");
-      p.className = "empty";
-      p.textContent = emptyText;
-      target.appendChild(p);
-      return;
-    }
-    items.forEach(item => {
-      const d = document.createElement("div");
-      d.className = "item";
-      const date = document.createElement("div");
-      date.className = "date";
-      date.textContent = (item.event_date || "").replace(/-/g, ".");
-      const title = document.createElement("div");
-      title.className = "ttl";
-      title.textContent = item.title;
-      d.appendChild(date);
-      d.appendChild(title);
-      if (item.url) {
-        d.style.cursor = "pointer";
-        d.addEventListener("click", () => window.open(item.url, "_blank", "noopener"));
-      }
-      target.appendChild(d);
+  const API="https://manami-site-worker.yellowworker.workers.dev/api/schedules";
+  const monthLabel=document.getElementById("calendar-month");
+  const daysEl=document.getElementById("calendar-days");
+  const selectedLabel=document.getElementById("selected-date");
+  const selectedEvents=document.getElementById("selected-events");
+  const today=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Tokyo"}));
+  today.setHours(0,0,0,0);
+  let view=new Date(today.getFullYear(),today.getMonth(),1);
+  let selected=new Date(today);
+  let events=[];
+  const key=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  const jpDate=d=>d.getFullYear()+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日（"+["日","月","火","水","木","金","土"][d.getDay()]+"）";
+  const safe=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  function eventsFor(date){return events.filter(e=>e.event_date===key(date));}
+  function renderSelected(){
+    selectedLabel.textContent=jpDate(selected);
+    const list=eventsFor(selected);
+    selectedEvents.innerHTML="";
+    if(!list.length){selectedEvents.innerHTML='<div class="no-events">この日の予定はありません。</div>';return;}
+    list.forEach(item=>{
+      const row=document.createElement("div");row.className="schedule-event";
+      const mark=document.createElement("span");mark.className="event-mark";
+      const copy=document.createElement("div");copy.className="event-copy";
+      const title=document.createElement("strong");
+      if(item.url){const a=document.createElement("a");a.href=item.url;a.target="_blank";a.rel="noopener";a.textContent=item.title;title.appendChild(a);}
+      else title.textContent=item.title;
+      const meta=document.createElement("small");meta.textContent=item.url?"関連ページを開く ↗":"大野愛実 関連予定";
+      copy.append(title,meta);row.append(mark,copy);selectedEvents.appendChild(row);
     });
   }
-  fetch(API).then(r => {
-    if (!r.ok) throw new Error("API error");
-    return r.json();
-  }).then(data => {
-    if (!data.ok || !Array.isArray(data.items)) throw new Error("データを取得できません");
-    const upcoming = data.items.filter(x => x.event_date >= today).sort((a,b) => a.event_date.localeCompare(b.event_date));
-    const recent = data.items.filter(x => x.event_date < today).sort((a,b) => b.event_date.localeCompare(a.event_date));
-    render(up, upcoming, "登録されている予定はありません。");
-    render(past, recent, "過去の予定はありません。");
-  }).catch(() => {
-    up.textContent = "スケジュールを読み込めませんでした。";
+  function renderCalendar(){
+    monthLabel.textContent=view.getFullYear()+"年"+(view.getMonth()+1)+"月";
+    daysEl.innerHTML="";
+    const first=new Date(view.getFullYear(),view.getMonth(),1);
+    const start=new Date(view.getFullYear(),view.getMonth(),1-first.getDay());
+    const count=Math.ceil((first.getDay()+new Date(view.getFullYear(),view.getMonth()+1,0).getDate())/7)*7;
+    for(let i=0;i<count;i++){
+      const d=new Date(start);d.setDate(start.getDate()+i);
+      const day=document.createElement("button");day.type="button";day.className="calendar-day";
+      if(d.getMonth()!==view.getMonth())day.classList.add("outside");
+      if(key(d)===key(today))day.classList.add("today");
+      if(key(d)===key(selected))day.classList.add("selected");
+      day.setAttribute("aria-label",jpDate(d)+(eventsFor(d).length?"、予定あり":""));
+      const num=document.createElement("span");num.className="day-num";num.textContent=d.getDate();
+      const dots=document.createElement("span");dots.className="dots";
+      if(eventsFor(d).length){const dot=document.createElement("i");dot.className="dot";dots.appendChild(dot);}
+      day.append(num,dots);
+      day.addEventListener("click",()=>{selected=new Date(d);if(d.getMonth()!==view.getMonth())view=new Date(d.getFullYear(),d.getMonth(),1);renderCalendar();renderSelected();});
+      daysEl.appendChild(day);
+    }
+  }
+  document.getElementById("prev-month").addEventListener("click",()=>{view.setMonth(view.getMonth()-1);renderCalendar();});
+  document.getElementById("next-month").addEventListener("click",()=>{view.setMonth(view.getMonth()+1);renderCalendar();});
+  document.getElementById("go-today").addEventListener("click",()=>{view=new Date(today.getFullYear(),today.getMonth(),1);selected=new Date(today);renderCalendar();renderSelected();});
+  renderCalendar();renderSelected();
+  fetch(API).then(r=>{if(!r.ok)throw new Error("API error");return r.json();}).then(data=>{
+    if(!data.ok||!Array.isArray(data.items))throw new Error("invalid schedule data");
+    events=data.items.filter(x=>x.event_date&&/^\d{4}-\d{2}-\d{2}$/.test(x.event_date)).sort((a,b)=>a.event_date.localeCompare(b.event_date));
+    renderCalendar();renderSelected();
+  }).catch(()=>{
+    selectedEvents.innerHTML='<div class="no-events">スケジュールを読み込めませんでした。時間をおいて再度お試しください。</div>';
   });
 })();
-</script><script src="egg.js" defer></script></body></html>
+</script>
+<script src="egg.js" defer></script>
+</body>
+</html>
