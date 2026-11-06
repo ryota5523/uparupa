@@ -138,7 +138,16 @@
         const body=await response.text();
         const matches=[...body.matchAll(/!\[[^\]]*\]\(<?(https:\/\/[^\s)>]+)>?\)/g)].map(m=>m[1]);
         const htmlMatches=[...body.matchAll(/<img[^>]+src=["'](https:\/\/[^"']+)["']/gi)].map(m=>m[1]);
-        const found=[...matches,...htmlMatches].find(src=>!/(logo|icon|avatar|banner|header)/i.test(src));
+        // 公式ブログ本文の写真だけを採用する。ページ装飾用のdiamond.svg等は除外。
+        const found=[...matches,...htmlMatches].find(src=>{
+          try{
+            const u=new URL(src);
+            return u.hostname==="cdn.hinatazaka46.com"
+              && /\\/diary\\/official\\/member\\//i.test(u.pathname)
+              && /\\.(jpe?g|png|webp)$/i.test(u.pathname)
+              && !/(logo|icon|avatar|banner|header)/i.test(u.pathname);
+          }catch(e){return false;}
+        });
         if(found)imageCache.set(post.url,found);
         return found||"";
       }catch(e){return "";}
