@@ -1,5 +1,12 @@
 <!DOCTYPE html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Profile｜大野愛実 ファンサイト（非公式）</title><link rel="stylesheet" href="style.css"><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#e8384f"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="まなみん"><meta name="apple-mobile-web-app-status-bar-style" content="default"></head><body><div class="appbar"><a href="index.html"><img src="logo.png" alt="" class="logo"><span><b>MANAMI</b><small>大野愛実 ファンサイト（非公式）</small></span></a></div><div class="wrap"><header><span class="badge">日向坂46 五期生</span><h1>Profile</h1><p class="kana">プロフィール</p></header><nav><a href="index.html"><i class="ms">home</i>Home</a><a href="profile.html" class="on"><i class="ms">person</i>Profile</a><a href="schedule.html"><i class="ms">calendar_month</i>Schedule</a><a href="news.html"><i class="ms">newspaper</i>News</a><a href="works.html"><i class="ms">movie</i>Works</a><a href="blog.html"><i class="ms">edit_note</i>Blog</a></nav>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Profile｜大野愛実 ファンサイト（非公式）</title><link rel="stylesheet" href="style.css"><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#e8384f"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="まなみん"><meta name="apple-mobile-web-app-status-bar-style" content="default"><style>
+#history{margin-top:30px}
+#history .chips{display:flex;gap:7px;overflow-x:auto;padding:2px 0 12px;scrollbar-width:none}
+#history .chips::-webkit-scrollbar{display:none}
+#history .chip{flex:0 0 auto;border:1px solid #efd5da;background:#fff7f8;color:#8b5360;border-radius:999px;padding:8px 13px;font-size:.78rem;font-weight:700}
+#history .chip[aria-pressed="true"]{background:#c92e49;border-color:#c92e49;color:#fff}
+#history .tl{padding-left:22px}
+</style></head><body><div class="appbar"><a href="index.html"><img src="logo.png" alt="" class="logo"><span><b>MANAMI</b><small>大野愛実 ファンサイト（非公式）</small></span></a></div><div class="wrap"><header><span class="badge">日向坂46 五期生</span><h1>Profile</h1><p class="kana">プロフィール</p></header><nav><a href="index.html"><i class="ms">home</i>Home</a><a href="profile.html" class="on"><i class="ms">person</i>Profile</a><a href="schedule.html"><i class="ms">calendar_month</i>Schedule</a><a href="news.html"><i class="ms">newspaper</i>News</a><a href="works.html"><i class="ms">movie</i>Works</a><a href="blog.html"><i class="ms">edit_note</i>Blog</a></nav>
 <section><h2>Basic Info</h2><dl>
 <dt>名前</dt><dd>大野愛実（おおの まなみ）</dd>
 <dt>愛称</dt><dd>まなみん</dd>
@@ -25,4 +32,48 @@
 <section><h2>Story</h2>
 <p>2024年8月に始まった新メンバーオーディションを経て、2025年3月に五期生として加入しました。五期生の第一号として発表され、紹介映像では特技のピアノも披露しています。</p>
 <p>2025年5月の14thシングル収録曲「ジャーマンアイリス」で五期生楽曲のセンターを務め、2026年1月発売の16thシングル「クリフハンガー」では、五期生として初めて表題曲センターに抜擢されました。モデル、ドラマ、雑誌グラビアなど活動の幅も広がっています。</p></section>
-<section><h2>Note</h2><p class="empty">Favorites &amp; Triviaは、本人のプロフィールボード（18歳のとき）の内容をもとにしています。身長などは変わることがあります。</p></section><footer><p>このサイトは有志による非公式ファンサイトです。日向坂46・運営・所属事務所とは一切関係ありません。<br>掲載内容は報道・公式発表をもとにまとめたものです。正確な情報は公式サイトをご確認ください。</p></footer></div><script src="egg.js" defer></script></body></html>
+<section id="history"><h2>History</h2>
+  <div class="chips" id="chips">
+    <button class="chip" data-f="all" aria-pressed="true">All</button>
+    <button class="chip" data-f="Group" aria-pressed="false">Group</button>
+    <button class="chip" data-f="Model" aria-pressed="false">Model</button>
+    <button class="chip" data-f="Drama" aria-pressed="false">Drama</button>
+    <button class="chip" data-f="Magazine" aria-pressed="false">Magazine</button>
+    <button class="chip" data-f="Event" aria-pressed="false">Event</button>
+  </div>
+  <ol class="tl" id="tl"></ol>
+</section>
+<section><h2>Note</h2><p class="empty">Favorites &amp; Triviaは、本人のプロフィールボード（18歳のとき）の内容をもとにしています。身長などは変わることがあります。</p></section><footer><p>このサイトは有志による非公式ファンサイトです。日向坂46・運営・所属事務所とは一切関係ありません。<br>掲載内容は報道・公式発表をもとにまとめたものです。正確な情報は公式サイトをご確認ください。</p></footer></div><script>
+var EVENTS=[
+ {d:"2025-03",c:"Group",t:"日向坂46 五期生として加入",s:"10人の五期生の一員としてグループに加わりました。"},
+ {d:"2025-05-27",c:"Event",t:"五期生『おもてなし会』",s:"国立代々木競技場第一体育館で開催。五期生にとって初の単独イベントで、客前での初パフォーマンスでした。"},
+ {d:"2025-08-22",c:"Model",t:"『CanCam』10月号に初登場",s:"「ジャーマンアイリス」にちなんだ4色のビジュアルで撮影されました。"},
+ {d:"2026-01-28",c:"Group",t:"16thシングル「クリフハンガー」で表題曲センター",s:"加入から1年未満でセンターに抜擢されました。"},
+ {d:"2026-03-23",c:"Model",t:"『CanCam』専属モデルに就任",s:"5月号から専属モデルとして加入。ファッション誌でも活躍の場を広げています。"},
+ {d:"2026-04",c:"Drama",t:"NHK夜ドラ『ラジオスター』に出演",s:"ドラマにも出演し、演技面でも注目を集めました。"},
+ {d:"2026-09-02",c:"Magazine",t:"『週刊少年マガジン』40号の表紙＆巻頭グラビア",s:"夏をテーマにしたグラビアで登場しました。"},
+ {d:"2026-09-23",c:"Event",t:"青葉坂46オーディション 取材会に登壇",s:"乃木坂46・櫻坂46のメンバーとともに、日向坂46代表として登壇しました。"},
+ {d:"2026-09-26",c:"Model",t:"Rakuten GirlsAward 2026 AUTUMN/WINTER に出演",s:"幕張メッセのステージでランウェイを披露しました。"},
+ {d:"2026-09-28",c:"Magazine",t:"『B.L.T. 2026年11月号』表紙＆巻頭に登場",s:"テーマは「世界征服」。グラビアで日向坂46への思いも語っています。"}
+];
+var tl=document.getElementById("tl"),cur="all";
+function renderHistory(){
+  tl.innerHTML="";
+  EVENTS.filter(function(e){return cur==="all"||e.c===cur}).sort(function(a,b){return a.d<b.d?-1:(a.d>b.d?1:0)}).forEach(function(e){
+    var li=document.createElement("li");
+    var a=document.createElement("div");a.className="date";a.textContent=e.d;
+    var cat=document.createElement("span");cat.className="cat";cat.textContent=e.c;a.appendChild(cat);
+    var t=document.createElement("div");t.className="ttl";t.textContent=e.t;
+    var s=document.createElement("p");s.className="desc";s.textContent=e.s;
+    li.appendChild(a);li.appendChild(t);li.appendChild(s);tl.appendChild(li);
+  });
+}
+document.getElementById("chips").addEventListener("click",function(ev){
+  var b=ev.target.closest(".chip");if(!b)return;
+  cur=b.getAttribute("data-f");
+  document.querySelectorAll(".chip").forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false")});
+  renderHistory();
+});
+renderHistory();
+</script>
+<script src="egg.js" defer></script></body></html>
