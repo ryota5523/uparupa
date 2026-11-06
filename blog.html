@@ -123,7 +123,6 @@
   let posts=[];
   const imageCache=new Map();
   const readerCache=new Map();
-  const FALLBACK="https://www.hinatazaka46.com/s/official/diary/member/list?ima=0000&ct=38";
   function articleImage(post){
     const candidates=[post.image_url,post.thumbnail_url,post.thumbnail,post.image,post.img,post.og_image,post.ogImage];
     return candidates.find(v=>typeof v==="string"&&/^https:\/\//i.test(v))||imageCache.get(post.url)||"";
@@ -137,8 +136,8 @@
         const response=await fetch(readerUrl,{headers:{"Accept":"text/plain"}});
         if(!response.ok)throw new Error("reader unavailable");
         const body=await response.text();
-        const matches=[...body.matchAll(/!\\[[^\\]]*\\]\\(<?(https:\\/\\/[^\\s)>]+)>?\\)/g)].map(m=>m[1]);
-        const htmlMatches=[...body.matchAll(/<img[^>]+src=[\"'](https:\\/\\/[^\"']+)[\"']/gi)].map(m=>m[1]);
+        const matches=[...body.matchAll(/!\[[^\]]*\]\(<?(https:\/\/[^\s)>]+)>?\)/g)].map(m=>m[1]);
+        const htmlMatches=[...body.matchAll(/<img[^>]+src=["'](https:\/\/[^"']+)["']/gi)].map(m=>m[1]);
         const found=[...matches,...htmlMatches].find(src=>!/(logo|icon|avatar|banner|header)/i.test(src));
         if(found)imageCache.set(post.url,found);
         return found||"";
