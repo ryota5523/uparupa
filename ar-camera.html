@@ -21,6 +21,11 @@
 .ar-steps{display:grid;gap:10px}.ar-step{display:flex;gap:12px;align-items:flex-start;font-size:.86rem;line-height:1.65}.ar-num{width:25px;height:25px;border-radius:50%;background:#fde8ec;color:var(--ar-pink);display:grid;place-items:center;font-weight:900;flex:none}
 .ar-note{font-size:.78rem;color:var(--sub);line-height:1.7;margin:10px 0 0}.ar-back{display:inline-block;color:var(--ar-pink);font-weight:800;text-decoration:none;margin:2px 0 12px}
 #arQuickLook{position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none}
+.easy-camera{display:none;position:fixed;inset:0;z-index:9999;background:#111;color:white;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);flex-direction:column}
+.easy-camera.open{display:flex}.easy-top{height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex:none}.easy-top b{letter-spacing:.12em;color:#ff7184}.easy-top button{border:0;border-radius:20px;padding:8px 13px;background:#333;color:white;font:inherit}
+.easy-stage{position:relative;flex:1;min-height:0;overflow:hidden;background:#222;touch-action:none}.easy-stage video{width:100%;height:100%;object-fit:cover}.easy-stage #floatingPhoto{position:absolute;left:50%;top:50%;width:45%;max-height:75%;object-fit:contain;transform:translate(-50%,-50%);filter:drop-shadow(0 8px 12px #0008);touch-action:none;user-select:none;-webkit-user-drag:none}.easy-hint{position:absolute;left:12px;right:12px;bottom:12px;text-align:center;color:white;text-shadow:0 1px 4px #000;background:#0005;border-radius:12px;padding:8px;pointer-events:none}
+.easy-tools{padding:12px 16px 18px;background:#171717;flex:none}.easy-toolrow{display:grid;grid-template-columns:54px 1fr;gap:12px;align-items:center;margin:8px 0}.easy-toolrow input{width:100%;accent-color:#e8384f}.easy-actions{display:flex;gap:9px;margin-top:10px}.easy-actions .ar-btn{color:#222}.easy-actions .primary{color:#fff}.easy-tip{font-size:.75rem;color:#ddd;text-align:center;margin:9px 0 0}
+@media(orientation:landscape){.easy-top{height:42px}.easy-tools{padding:7px 16px}.easy-toolrow{margin:4px 0}.easy-actions{margin-top:5px}.easy-tip{margin-top:4px}}
 @media(min-width:720px){.ar-layout{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}.ar-layout .ar-card{margin:0 0 14px}}
 </style>
 </head>
@@ -29,6 +34,11 @@
 <main class="ar-wrap">
 <a class="ar-back" href="index.html">← HOMEに戻る</a>
 <header class="ar-head"><div class="ar-kicker">AUGMENTED REALITY EXPERIENCE</div><h1>MANAMIN <span style="color:var(--ar-pink)">AR</span></h1><p>写真を、いつもの部屋に。<br>現実の空間にまなみんのフォトカードを配置しよう。</p></header>
+<section class="ar-card">
+<h2>♡ かんたん撮影モード</h2>
+<p class="ar-note">カメラ映像に写真を重ねて、指で位置を動かし、スライダーで大きさや向きを調整。そのまま合成写真を保存できるよ。</p>
+<button class="ar-btn primary" id="easyOpenBtn" type="button">♡ カメラで一緒に撮る</button>
+</section>
 <div class="ar-layout">
 <section class="ar-card">
 <h2>① 写真を選ぶ</h2>
@@ -56,6 +66,16 @@
 <p class="ar-note">このページは画像からUSDZ形式のARモデルを端末内で生成し、iPhoneではApple AR Quick Lookに渡します。写真はサーバーへアップロードしません。Android・PCではARデータを保存して対応アプリで開いてください。</p>
 </section>
 <a id="arQuickLook" rel="ar" href="#"><img id="quickLookImage" alt="ARモデルを開く"></a>
+<div class="easy-camera" id="easyCamera" aria-hidden="true">
+ <div class="easy-top"><b>MANAMIN CAMERA</b><button type="button" id="easyCloseBtn" aria-label="閉じる">閉じる ✕</button></div>
+ <div class="easy-stage" id="easyStage"><video id="cameraVideo" autoplay playsinline muted></video><img id="floatingPhoto" alt="重ねる写真"><div class="easy-hint" id="easyHint">写真を選ぶとここに表示されるよ</div></div>
+ <div class="easy-tools">
+  <div class="easy-toolrow"><label for="easyScale">大きさ</label><input id="easyScale" type="range" min="15" max="100" value="45"></div>
+  <div class="easy-toolrow"><label for="easyRotate">回転</label><input id="easyRotate" type="range" min="-180" max="180" value="0"></div>
+  <div class="easy-actions"><button class="ar-btn" id="cameraFlipBtn" type="button">カメラ切替</button><button class="ar-btn primary" id="captureBtn" type="button" disabled>◎ 写真を撮る</button></div>
+  <p class="easy-tip">写真は指で移動。大きさ・向きはスライダーで調整できるよ。</p>
+ </div>
+</div>
 </main>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
 <script>
@@ -71,6 +91,18 @@ const sizeValue=document.getElementById('sizeValue');
 const angleValue=document.getElementById('angleValue');
 const quickLink=document.getElementById('arQuickLook');
 const quickImage=document.getElementById('quickLookImage');
+const easyCamera=document.getElementById('easyCamera');
+const easyOpenBtn=document.getElementById('easyOpenBtn');
+const easyCloseBtn=document.getElementById('easyCloseBtn');
+const cameraVideo=document.getElementById('cameraVideo');
+const easyStage=document.getElementById('easyStage');
+const floatingPhoto=document.getElementById('floatingPhoto');
+const easyHint=document.getElementById('easyHint');
+const easyScale=document.getElementById('easyScale');
+const easyRotate=document.getElementById('easyRotate');
+const captureBtn=document.getElementById('captureBtn');
+const cameraFlipBtn=document.getElementById('cameraFlipBtn');
+let cameraStream=null,cameraFacing='environment',photoX=0,photoY=0,photoScale=45,photoRotation=0,dragState=null;
 let image=null, imageUrl=null, usdzUrl=null, busy=false;
 
 function say(message,type=''){status.textContent=message;status.className='ar-status'+(type?' '+type:'');}
@@ -83,7 +115,7 @@ input.addEventListener('change',()=>{
  if(!file.type.startsWith('image/')){say('画像ファイルを選んでね。','error');return;}
  if(file.size>15*1024*1024){say('画像は15MB以下にしてね。','error');return;}
  revokeAssets();imageUrl=URL.createObjectURL(file);image=new Image();
- image.onload=()=>{preview.replaceChildren();const p=document.createElement('img');p.src=imageUrl;p.alt='選択した写真';preview.append(p);placeBtn.disabled=false;downloadBtn.disabled=true;clearBtn.disabled=false;say('写真を読み込んだよ。サイズを決めて、空間に配置してみよう。','success');};
+ image.onload=()=>{preview.replaceChildren();const p=document.createElement('img');p.src=imageUrl;p.alt='選択した写真';preview.append(p);placeBtn.disabled=false;downloadBtn.disabled=true;clearBtn.disabled=false;floatingPhoto.src=imageUrl;easyHint.style.display='none';say('写真を読み込んだよ。かんたん撮影でも使えるよ。','success');};
  image.onerror=()=>say('画像を読み込めなかったみたい。別の画像を試してね。','error');
  image.src=imageUrl;
 });
@@ -138,6 +170,37 @@ placeBtn.addEventListener('click',async()=>{
   saveUsdz();
  }
 });
+
+function applyFloatingPhoto(){floatingPhoto.style.left=(50+photoX)+'%';floatingPhoto.style.top=(50+photoY)+'%';floatingPhoto.style.width=photoScale+'%';floatingPhoto.style.transform='translate(-50%,-50%) rotate('+photoRotation+'deg)';}
+easyOpenBtn.addEventListener('click',async()=>{
+ if(!image){say('先に写真を選んでね。','error');return;}
+ if(!navigator.mediaDevices?.getUserMedia){say('このブラウザではカメラを使えません。Safariで開いてね。','error');return;}
+ easyCamera.classList.add('open');easyCamera.setAttribute('aria-hidden','false');
+ try{cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:cameraFacing},audio:false});cameraVideo.srcObject=cameraStream;await cameraVideo.play();captureBtn.disabled=false;}
+ catch(e){say('カメラを起動できませんでした。Safariのカメラ許可とHTTPS接続を確認してね。','error');easyCamera.classList.remove('open');}
+});
+function closeEasyCamera(){if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}cameraVideo.srcObject=null;easyCamera.classList.remove('open');easyCamera.setAttribute('aria-hidden','true');}
+easyCloseBtn.addEventListener('click',closeEasyCamera);
+cameraFlipBtn.addEventListener('click',async()=>{cameraFacing=cameraFacing==='environment'?'user':'environment';if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}try{cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:cameraFacing},audio:false});cameraVideo.srcObject=cameraStream;await cameraVideo.play();}catch(e){say('カメラを切り替えられませんでした。','error');}});
+easyScale.addEventListener('input',()=>{photoScale=Number(easyScale.value);applyFloatingPhoto();});
+easyRotate.addEventListener('input',()=>{photoRotation=Number(easyRotate.value);applyFloatingPhoto();});
+floatingPhoto.addEventListener('pointerdown',e=>{e.preventDefault();floatingPhoto.setPointerCapture(e.pointerId);dragState={x:e.clientX,y:e.clientY,px:photoX,py:photoY};});
+floatingPhoto.addEventListener('pointermove',e=>{if(!dragState)return;const r=easyStage.getBoundingClientRect();photoX=dragState.px+(e.clientX-dragState.x)/r.width*100;photoY=dragState.py+(e.clientY-dragState.y)/r.height*100;applyFloatingPhoto();});
+floatingPhoto.addEventListener('pointerup',()=>{dragState=null;});
+floatingPhoto.addEventListener('pointercancel',()=>{dragState=null;});
+captureBtn.addEventListener('click',()=>{
+ if(!cameraVideo.videoWidth||!image)return;
+ const stageRect=easyStage.getBoundingClientRect(),w=stageRect.width,h=stageRect.height,scale=cameraVideo.videoWidth/w;
+ const canvas=document.createElement('canvas');canvas.width=cameraVideo.videoWidth;canvas.height=Math.round(h*scale);
+ const ctx=canvas.getContext('2d');
+ const vw=cameraVideo.videoWidth,vh=cameraVideo.videoHeight,cover=Math.max(canvas.width/vw,canvas.height/canvas.width*canvas.width/vh),dw=vw*cover,dh=vh*cover;
+ ctx.drawImage(cameraVideo,(canvas.width-dw)/2,(canvas.height-dh)/2,dw,dh);
+ const rect=floatingPhoto.getBoundingClientRect(),cx=(rect.left+rect.width/2-stageRect.left)*scale,cy=(rect.top+rect.height/2-stageRect.top)*scale;
+ const drawW=rect.width*scale,drawH=rect.height*scale;
+ ctx.save();ctx.translate(cx,cy);ctx.rotate(photoRotation*Math.PI/180);ctx.drawImage(image,-drawW/2,-drawH/2,drawW,drawH);ctx.restore();
+ canvas.toBlob(blob=>{if(!blob){say('写真を保存できませんでした。','error');return;}const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='manamin-camera-'+Date.now()+'.jpg';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);},'image/jpeg',.92);
+});
+
 function saveUsdz(){if(!usdzUrl)return;const a=document.createElement('a');a.href=usdzUrl;a.download='manamin-photo-ar.usdz';document.body.append(a);a.click();a.remove();}
 downloadBtn.addEventListener('click',saveUsdz);
 clearBtn.addEventListener('click',()=>{revokeAssets();image=null;input.value='';preview.innerHTML='<div class="ar-empty"><span class="symbol">✧</span>画像を選ぶとここに表示されるよ</div>';placeBtn.disabled=true;downloadBtn.disabled=true;clearBtn.disabled=true;say('画像をクリアしました。');});
