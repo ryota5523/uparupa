@@ -53,6 +53,10 @@
 <main class="admin-wrap">
 <div class="admin-head"><div><div class="admin-eyebrow">MANAMI SITE / CONTROL ROOM</div><h1 class="admin-title">管理画面</h1><p class="admin-desc">サイトに表示する情報と開催予定を管理します。</p></div><span class="admin-status" id="connection-status">接続確認中…</span></div>
 <div id="global-message" class="admin-message"></div>
+<div class="admin-card" id="admin-login-card">
+<h2>管理者認証</h2><p class="sub">Workerに設定した管理用トークンを入力してください。このブラウザのタブを閉じると認証情報は消えます。</p>
+<form id="admin-login-form"><div class="admin-form-grid"><div class="admin-field full"><label for="admin-token">管理用トークン</label><input id="admin-token" type="password" autocomplete="current-password" placeholder="ADMIN_TOKEN" required></div></div><div class="admin-actions"><button class="admin-btn primary" type="submit">認証して接続</button><button class="admin-btn ghost" type="button" id="admin-logout">ログアウト</button></div></form>
+</div>
 <div class="admin-tabs" role="tablist">
 <button class="admin-tab active" data-tab="schedule" type="button">📅 スケジュール</button>
 <button class="admin-tab" data-tab="info" type="button">✍️ サイト情報</button>
@@ -99,8 +103,10 @@
  const status=$("connection-status");
  function message(el,text,type){el.textContent=text;el.className="admin-message show "+type;}
  function hideMessage(el){el.textContent="";el.className="admin-message";}
+ let adminToken=sessionStorage.getItem("manami-admin-token")||"";
  async function request(path,options={}){
-  const response=await fetch(API+path,{...options,credentials:"include",headers:{"Content-Type":"application/json",...(options.headers||{})}});
+  if(!adminToken)throw new Error("管理用トークンを入力してください");
+  const response=await fetch(API+path,{...options,credentials:"omit",headers:{"Content-Type":"application/json","Authorization":"Bearer "+adminToken,...(options.headers||{})}});
   const data=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error(data.error||("HTTP "+response.status));
   if(data.ok===false)throw new Error(data.error||"API error");
@@ -162,13 +168,23 @@
   try{await request("/api/admin/site-info",{method:"PUT",body:JSON.stringify(payload)});message($("info-message"),"表示情報を保存しました。","ok");}
   catch(err){message($("info-message"),"保存できませんでした："+err.message,"error");}
  });
+ $("admin-login-form").addEventListener("submit",async e=>{
+  e.preventDefault();adminToken=$("admin-token").value.trim();
+  if(!adminToken)return;
+  sessionStorage.setItem("manami-admin-token",adminToken);
+  try{await Promise.all([loadSchedules(),loadInfo()]);status.textContent="管理API 接続済み";status.style.background="#eff8f1";status.style.color="#39734a";$("admin-login-card").style.display="none";hideMessage($("global-message"));}
+  catch(err){adminToken="";sessionStorage.removeItem("manami-admin-token");message($("global-message"),"認証または接続に失敗しました："+err.message,"error");}
+ });
+ $("admin-logout").addEventListener("click",()=>{adminToken="";sessionStorage.removeItem("manami-admin-token");$("admin-token").value="";$("admin-login-card").style.display="block";status.textContent="未認証";});
  async function init(){
+  if(!adminToken){status.textContent="未認証";$("admin-login-card").style.display="block";return;}
+  $("admin-token").value=adminToken;
   try{
    await Promise.all([loadSchedules(),loadInfo()]);
-   status.textContent="管理API 接続済み";status.style.background="#eff8f1";status.style.color="#39734a";
+   status.textContent="管理API 接続済み";status.style.background="#eff8f1";status.style.color="#39734a";$("admin-login-card").style.display="none";
   }catch(e){
-   status.textContent="API未接続";status.style.background="#fff0ef";status.style.color="#a63a34";
-   message($("global-message"),"管理APIの準備がまだ完了していません。Workerに /api/admin/schedules と /api/admin/site-info の追加が必要です。詳細："+e.message,"error");
+   adminToken="";sessionStorage.removeItem("manami-admin-token");status.textContent="認証が必要";$("admin-login-card").style.display="block";
+   message($("global-message"),"管理APIに接続できません："+e.message,"error");
   }
  }
  init();
