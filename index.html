@@ -183,16 +183,16 @@
 <script>
 (function(){
  const API="https://manami-site-worker.yellowworker.workers.dev";
- const photos=document.querySelectorAll(".app-photo");
+ const photos=[...document.querySelectorAll(".app-photo")];
  fetch(API+"/api/greetings").then(r=>{if(!r.ok)throw new Error("greeting API");return r.json();}).then(data=>{
-  const items=data.items||data.greetings||data.results||[];
+  const items=(data.items||data.greetings||data.results||[]).filter(x=>x.object_key);
   items.sort((a,b)=>String(b.published_at||"").localeCompare(String(a.published_at||"")));
-  const latest=items.find(x=>x.object_key);
-  if(!latest)return;
-  const src=API+"/api/greeting/image?key="+encodeURIComponent(latest.object_key);
+  if(!items.length)return;
+  // メニューごとに別々のグリーティングカードを割り当てる
   photos.forEach((img,index)=>{
-   img.src=src;
-   img.style.objectPosition=["center 25%","center 18%","center 30%","center 22%","center 15%","center 28%","center 20%","center 32%"][index%8];
+   const card=items[index % items.length];
+   img.src=API+"/api/greeting/image?key="+encodeURIComponent(card.object_key);
+   img.style.objectPosition="center 25%";
    img.onerror=()=>{img.remove();};
   });
  }).catch(()=>{});
