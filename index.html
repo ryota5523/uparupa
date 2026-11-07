@@ -184,14 +184,17 @@
 (function(){
  const API="https://manami-site-worker.yellowworker.workers.dev";
  const photos=[...document.querySelectorAll(".app-photo")];
- fetch(API+"/api/greetings").then(r=>{if(!r.ok)throw new Error("greeting API");return r.json();}).then(data=>{
-  const items=(data.items||data.greetings||data.results||[]).filter(x=>x.object_key);
-  items.sort((a,b)=>String(b.published_at||"").localeCompare(String(a.published_at||"")));
+ fetch(API+"/api/menu-photos").then(r=>{
+  if(!r.ok)throw new Error("R2 menu photo API");
+  return r.json();
+ }).then(data=>{
+  const items=(data.items||[]).filter(x=>x&&x.url);
   if(!items.length)return;
-  // メニューごとに別々のグリーティングカードを割り当てる
+  // R2の写真を重複させず、各メニューに1枚ずつ割り当てる
   photos.forEach((img,index)=>{
-   const card=items[index % items.length];
-   img.src=API+"/api/greeting/image?key="+encodeURIComponent(card.object_key);
+   const photo=items[index];
+   if(!photo)return;
+   img.src=photo.url;
    img.style.objectPosition="center 25%";
    img.onerror=()=>{img.remove();};
   });
