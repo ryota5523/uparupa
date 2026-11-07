@@ -66,7 +66,7 @@
 .blog-card .card-copy{min-width:0}
 .blog-card .card-date{font-size:.7rem;color:var(--blog-muted);letter-spacing:.04em}
 .blog-card .card-title{display:-webkit-box;margin-top:3px;overflow:hidden;color:var(--blog-ink);font-size:.92rem;font-weight:800;line-height:1.55;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-.blog-card .arrow{color:var(--blog-red);font-size:1.15rem}
+.blog-card .arrow{color:var(--blog-red);font-size:1.15rem}.blog-card .favorite-toggle{border:0;background:#fff0f2;color:#c91532;border-radius:50%;width:34px;height:34px;font-size:19px;cursor:pointer;display:grid;place-items:center}.blog-card .favorite-toggle.active{background:#c91532;color:#fff}.saved-empty{padding:18px;border:1px dashed #e9cbd1;border-radius:16px;color:var(--blog-muted);text-align:center}
 .blog-empty{padding:22px 16px;border:1px dashed #e9cbd1;border-radius:16px;background:#fff9fa;color:var(--blog-muted);text-align:center;font-size:.88rem}
 .blog-footnote{margin:16px 2px 0;color:var(--blog-muted);font-size:.76rem;line-height:1.8}
 .blog-loading{padding:22px;text-align:center;color:var(--blog-muted)}
@@ -88,6 +88,8 @@
 <div class="blog-section-title"><h2>Latest Letter</h2><span>FEATURED</span></div>
 <div id="featured" class="blog-feature"><div class="blog-loading">最新の記事を探しています…</div></div>
 
+<div class="blog-section-title" id="saved"><h2>Saved Stories</h2><span>FAVORITES</span></div>
+<div id="favorite-list" class="blog-list"><div class="blog-empty">♡を押した記事がここに保存されます。</div></div>
 <div class="blog-section-title"><h2>Blog Archive</h2><span>STORIES</span></div>
 <div class="blog-tools">
 <input id="blog-search" class="blog-search" type="search" placeholder="記事タイトルで検索…" aria-label="記事タイトルで検索">
@@ -107,6 +109,13 @@
   const search=document.getElementById("blog-search");
   const month=document.getElementById("blog-month");
   const count=document.getElementById("blog-result-count");
+  const favoriteList=document.getElementById("favorite-list");
+  const FAVORITES_KEY="manami-blog-favorites-v1";
+  function getFavorites(){try{return JSON.parse(localStorage.getItem(FAVORITES_KEY)||"[]");}catch(e){return [];}}
+  function setFavorites(items){localStorage.setItem(FAVORITES_KEY,JSON.stringify(items));renderFavorites();}
+  function isFavorite(url){return getFavorites().some(x=>x.url===url);}
+  function toggleFavorite(post){const items=getFavorites();const i=items.findIndex(x=>x.url===post.url);if(i>=0)items.splice(i,1);else items.unshift({url:post.url,title:post.title||"タイトル未設定",published_at:post.published_at||"",image:articleImage(post)});setFavorites(items);}
+  function renderFavorites(){if(!favoriteList)return;const items=getFavorites();favoriteList.innerHTML="";if(!items.length){favoriteList.innerHTML='<div class="saved-empty">まだお気に入りはありません。ブログの♡を押して保存してね。</div>';return;}items.forEach(p=>{const a=document.createElement("a");a.className="blog-card";a.href=safeUrl(p.url);a.target="_blank";a.rel="noopener";const day=document.createElement("span");day.className="thumb";if(p.image){const img=document.createElement("img");img.src=p.image;img.alt="";img.loading="lazy";day.appendChild(img);}else{const d=safeDate(p.published_at);day.textContent=d.month+" "+d.day;}const copy=document.createElement("span");copy.className="card-copy";const date=document.createElement("span");date.className="card-date";date.textContent=safeDate(p.published_at).full;const title=document.createElement("span");title.className="card-title";title.textContent=p.title;copy.append(date,title);const remove=document.createElement("button");remove.type="button";remove.className="favorite-toggle active";remove.textContent="♥";remove.setAttribute("aria-label","お気に入りから削除");remove.addEventListener("click",ev=>{ev.preventDefault();ev.stopPropagation();setFavorites(getFavorites().filter(x=>x.url!==p.url));});a.append(day,copy,remove);favoriteList.appendChild(a);});}
   let posts=[];
   const imageCache=new Map();
   const readerCache=new Map();
@@ -198,21 +207,22 @@
       const date=document.createElement("span");date.className="card-date";date.textContent=d.full;
       const title=document.createElement("span");title.className="card-title";title.textContent=p.title||"タイトル未設定";
       copy.append(date,title);
-      const arrow=document.createElement("span");arrow.className="arrow";arrow.textContent="↗";
-      a.append(day,copy,arrow);list.appendChild(a);
+      const favorite=document.createElement("button");favorite.type="button";favorite.className="favorite-toggle"+(isFavorite(p.url)?" active":"");favorite.textContent=isFavorite(p.url)?"♥":"♡";favorite.setAttribute("aria-label","お気に入り");favorite.addEventListener("click",ev=>{ev.preventDefault();ev.stopPropagation();toggleFavorite(p);renderList();});
+      a.append(day,copy,favorite);list.appendChild(a);
     });
   }
   function setupMonths(){
     const months=[...new Set(posts.map(p=>safeDate(p.published_at).key).filter(k=>k!=="unknown"))].sort().reverse();
     months.forEach(key=>{const o=document.createElement("option");o.value=key;o.textContent=key.replace("-","年")+"月";month.appendChild(o);});
   }
+  renderFavorites();
   search.addEventListener("input",renderList);
   month.addEventListener("change",renderList);
   fetch(API).then(r=>{if(!r.ok)throw new Error("API error");return r.json();})
     .then(data=>{
       if(!data.ok||!Array.isArray(data.items))throw new Error("Invalid response");
       posts=data.items.slice().sort((a,b)=>String(b.published_at||"").localeCompare(String(a.published_at||"")));
-      setupMonths();renderFeatured();renderList();loadVisibleImages();
+      setupMonths();renderFeatured();renderList();renderFavorites();loadVisibleImages();
     })
     .catch(()=>{
       featured.innerHTML='<div class="blog-empty">最新記事を読み込めませんでした。</div>';
