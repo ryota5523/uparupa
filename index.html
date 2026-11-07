@@ -33,8 +33,12 @@
 .menu-caption{font-size:.62rem;letter-spacing:.15em;color:#bd8a93;font-weight:800}
 .app-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px 9px}
 .app-icon{display:flex;min-width:0;flex-direction:column;align-items:center;gap:7px;text-decoration:none;color:#4c3a3e;text-align:center}
-.app-icon .app-glyph{width:clamp(52px,15vw,68px);height:clamp(52px,15vw,68px);display:grid;place-items:center;border-radius:19px;color:white;font-family:"Material Symbols Rounded","Material Symbols Outlined",sans-serif;font-size:31px;font-weight:400;box-shadow:0 5px 12px rgba(70,30,40,.14);transition:transform .18s ease}
+.app-icon .app-glyph{position:relative;width:clamp(58px,16vw,76px);height:clamp(58px,16vw,76px);display:grid;place-items:center;overflow:hidden;border-radius:20px;color:white;font-family:"Material Symbols Rounded","Material Symbols Outlined",sans-serif;font-size:31px;font-weight:400;background:linear-gradient(145deg,#d96b82,#b92d4b);box-shadow:0 6px 15px rgba(70,30,40,.18);transition:transform .18s ease}
+.app-icon .app-photo{display:block;width:100%;height:100%;object-fit:cover;object-position:center 28%;position:absolute;inset:0}
+.app-icon .app-glyph:has(.app-photo[src=""]){font-size:31px}
 .app-icon:active .app-glyph{transform:scale(.92)}
+.app-icon b{font-size:.72rem;font-weight:700;white-space:nowrap;text-shadow:0 1px 0 #fff}
+.app-icon{gap:8px}
 .app-icon b{font-size:.72rem;font-weight:700;white-space:nowrap}
 .app-profile .app-glyph{background:linear-gradient(145deg,#d96b82,#b92d4b)}
 .app-schedule .app-glyph{background:linear-gradient(145deg,#e69a65,#cf633f)}
@@ -78,14 +82,14 @@
 <section class="app-menu" id="app-menu">
 <div class="menu-heading"><div><span class="home-eyebrow">EXPLORE</span><h2>まなみんメニュー</h2></div><span class="menu-caption">MANAMI APP</span></div>
 <div class="app-grid">
-<a class="app-icon app-profile" href="profile.html"><span class="app-glyph">person</span><b>Profile</b></a>
-<a class="app-icon app-schedule" href="schedule.html"><span class="app-glyph">calendar_month</span><b>Schedule</b></a>
-<a class="app-icon app-news" href="news.html"><span class="app-glyph">newspaper</span><b>News</b></a>
-<a class="app-icon app-works" href="works.html"><span class="app-glyph">movie</span><b>Works</b></a>
-<a class="app-icon app-blog" href="blog.html"><span class="app-glyph">edit_note</span><b>Blog</b></a>
-<a class="app-icon app-greeting" href="greetings.html" id="open-greeting"><span class="app-glyph">photo_library</span><b>Greeting</b></a>
-<a class="app-icon app-camera" href="ar-camera.html"><span class="app-glyph">photo_camera</span><b>AR Camera</b></a>
-<a class="app-icon app-memo" href="memo.html"><span class="app-glyph">auto_stories</span><b>推し活メモ</b></a>
+<a class="app-icon app-profile" href="profile.html"><span class="app-glyph"><span class="app-fallback">person</span><img class="app-photo" alt="" loading="lazy"></span><b>Profile</b></a>
+<a class="app-icon app-schedule" href="schedule.html"><span class="app-glyph"><span class="app-fallback">calendar_month</span><img class="app-photo" alt="" loading="lazy"></span><b>Schedule</b></a>
+<a class="app-icon app-news" href="news.html"><span class="app-glyph"><span class="app-fallback">newspaper</span><img class="app-photo" alt="" loading="lazy"></span><b>News</b></a>
+<a class="app-icon app-works" href="works.html"><span class="app-glyph"><span class="app-fallback">movie</span><img class="app-photo" alt="" loading="lazy"></span><b>Works</b></a>
+<a class="app-icon app-blog" href="blog.html"><span class="app-glyph"><span class="app-fallback">edit_note</span><img class="app-photo" alt="" loading="lazy"></span><b>Blog</b></a>
+<a class="app-icon app-greeting" href="greetings.html" id="open-greeting"><span class="app-glyph"><span class="app-fallback">photo_library</span><img class="app-photo" alt="" loading="lazy"></span><b>Greeting</b></a>
+<a class="app-icon app-camera" href="ar-camera.html"><span class="app-glyph"><span class="app-fallback">photo_camera</span><img class="app-photo" alt="" loading="lazy"></span><b>AR Camera</b></a>
+<a class="app-icon app-memo" href="memo.html"><span class="app-glyph"><span class="app-fallback">auto_stories</span><img class="app-photo" alt="" loading="lazy"></span><b>推し活メモ</b></a>
 </div></section>
 <section id="app"><h2>Install</h2>
 <p>ホーム画面に追加すると、アイコンから全画面で開けます。公式サイトへのリンクは、アプリ内のブラウザで開きます。</p>
@@ -176,6 +180,24 @@
 })();
 </script>
 
+<script>
+(function(){
+ const API="https://manami-site-worker.yellowworker.workers.dev";
+ const photos=document.querySelectorAll(".app-photo");
+ fetch(API+"/api/greetings").then(r=>{if(!r.ok)throw new Error("greeting API");return r.json();}).then(data=>{
+  const items=data.items||data.greetings||data.results||[];
+  items.sort((a,b)=>String(b.published_at||"").localeCompare(String(a.published_at||"")));
+  const latest=items.find(x=>x.object_key);
+  if(!latest)return;
+  const src=API+"/api/greeting/image?key="+encodeURIComponent(latest.object_key);
+  photos.forEach((img,index)=>{
+   img.src=src;
+   img.style.objectPosition=["center 25%","center 18%","center 30%","center 22%","center 15%","center 28%","center 20%","center 32%"][index%8];
+   img.onerror=()=>{img.remove();};
+  });
+ }).catch(()=>{});
+})();
+</script>
 <script src="egg.js" defer></script>
 <div id="greeting-page-modal" aria-hidden="true">
   <div id="greeting-page-panel" role="dialog" aria-modal="true" aria-label="Greetingカード一覧">
