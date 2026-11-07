@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Admin｜MANAMI</title>
+<link rel="stylesheet" href="style.css">
+<meta name="theme-color" content="#e8384f">
+<style>
+:root{--admin-red:#c92e49;--admin-ink:#35282c;--admin-muted:#927d83;--admin-line:#f0dce0}
+.admin-wrap{max-width:980px;margin:0 auto;padding:26px 18px 70px}
+.admin-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:18px 0 26px}
+.admin-eyebrow{font-size:.68rem;letter-spacing:.2em;color:var(--admin-red);font-weight:800}
+.admin-title{font-size:clamp(1.7rem,5vw,2.3rem);margin:5px 0;color:var(--admin-ink)}
+.admin-desc{font-size:.84rem;color:var(--admin-muted);margin:0}
+.admin-status{font-size:.72rem;border-radius:999px;padding:8px 12px;background:#fff1f3;color:#a72b43;white-space:nowrap}
+.admin-tabs{display:flex;gap:8px;overflow:auto;padding:4px 0 14px}
+.admin-tab{border:1px solid var(--admin-line);background:#fff;color:#765b62;border-radius:999px;padding:10px 16px;font:inherit;font-size:.82rem;font-weight:700;white-space:nowrap;cursor:pointer}
+.admin-tab.active{background:var(--admin-red);border-color:var(--admin-red);color:white}
+.admin-panel{display:none}.admin-panel.active{display:block}
+.admin-card{background:#fff;border:1px solid var(--admin-line);border-radius:20px;padding:clamp(16px,3vw,24px);box-shadow:0 8px 25px #71303b0b;margin-bottom:16px}
+.admin-card h2{font-size:1.05rem;margin:0 0 5px;color:var(--admin-ink)}
+.admin-card .sub{font-size:.78rem;color:var(--admin-muted);margin:0 0 18px;line-height:1.7}
+.admin-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.admin-field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.admin-field.full{grid-column:1/-1}
+.admin-field label{font-size:.76rem;font-weight:700;color:#6f535a}
+.admin-field input,.admin-field textarea,.admin-field select{width:100%;box-sizing:border-box;border:1px solid #ead9dd;border-radius:12px;background:#fffdfd;padding:12px 13px;font:inherit;font-size:.9rem;color:var(--admin-ink);outline:none}
+.admin-field input:focus,.admin-field textarea:focus,.admin-field select:focus{border-color:#d96a7e;box-shadow:0 0 0 3px #e8384f15}
+.admin-field textarea{min-height:88px;resize:vertical}
+.admin-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.admin-btn{border:0;border-radius:999px;padding:11px 17px;font:inherit;font-size:.8rem;font-weight:800;cursor:pointer}
+.admin-btn.primary{background:var(--admin-red);color:white}
+.admin-btn.secondary{background:#fff1f3;color:#a72b43}
+.admin-btn.ghost{background:#f6f1f2;color:#735e63}
+.admin-btn.danger{background:#fff0ef;color:#b83c36}
+.admin-list{display:grid;gap:9px}
+.admin-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 14px;border:1px solid #f0e3e5;border-radius:14px;background:#fffdfd}
+.admin-item-main{min-width:0}.admin-item-main strong{display:block;font-size:.86rem;color:#49353b;overflow-wrap:anywhere}
+.admin-item-main small{display:block;color:#9a8289;font-size:.72rem;margin-top:4px}
+.admin-item-actions{display:flex;gap:6px;flex-shrink:0}
+.admin-item-actions button{border:1px solid #eadde0;border-radius:999px;background:#fff;padding:7px 11px;font:inherit;font-size:.72rem;font-weight:700;color:#765b62;cursor:pointer}
+.admin-item-actions button.delete{color:#b83c36}
+.admin-empty{padding:18px;border-radius:14px;background:#fff7f8;color:#9b7e85;font-size:.82rem;text-align:center}
+.admin-message{display:none;padding:12px 14px;border-radius:12px;margin:12px 0;font-size:.8rem;line-height:1.6}
+.admin-message.show{display:block}.admin-message.error{background:#fff0ef;color:#a63a34}.admin-message.ok{background:#eff8f1;color:#39734a}
+.admin-note{font-size:.72rem;color:#a08a90;line-height:1.7;margin:12px 0 0}
+@media(max-width:620px){.admin-form-grid{grid-template-columns:1fr}.admin-field.full{grid-column:auto}.admin-head{align-items:flex-start}.admin-item{align-items:flex-start}.admin-item-actions{flex-direction:column}.admin-item-actions button{padding:7px 9px}}
+</style>
+</head>
+<body>
+<div class="appbar"><a href="index.html"><img src="logo.png" alt="" class="logo"><span><b>MANAMI</b><small>管理者メニュー</small></span></a></div>
+<main class="admin-wrap">
+<div class="admin-head"><div><div class="admin-eyebrow">MANAMI SITE / CONTROL ROOM</div><h1 class="admin-title">管理画面</h1><p class="admin-desc">サイトに表示する情報と開催予定を管理します。</p></div><span class="admin-status" id="connection-status">接続確認中…</span></div>
+<div id="global-message" class="admin-message"></div>
+<div class="admin-tabs" role="tablist">
+<button class="admin-tab active" data-tab="schedule" type="button">📅 スケジュール</button>
+<button class="admin-tab" data-tab="info" type="button">✍️ サイト情報</button>
+</div>
+<section class="admin-panel active" id="panel-schedule">
+<div class="admin-card">
+<h2 id="schedule-form-title">予定を追加</h2><p class="sub">出演情報やミーグリの日程を登録できます。保存した予定はサイト側にも反映する想定です。</p>
+<form id="schedule-form">
+<input type="hidden" id="schedule-id">
+<div class="admin-form-grid">
+<div class="admin-field"><label for="event-date">開催日</label><input id="event-date" type="date" required></div>
+<div class="admin-field"><label for="event-kind">予定の種類</label><select id="event-kind"><option value="appearance">出演情報</option><option value="meet">ミーグリ</option><option value="other">その他</option></select></div>
+<div class="admin-field full"><label for="event-title">タイトル</label><input id="event-title" type="text" maxlength="120" placeholder="例：オンラインミート＆グリート" required></div>
+<div class="admin-field full"><label for="event-url">関連URL（任意）</label><input id="event-url" type="url" placeholder="https://..."></div>
+</div>
+<div class="admin-actions"><button class="admin-btn primary" type="submit" id="schedule-save">予定を保存</button><button class="admin-btn ghost" type="button" id="schedule-cancel" hidden>編集をやめる</button></div>
+</form>
+<div id="schedule-message" class="admin-message"></div>
+</div>
+<div class="admin-card"><h2>登録済みの予定</h2><p class="sub">日付順に表示しています。編集・削除もここから行えます。</p><div id="schedule-list" class="admin-list"><div class="admin-empty">読み込み中…</div></div></div>
+</section>
+<section class="admin-panel" id="panel-info">
+<div class="admin-card">
+<h2>サイト表示情報</h2><p class="sub">トップページなどに表示する紹介文を編集します。現在の内容を読み込んでから保存してください。</p>
+<form id="info-form">
+<div class="admin-form-grid">
+<div class="admin-field full"><label for="site-tagline">キャッチコピー</label><input id="site-tagline" type="text" maxlength="120" placeholder="負けない！泣かない！実らせたい！"></div>
+<div class="admin-field full"><label for="site-intro">紹介文</label><textarea id="site-intro" maxlength="500" placeholder="サイトの紹介文"></textarea></div>
+<div class="admin-field"><label for="site-note">お知らせ見出し</label><input id="site-note" type="text" maxlength="80" placeholder="お知らせ"></div>
+<div class="admin-field"><label for="site-note-body">お知らせ本文</label><input id="site-note-body" type="text" maxlength="200" placeholder="表示したいお知らせ"></div>
+</div>
+<div class="admin-actions"><button class="admin-btn primary" type="submit">表示情報を保存</button></div>
+</form>
+<div id="info-message" class="admin-message"></div>
+<p class="admin-note">※ 公開サイトへの反映は、Worker側の管理APIとトップページの連携が完了してから有効になります。</p>
+</div>
+</section>
+<p class="admin-note">このページは管理者専用です。Cloudflare Accessで <code>/admin.html</code> と Worker の <code>/api/admin/*</code> を保護してください。</p>
+</main>
+<script>
+(function(){
+ const API="https://manami-site-worker.yellowworker.workers.dev";
+ const $=id=>document.getElementById(id);
+ const status=$("connection-status");
+ function message(el,text,type){el.textContent=text;el.className="admin-message show "+type;}
+ function hideMessage(el){el.textContent="";el.className="admin-message";}
+ async function request(path,options={}){
+  const response=await fetch(API+path,{...options,credentials:"include",headers:{"Content-Type":"application/json",...(options.headers||{})}});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(data.error||("HTTP "+response.status));
+  if(data.ok===false)throw new Error(data.error||"API error");
+  return data;
+ }
+ document.querySelectorAll(".admin-tab").forEach(tab=>tab.addEventListener("click",()=>{
+  document.querySelectorAll(".admin-tab").forEach(x=>x.classList.toggle("active",x===tab));
+  document.querySelectorAll(".admin-panel").forEach(x=>x.classList.toggle("active",x.id==="panel-"+tab.dataset.tab));
+ }));
+ function resetSchedule(){
+  $("schedule-form").reset();$("schedule-id").value="";$("schedule-form-title").textContent="予定を追加";$("schedule-save").textContent="予定を保存";$("schedule-cancel").hidden=true;
+ }
+ $("schedule-cancel").addEventListener("click",resetSchedule);
+ function renderSchedules(items){
+  const list=$("schedule-list");list.innerHTML="";
+  if(!items.length){list.innerHTML='<div class="admin-empty">登録されている予定はありません。</div>';return;}
+  items.sort((a,b)=>String(a.event_date).localeCompare(String(b.event_date)));
+  items.forEach(item=>{
+   const row=document.createElement("div");row.className="admin-item";
+   const main=document.createElement("div");main.className="admin-item-main";
+   const title=document.createElement("strong");title.textContent=item.title||"（タイトルなし）";
+   const meta=document.createElement("small");meta.textContent=(item.event_date||"日付未設定")+" ・ "+({appearance:"出演情報",meet:"ミーグリ",other:"その他"}[item.kind]||"予定");
+   main.append(title,meta);
+   const actions=document.createElement("div");actions.className="admin-item-actions";
+   const edit=document.createElement("button");edit.type="button";edit.textContent="編集";edit.addEventListener("click",()=>{
+    $("schedule-id").value=item.id;$("event-date").value=item.event_date||"";$("event-kind").value=item.kind||"appearance";$("event-title").value=item.title||"";$("event-url").value=item.url||"";
+    $("schedule-form-title").textContent="予定を編集";$("schedule-save").textContent="変更を保存";$("schedule-cancel").hidden=false;
+    $("schedule-form").scrollIntoView({behavior:"smooth",block:"start"});
+   });
+   const del=document.createElement("button");del.type="button";del.textContent="削除";del.className="delete";del.addEventListener("click",async()=>{
+    if(!confirm("「"+(item.title||"この予定")+"」を削除しますか？"))return;
+    try{await request("/api/admin/schedules/"+encodeURIComponent(item.id),{method:"DELETE"});await loadSchedules();message($("schedule-message"),"予定を削除しました。","ok");}
+    catch(e){message($("schedule-message"),"削除できませんでした："+e.message,"error");}
+   });
+   actions.append(edit,del);row.append(main,actions);list.appendChild(row);
+  });
+ }
+ async function loadSchedules(){
+  const data=await request("/api/admin/schedules");
+  renderSchedules(Array.isArray(data.items)?data.items:[]);
+ }
+ $("schedule-form").addEventListener("submit",async e=>{
+  e.preventDefault();hideMessage($("schedule-message"));
+  const id=$("schedule-id").value;
+  const payload={event_date:$("event-date").value,kind:$("event-kind").value,title:$("event-title").value.trim(),url:$("event-url").value.trim()||null};
+  try{
+   await request(id?"/api/admin/schedules/"+encodeURIComponent(id):"/api/admin/schedules",{method:id?"PUT":"POST",body:JSON.stringify(payload)});
+   resetSchedule();await loadSchedules();message($("schedule-message"),"保存しました。","ok");
+  }catch(err){message($("schedule-message"),"保存できませんでした："+err.message,"error");}
+ });
+ async function loadInfo(){
+  const data=await request("/api/admin/site-info");
+  const info=data.item||data.info||{};
+  $("site-tagline").value=info.tagline||"";$("site-intro").value=info.intro||"";$("site-note").value=info.note_title||"";$("site-note-body").value=info.note_body||"";
+ }
+ $("info-form").addEventListener("submit",async e=>{
+  e.preventDefault();hideMessage($("info-message"));
+  const payload={tagline:$("site-tagline").value.trim(),intro:$("site-intro").value.trim(),note_title:$("site-note").value.trim(),note_body:$("site-note-body").value.trim()};
+  try{await request("/api/admin/site-info",{method:"PUT",body:JSON.stringify(payload)});message($("info-message"),"表示情報を保存しました。","ok");}
+  catch(err){message($("info-message"),"保存できませんでした："+err.message,"error");}
+ });
+ async function init(){
+  try{
+   await Promise.all([loadSchedules(),loadInfo()]);
+   status.textContent="管理API 接続済み";status.style.background="#eff8f1";status.style.color="#39734a";
+  }catch(e){
+   status.textContent="API未接続";status.style.background="#fff0ef";status.style.color="#a63a34";
+   message($("global-message"),"管理APIの準備がまだ完了していません。Workerに /api/admin/schedules と /api/admin/site-info の追加が必要です。詳細："+e.message,"error");
+  }
+ }
+ init();
+})();
+</script>
+</body>
+</html>
