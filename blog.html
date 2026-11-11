@@ -88,7 +88,7 @@
 .blog-photo-item a{display:block;margin-top:5px;color:#fff;font-size:.75rem;text-align:center;text-decoration:underline}
 .blog-photo-help{margin:12px 0 18px;color:#f5dce1;font-size:.8rem;line-height:1.7}
 
-.blog-article-view{padding:4px 0 28px}
+.blog-article-view{padding:4px 0 28px}body.blog-reading footer{display:none}
 .blog-article-view[hidden]{display:none}
 .blog-article-back{display:inline-flex;align-items:center;gap:8px;margin:8px 0 18px;padding:10px 15px;border:1px solid #efc7cf;border-radius:999px;background:#fff7f8;color:#a9142e;font:700 .88rem inherit;cursor:pointer}
 .blog-article-title{margin:8px 0 6px;font-size:1.45rem;line-height:1.55;color:var(--blog-ink)}
@@ -174,7 +174,7 @@
   }
   async function openBlogArticle(url,title,date){
     articleReturnY=window.scrollY;
-    blogMain.hidden=true;articleView.hidden=false;articleContent.innerHTML='<div class="blog-article-loading">ブログ記事を読み込んでいます…</div>';
+    document.body.classList.add("blog-reading");blogMain.hidden=true;articleView.hidden=false;articleContent.innerHTML='<div class="blog-article-loading">ブログ記事を読み込んでいます…</div>';
     window.scrollTo(0,0);
     const h=document.createElement("h1");h.className="blog-article-title";h.textContent=title||"ブログ記事";
     const meta=document.createElement("div");meta.className="blog-article-meta";meta.textContent=date||"大野 愛実";
@@ -195,7 +195,7 @@
     }
   }
   articleBack.addEventListener("click",()=>{
-    articleView.hidden=true;blogMain.hidden=false;window.scrollTo(0,articleReturnY);
+    articleView.hidden=true;blogMain.hidden=false;document.body.classList.remove("blog-reading");window.scrollTo(0,articleReturnY);
   });
   document.addEventListener("click",ev=>{
     const link=ev.target.closest("a[data-blog-article]");
