@@ -179,15 +179,15 @@
         const response=await fetch(readerUrl,{headers:{"Accept":"text/plain"}});
         if(!response.ok)throw new Error("reader unavailable");
         const body=await response.text();
-        const matches=[...body.matchAll(/!\\[[^\\]]*\\]\\(<?(https:\\/\\/[^\\s)>]+)>?\\)/g)].map(m=>m[1]);
-        const htmlMatches=[...body.matchAll(/<img[^>]+src=["'](https:\\/\\/[^"']+)["']/gi)].map(m=>m[1]);
+        const matches=[...body.matchAll(/!\[[^\]]*\]\(<?(https:\/\/[^\s)>]+)>?\)/g)].map(m=>m[1]);
+        const htmlMatches=[...body.matchAll(/<img[^>]+src=["'](https:\/\/[^"']+)["']/gi)].map(m=>m[1]);
         const unique=[...new Set([...matches,...htmlMatches])];
         return unique.filter(src=>{
           try{
             const u=new URL(src);
             return u.hostname==="cdn.hinatazaka46.com"
-              && /\\/diary\\/official\\/member\\//i.test(u.pathname)
-              && /\\.(jpe?g|png|webp)$/i.test(u.pathname)
+              && /\/diary\/official\/member\//i.test(u.pathname)
+              && /\.(jpe?g|png|webp)$/i.test(u.pathname)
               && !/(logo|icon|avatar|banner|header)/i.test(u.pathname);
           }catch(e){return false;}
         });
