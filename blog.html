@@ -76,6 +76,17 @@
 .blog-image-save{position:absolute;right:12px;bottom:12px;z-index:2;display:inline-flex;align-items:center;gap:6px;padding:9px 13px;border:1px solid rgba(255,255,255,.65);border-radius:999px;background:rgba(35,20,24,.78);color:#fff;font:700 .78rem/1 inherit;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.18)}
 .blog-thumb-save{position:absolute;right:4px;bottom:4px;width:30px;height:30px;border:1px solid rgba(255,255,255,.8);border-radius:50%;background:rgba(35,20,24,.78);color:#fff;font-size:15px;display:grid;place-items:center;z-index:2;cursor:pointer}
 .blog-card .thumb{position:relative}
+.blog-all-photos{display:block;margin:8px 0 0;padding:7px 10px;border:1px solid #efc7cf;border-radius:10px;background:#fff7f8;color:#a9142e;font-size:.72rem;font-weight:800;cursor:pointer}
+.blog-photo-panel{position:fixed;inset:0;z-index:9999;display:none;overflow:auto;padding:22px 14px 40px;background:rgba(25,12,16,.94);color:#fff}
+.blog-photo-panel.open{display:block}
+.blog-photo-panel-inner{max-width:760px;margin:0 auto}
+.blog-photo-panel-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0 16px;background:rgba(25,12,16,.96)}
+.blog-photo-panel-title{font-size:1rem;font-weight:900}
+.blog-photo-panel-close{border:1px solid #ffffff55;border-radius:99px;padding:8px 13px;background:#ffffff18;color:#fff;font:inherit}
+.blog-photo-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.blog-photo-grid img{display:block;width:100%;height:auto;border-radius:12px;background:#ffffff12}
+.blog-photo-item a{display:block;margin-top:5px;color:#fff;font-size:.75rem;text-align:center;text-decoration:underline}
+.blog-photo-help{margin:12px 0 18px;color:#f5dce1;font-size:.8rem;line-height:1.7}
 </style>
 </head>
 <body>
@@ -103,6 +114,7 @@
 <div class="blog-results"><span id="blog-result-count">記事を読み込み中</span><span>NEWEST FIRST</span></div>
 <div id="blog-list" class="blog-list"><div class="blog-loading">ブログを読み込んでいます…</div></div>
 <p class="blog-footnote">記事の本文・写真は日向坂46公式サイトでご覧ください。タイトルをタップすると公式ブログが開きます。</p>
+<div id="blog-photo-panel" class="blog-photo-panel" aria-hidden="true"><div class="blog-photo-panel-inner"><div class="blog-photo-panel-head"><div id="blog-photo-panel-title" class="blog-photo-panel-title">記事の写真</div><button id="blog-photo-panel-close" class="blog-photo-panel-close" type="button">閉じる ✕</button></div><p class="blog-photo-help">写真をタップして開き、画像を長押しするとiPhoneの写真アプリに保存できるよ。</p><div id="blog-photo-grid" class="blog-photo-grid"></div></div></div>
 
 <footer><p>このサイトは有志による非公式ファンサイトです。日向坂46・運営・所属事務所とは一切関係ありません。<br>掲載内容は報道・公式発表をもとにまとめたものです。正確な情報は公式サイトをご確認ください。</p></footer>
 </div>
@@ -116,6 +128,36 @@
   const count=document.getElementById("blog-result-count");
   const favoriteList=document.getElementById("favorite-list");
   const FAVORITES_KEY="manami-blog-favorites-v1";
+  const photoPanel=document.getElementById("blog-photo-panel");
+  const photoGrid=document.getElementById("blog-photo-grid");
+  const photoPanelTitle=document.getElementById("blog-photo-panel-title");
+  document.getElementById("blog-photo-panel-close").addEventListener("click",closePhotoPanel);
+  photoPanel.addEventListener("click",ev=>{if(ev.target===photoPanel)closePhotoPanel();});
+  function closePhotoPanel(){photoPanel.classList.remove("open");photoPanel.setAttribute("aria-hidden","true");document.body.style.overflow="";}
+  function openPhotoPanel(post,images){
+    photoGrid.innerHTML="";
+    photoPanelTitle.textContent=(post.title||"ブログ記事")+" · "+images.length+"枚";
+    images.forEach((src,i)=>{
+      const item=document.createElement("div");item.className="blog-photo-item";
+      const a=document.createElement("a");a.href=src;a.target="_blank";a.rel="noopener";
+      const img=document.createElement("img");img.src=src;img.alt="ブログ写真 "+(i+1);img.loading="lazy";img.referrerPolicy="no-referrer";
+      a.appendChild(img);
+      const save=document.createElement("a");save.href=src;save.target="_blank";save.rel="noopener";save.textContent="写真 "+(i+1)+" を開く";
+      item.append(a,save);photoGrid.appendChild(item);
+    });
+    photoPanel.classList.add("open");photoPanel.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";
+  }
+  function addAllPhotosButton(container,post){
+    const button=document.createElement("button");button.type="button";button.className="blog-all-photos";button.textContent="写真を全部見る";
+    button.addEventListener("click",async ev=>{
+      ev.preventDefault();ev.stopPropagation();button.disabled=true;button.textContent="写真を探しています…";
+      const images=await findArticleImages(post);
+      button.disabled=false;button.textContent="写真を全部見る";
+      if(!images.length){alert("この記事の写真を取得できなかったよ。公式ブログを開いて確認してね。");return;}
+      openPhotoPanel(post,images);
+    });
+    container.appendChild(button);
+  }
   function getFavorites(){try{return JSON.parse(localStorage.getItem(FAVORITES_KEY)||"[]");}catch(e){return [];}}
   function setFavorites(items){localStorage.setItem(FAVORITES_KEY,JSON.stringify(items));renderFavorites();}
   function isFavorite(url){return getFavorites().some(x=>x.url===url);}
@@ -128,33 +170,38 @@
     const candidates=[post.image_url,post.thumbnail_url,post.thumbnail,post.image,post.img,post.og_image,post.ogImage];
     return candidates.find(v=>typeof v==="string"&&/^https:\/\//i.test(v))||imageCache.get(post.url)||"";
   }
-  async function findArticleImage(post){
-    if(!post.url||imageCache.has(post.url))return imageCache.get(post.url)||"";
-    if(readerCache.has(post.url))return readerCache.get(post.url);
+  async function findArticleImages(post){
+    if(!post.url)return [];
+    if(readerCache.has(post.url+"#all"))return readerCache.get(post.url+"#all");
     const task=(async()=>{
       try{
         const readerUrl="https://r.jina.ai/"+safeUrl(post.url);
         const response=await fetch(readerUrl,{headers:{"Accept":"text/plain"}});
         if(!response.ok)throw new Error("reader unavailable");
         const body=await response.text();
-        const matches=[...body.matchAll(/!\[[^\]]*\]\(<?(https:\/\/[^\s)>]+)>?\)/g)].map(m=>m[1]);
-        const htmlMatches=[...body.matchAll(/<img[^>]+src=["'](https:\/\/[^"']+)["']/gi)].map(m=>m[1]);
-        // 公式ブログ本文の写真だけを採用する。ページ装飾用のdiamond.svg等は除外。
-        const found=[...matches,...htmlMatches].find(src=>{
+        const matches=[...body.matchAll(/!\\[[^\\]]*\\]\\(<?(https:\\/\\/[^\\s)>]+)>?\\)/g)].map(m=>m[1]);
+        const htmlMatches=[...body.matchAll(/<img[^>]+src=["'](https:\\/\\/[^"']+)["']/gi)].map(m=>m[1]);
+        const unique=[...new Set([...matches,...htmlMatches])];
+        return unique.filter(src=>{
           try{
             const u=new URL(src);
             return u.hostname==="cdn.hinatazaka46.com"
-              && /\/diary\/official\/member\//i.test(u.pathname)
-              && /\.(jpe?g|png|webp)$/i.test(u.pathname)
+              && /\\/diary\\/official\\/member\\//i.test(u.pathname)
+              && /\\.(jpe?g|png|webp)$/i.test(u.pathname)
               && !/(logo|icon|avatar|banner|header)/i.test(u.pathname);
           }catch(e){return false;}
         });
-        if(found)imageCache.set(post.url,found);
-        return found||"";
-      }catch(e){return "";}
+      }catch(e){return [];}
     })();
-    readerCache.set(post.url,task);
+    readerCache.set(post.url+"#all",task);
     return task;
+  }
+  async function findArticleImage(post){
+    const cached=imageCache.get(post.url);
+    if(cached)return cached;
+    const images=await findArticleImages(post);
+    if(images.length)imageCache.set(post.url,images[0]);
+    return images[0]||"";
   }
   function loadVisibleImages(){
     posts.slice(0,18).forEach(async post=>{
@@ -228,6 +275,7 @@
       const date=document.createElement("span");date.className="card-date";date.textContent=d.full;
       const title=document.createElement("span");title.className="card-title";title.textContent=p.title||"タイトル未設定";
       copy.append(date,title);
+      addAllPhotosButton(copy,p);
       const favorite=document.createElement("button");favorite.type="button";favorite.className="favorite-toggle"+(isFavorite(p.url)?" active":"");favorite.textContent=isFavorite(p.url)?"♥":"♡";favorite.setAttribute("aria-label","お気に入り");favorite.addEventListener("click",ev=>{ev.preventDefault();ev.stopPropagation();toggleFavorite(p);renderList();});
       a.append(day,copy,favorite);list.appendChild(a);
     });
