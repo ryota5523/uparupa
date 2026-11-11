@@ -142,10 +142,10 @@
   const articleBack=document.getElementById("blog-article-back");
   let articleReturnY=0;
   function articleText(line){
-    return line.replace(/!\\[[^\\]]*\\]\\([^)]*\\)/g,"").replace(/\\[([^\\]]+)\\]\\((https?:\\/\\/[^)]+)\\)/g,"$1").replace(/\\*\\*([^*]+)\\*\\*/g,"$1").replace(/\\*([^*]+)\\*/g,"$1").replace(/\\s+#+\\s*$/,"").trim();
+    return line.replace(/!\[[^\]]*\]\([^)]*\)/g,"").replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,"$1").replace(/\*\*([^*]+)\*\*/g,"$1").replace(/\*([^*]+)\*/g,"$1").replace(/\s+#+\s*$/,"").trim();
   }
   function appendInlineLinks(el,line){
-    const re=/\\[([^\\]]+)\\]\\((https?:\\/\\/[^)]+)\\)/g;
+    const re=/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g;
     let last=0,m;
     while((m=re.exec(line))){
       el.append(document.createTextNode(line.slice(last,m.index)));
@@ -156,18 +156,18 @@
   }
   function renderArticleMarkdown(body){
     const root=document.createElement("div");root.className="blog-article-body";
-    let lines=body.replace(/\\r/g,"").split("\\n"),paragraph=[];
+    let lines=body.replace(/\r/g,"").split("\n"),paragraph=[];
     function flush(){if(!paragraph.length)return;const p=document.createElement("p");appendInlineLinks(p,paragraph.join(" "));root.append(p);paragraph=[];}
     for(let i=0;i<lines.length;i++){
       const line=lines[i].trim();
       if(!line){flush();continue;}
-      const image=line.match(/^!\\[[^\\]]*\\]\\((<?https?:\\/\\/[^)>]+>?)\\)$/);
+      const image=line.match(/^!\[[^\]]*\]\((<?https?:\/\/[^)>]+>?)\)$/);
       if(image){flush();const src=image[1].replace(/^<|>$/g,"");try{const u=new URL(src);if(u.protocol==="https:"&&u.hostname==="cdn.hinatazaka46.com"){const img=document.createElement("img");img.src=u.href;img.alt="ブログ写真";img.loading="lazy";img.referrerPolicy="no-referrer";root.append(img);}}catch(e){}continue;}
       if(/^Markdown Content:$/i.test(line)||/^Title:/.test(line)||/^URL Source:/.test(line)||/^Published Time:/.test(line))continue;
-      if(/^https?:\\/\\//.test(line)&&i<5)continue;
-      if(/^#{1,3}\\s/.test(line)){flush();const h=document.createElement(line.startsWith("# ")?"h2":"h3");appendInlineLinks(h,line.replace(/^#{1,3}\\s+/,""));root.append(h);continue;}
-      if(/^>\\s?/.test(line)){flush();const q=document.createElement("blockquote");appendInlineLinks(q,line.replace(/^>\\s?/,""));root.append(q);continue;}
-      if(/^[-*]\\s+/.test(line)){flush();const p=document.createElement("p");appendInlineLinks(p,"・"+line.replace(/^[-*]\\s+/,""));root.append(p);continue;}
+      if(/^https?:\/\//.test(line)&&i<5)continue;
+      if(/^#{1,3}\s/.test(line)){flush();const h=document.createElement(line.startsWith("# ")?"h2":"h3");appendInlineLinks(h,line.replace(/^#{1,3}\s+/,""));root.append(h);continue;}
+      if(/^>\s?/.test(line)){flush();const q=document.createElement("blockquote");appendInlineLinks(q,line.replace(/^>\s?/,""));root.append(q);continue;}
+      if(/^[-*]\s+/.test(line)){flush();const p=document.createElement("p");appendInlineLinks(p,"・"+line.replace(/^[-*]\s+/,""));root.append(p);continue;}
       paragraph.push(articleText(line));
     }
     flush();return root;
