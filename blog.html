@@ -161,6 +161,10 @@
     const isChromeLine=line=>{
       const s=line.trim();
       if(!s)return true;
+      if(/^＜?\s*\d{4}年\d{1,2}月\s*＞?\s*(?:\d{1,2}\s*){3,}$/u.test(s))return true;
+      if(/^Cookie Settings\s*OK?$/i.test(s))return true;
+      const memberNames=["石塚 瑶季","大田 美月","大野 愛実","片山 紗希","金村 美玖","上村 ひなの","蔵盛 妃那乃","小坂 菜緒","小西 夏菜実","坂井 新奈","佐藤 優羽","清水 理央","下田 衣珠季","正源司 陽子","高井 俐香","髙橋 未来虹","竹内 希来里","鶴崎 仁香","平尾 帆夏","平岡 海月","藤嶌 果歩","松尾 桜","宮地 すみれ","森本 茉莉","山下 葉留花","渡辺 莉奈","ポカ"];
+      if(memberNames.filter(name=>s.includes(name)).length>=10)return true;
       if(/^(?:ニュース|スケジュール|メンバー|フォーメーション|ブログ|ディスコグラフィー|動画|TV|ミート＆グリート|日向坂46とは？|ファンクラブ|グッズ|OFFICIAL BLOG|プロフィール詳細|大野 愛実 公式ブログ|大野 愛実|おおの まなみ)$/i.test(s))return true;
       if(/^(?:大野 愛実の|NEW ENTRY|日向坂46の|メンバー別ブログ|OFFICIAL|FAN CLUB|JASRAC許諾第.*|Cookie Policy|Cookie Settings|Cookie Notice|Manage Consent Preferences|Cookie List|Consent Leg\.Interest|Clear|Apply Cancel|Always Active)$/i.test(s))return true;
       if(/^(?:Strictly Necessary Cookies|Performance Cookies|Functional Cookies|Targeting Cookies|Social Media Cookies|Cookies Details|checkbox label label|OK|Save Settings)$/i.test(s))return true;
