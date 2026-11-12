@@ -156,19 +156,58 @@
   }
   function renderArticleMarkdown(body){
     const root=document.createElement("div");root.className="blog-article-body";
-    let lines=body.replace(/\r/g,"").split("\n"),paragraph=[];
-    function flush(){if(!paragraph.length)return;const p=document.createElement("p");appendInlineLinks(p,paragraph.join(" "));root.append(p);paragraph=[];}
+    const lines=body.replace(/\r/g,"").split("\n");
+    let paragraph=[];
+    function validBlogImage(raw){
+      try{
+        const u=new URL(raw);
+        return u.protocol==="https:"&&u.hostname==="cdn.hinatazaka46.com"
+          && /\/diary\/official\/member\//i.test(u.pathname)
+          && /\.(jpe?g|png|webp)$/i.test(u.pathname)
+          && !/(logo|icon|avatar|banner|header|bg_)/i.test(u.pathname);
+      }catch(e){return false;}
+    }
+    function appendImage(src){
+      if(!validBlogImage(src))return;
+      const img=document.createElement("img");img.src=src;img.alt="ブログ写真";
+      img.loading="lazy";img.referrerPolicy="no-referrer";root.append(img);
+    }
+    function flush(){
+      if(!paragraph.length)return;
+      const text=paragraph.join(" ").trim();paragraph=[];
+      if(!text||/^(?:Image\s*\d+|ブログ写真)$/i.test(text))return;
+      const p=document.createElement("p");appendInlineLinks(p,text);root.append(p);
+    }
     for(let i=0;i<lines.length;i++){
       const line=lines[i].trim();
       if(!line){flush();continue;}
-      const image=line.match(/^!\[[^\]]*\]\((<?https?:\/\/[^)>]+>?)\)$/);
-      if(image){flush();const src=image[1].replace(/^<|>$/g,"");try{const u=new URL(src);if(u.protocol==="https:"&&u.hostname==="cdn.hinatazaka46.com"){const img=document.createElement("img");img.src=u.href;img.alt="ブログ写真";img.loading="lazy";img.referrerPolicy="no-referrer";root.append(img);}}catch(e){}continue;}
-      if(/^Markdown Content:$/i.test(line)||/^Title:/.test(line)||/^URL Source:/.test(line)||/^Published Time:/.test(line))continue;
-      if(/^https?:\/\//.test(line)&&i<5)continue;
-      if(/^#{1,3}\s/.test(line)){flush();const h=document.createElement(line.startsWith("# ")?"h2":"h3");appendInlineLinks(h,line.replace(/^#{1,3}\s+/,""));root.append(h);continue;}
-      if(/^>\s?/.test(line)){flush();const q=document.createElement("blockquote");appendInlineLinks(q,line.replace(/^>\s?/,""));root.append(q);continue;}
-      if(/^[-*]\s+/.test(line)){flush();const p=document.createElement("p");appendInlineLinks(p,"・"+line.replace(/^[-*]\s+/,""));root.append(p);continue;}
-      paragraph.push(articleText(line));
+      if(/^Markdown Content:$/i.test(line)||/^(?:Title|URL Source|Published Time):/.test(line))continue;
+      // Jina reader sometimes includes site chrome as raw HTML. Never show it.
+      if(/<(?:html|head|body|header|nav|footer|h[1-6]|a|div|svg)\b/i.test(line)){
+        flush();
+        const srcs=[...line.matchAll(/(?:src=|\]\()<?(https:\/\/[^\s"'<>\)]+)>?/gi)].map(m=>m[1]);
+        srcs.forEach(appendImage);
+        continue;
+      }
+      const markdownImages=[...line.matchAll(/!\[[^\]]*\]\(<?(https:\/\/[^\s)>]+)>?\)/g)].map(m=>m[1]);
+      const htmlImages=[...line.matchAll(/<img[^>]+src=["'](https:\/\/[^"']+)["']/gi)].map(m=>m[1]);
+      const images=[...new Set([...markdownImages,...htmlImages])];
+      if(images.length){flush();images.forEach(appendImage);continue;}
+      if(/\.svg(?:[?#]|$)|logo_side|bg_diamond|^https?:\/\//i.test(line))continue;
+      if(/^#{1,3}\s/.test(line)){
+        flush();const h=document.createElement(line.startsWith("# ")?"h2":"h3");
+        appendInlineLinks(h,line.replace(/^#{1,3}\s+/,""));root.append(h);continue;
+      }
+      if(/^>\s?/.test(line)){
+        flush();const q=document.createElement("blockquote");
+        appendInlineLinks(q,line.replace(/^>\s?/,""));root.append(q);continue;
+      }
+      if(/^[-*]\s+/.test(line)){
+        flush();const p=document.createElement("p");
+        appendInlineLinks(p,"・"+line.replace(/^[-*]\s+/,""));root.append(p);continue;
+      }
+      const clean=articleText(line);
+      if(clean&&!/^Image\s*\d+$/i.test(clean))paragraph.push(clean);
     }
     flush();return root;
   }
