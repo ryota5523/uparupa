@@ -217,6 +217,20 @@
       let body=await response.text();
       const marker=body.indexOf("Markdown Content:");
       if(marker>=0)body=body.slice(marker+"Markdown Content:".length);
+      // JinaがHTML段落を返す場合、段落単位でテキスト化してサイト共通パーツを除外する
+      body=body.replace(/<p\\b[^>]*>([\\s\\S]*?)<\\/p>/gi,(whole,inner)=>{
+        const temp=document.createElement("div");
+        temp.innerHTML=inner;
+        const text=(temp.textContent||"").replace(/\\s+/g," ").trim();
+        const names=["石塚 瑶季","大田 美月","大野 愛実","片山 紗希","金村 美玖","上村 ひなの","蔵盛 妃那乃","小坂 菜緒","小西 夏菜実","坂井 新奈","佐藤 優羽","清水 理央","下田 衣珠季","正源司 陽子","高井 俐香","髙橋 未来虹","竹内 希来里","鶴崎 仁香","平尾 帆夏","平岡 海月","藤嶌 果歩","松尾 桜","宮地 すみれ","森本 茉莉","山下 葉留花","渡辺 莉奈","ポカ"];
+        const calendar=/^＜?\\s*\\d{4}年\\d{1,2}月\\s*＞?\\s*(?:\\d{1,2}\\s*){3,}$/u.test(text);
+        const memberMenu=names.filter(name=>text.includes(name)).length>=10;
+        const cookie=/^Cookie Settings\\s*OK?$/i.test(text);
+        if(calendar||memberMenu||cookie)return "\\n";
+        const images=[...temp.querySelectorAll("img")].map(img=>img.getAttribute("src")).filter(Boolean);
+        const content=text.replace(/!?\\[[^\\]]*\\]\\((https?:\\/\\/[^)]+)\\)/g,"$1");
+        return "\\n"+content+(images.length?"\\n"+images.map(src=>"![]("+src+")").join("\\n"):"")+"\\n";
+      });
       const rendered=renderArticleMarkdown(body);
       if(!rendered.childNodes.length)throw new Error("記事本文が見つかりませんでした");
       articleContent.append(rendered);
