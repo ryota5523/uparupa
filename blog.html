@@ -126,7 +126,7 @@
 </div>
 <div class="blog-results"><span id="blog-result-count">記事を読み込み中</span><span>NEWEST FIRST</span></div>
 <div id="blog-list" class="blog-list"><div class="blog-loading">ブログを読み込んでいます…</div></div>
-<p class="blog-footnote">記事の本文・写真は日向坂46公式サイトでご覧ください。タイトルをタップすると公式ブログが開きます。</p>
+<p class="blog-footnote">記事をタップすると、サイト内の専用ページで本文と写真を読めます。</p>
 </main>
 
 <div id="blog-photo-panel" class="blog-photo-panel" aria-hidden="true"><div class="blog-photo-panel-inner"><div class="blog-photo-panel-head"><div id="blog-photo-panel-title" class="blog-photo-panel-title">記事の写真</div><button id="blog-photo-panel-close" class="blog-photo-panel-close" type="button">閉じる ✕</button></div><p class="blog-photo-help">写真をタップして開き、画像を長押しするとiPhoneの写真アプリに保存できるよ。</p><div id="blog-photo-grid" class="blog-photo-grid"></div></div></div>
@@ -271,7 +271,7 @@
     const date=document.createElement("div");date.className="feature-date";date.textContent=d.full;
     const a=document.createElement("a");a.href=articlePageUrl(safeUrl(p.url),p.title,d.full);a.dataset.blogArticle=safeUrl(p.url);a.textContent=p.title||"タイトル未設定";
     const foot=document.createElement("div");foot.className="feature-foot";
-    const note=document.createElement("span");note.textContent="公式ブログで続きを読む";
+    const note=document.createElement("span");note.textContent="記事ページを開く";
     const number=document.createElement("span");number.className="feature-count";number.textContent="01";
     foot.append(note,number);body.append(label,date,a,foot);featured.appendChild(body);
   }
