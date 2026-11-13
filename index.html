@@ -29,7 +29,7 @@
 .reveal-art{display:inline-block;text-align:left;white-space:pre;overflow:visible;font-family:ui-monospace,"SFMono-Regular",monospace;font-size:clamp(.66rem,2.7vw,.95rem);line-height:1.7;margin:8px auto 0;color:#574047}
 .reveal-pop{animation:reveal-pop .38s ease}
 .revealed-photo{grid-column:1/-1;display:block;width:100%;max-height:420px;object-fit:contain;border-radius:16px;background:#fff;animation:reveal-in .65s ease both}
-.reveal-note{grid-column:1/-1;text-align:center;color:var(--sub);font-size:.88rem}
+.reveal-note{grid-column:1/-1;text-align:center;color:var(--sub);font-size:.88rem}.reveal-again{grid-column:1/-1;justify-self:center;margin:14px auto 4px;border:0;border-radius:999px;padding:12px 25px;background:linear-gradient(135deg,#e87891,#c94b63);color:#fff;font-size:.92rem;font-weight:800;letter-spacing:.04em;box-shadow:0 5px 14px rgba(180,65,91,.2);cursor:pointer;transition:transform .15s ease,opacity .15s ease}.reveal-again:active{transform:scale(.96)}.reveal-again:disabled{opacity:.55;cursor:wait}
 @keyframes reveal-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes reveal-pop{0%{transform:scale(.94)}65%{transform:scale(1.04)}100%{transform:scale(1)}}
 
@@ -117,21 +117,14 @@
 </footer></div><script>(function(){var n=new Date(),a=n.getFullYear()-2007-((n.getMonth()<4||(n.getMonth()==4&&n.getDate()<5))?1:0),e=document.getElementById("age");if(e)e.textContent=a})();</script>
 <script>
 (function(){
- const API="https://manami-site-worker.yellowworker.workers.dev";
+ const API="https://manami-site-worker.yellowworkers.dev".replace("yellowworkers","yellowworker");
  const target=document.getElementById("daily-content");
  const dateEl=document.getElementById("daily-date");
  const now=new Date();
  const key=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0");
  dateEl.textContent=now.getFullYear()+"年"+(now.getMonth()+1)+"月"+now.getDate()+"日";
-
  const bikes=["🏍️","🛵","🏍️","🚲","🏍️","🛺"];
- const bike=bikes[Math.floor(Math.random()*bikes.length)];
- const scenes=[
-  "ｸﾞﾙｸﾞﾙ",
-  "ｶﾞﾗｶﾞﾗｶﾞﾗｶﾞﾗ ...",
-  "ﾊﾟｶｯ  !!",
-  "ｼﾞｬｼﾞｬｰﾝ！"
- ];
+ const scenes=["ｸﾞﾙｸﾞﾙ","ｶﾞﾗｶﾞﾗｶﾞﾗｶﾞﾗ ...","ﾊﾟｶｯ  !!","ｼﾞｬｼﾞｬｰﾝ！"];
  const art=document.createElement("div");
  art.className="manami-reveal";
  art.setAttribute("aria-live","polite");
@@ -139,8 +132,29 @@
  target.innerHTML="";
  target.appendChild(art);
  const line=art.querySelector("#reveal-line");
- art.querySelector("#reveal-bike").textContent=bike;
+ const bikeEl=art.querySelector("#reveal-bike");
+ let photos=[];
+ let busy=false;
+ let lastIndex=-1;
 
+ async function loadPhotos(){
+  const response=await fetch(API+"/api/menu-photos");
+  if(!response.ok)throw new Error("saved photos unavailable");
+  const data=await response.json();
+  photos=(Array.isArray(data.items)?data.items:[])
+   .filter(photo=>photo&&typeof photo.url==="string"&&photo.url.startsWith("https://"));
+  if(!photos.length)throw new Error("no saved photos");
+ }
+ function nextPhoto(){
+  if(photos.length===1){lastIndex=0;return photos[0];}
+  let index;
+  do{index=Math.floor(Math.random()*photos.length);}while(index===lastIndex);
+  lastIndex=index;
+  return photos[index];
+ }
+ function clearResult(){
+  target.querySelectorAll(".revealed-photo,.daily-copy,.reveal-note,.reveal-again").forEach(el=>el.remove());
+ }
  function showPhoto(photo){
   const image=document.createElement("img");
   image.className="revealed-photo";
@@ -152,48 +166,56 @@
    const msg=document.createElement("p");
    msg.className="reveal-note";
    msg.textContent="写真を読み込めなかったみたい。また見にきてね。";
-   art.appendChild(msg);
+   target.appendChild(msg);
   };
   const copy=document.createElement("div");
   copy.className="daily-copy";
   const heading=document.createElement("h3");
   heading.textContent=photo.title||"今日のまなみん";
   copy.appendChild(heading);
-  target.append(image,copy);
+  const button=document.createElement("button");
+  button.type="button";
+  button.className="reveal-again";
+  button.textContent="もう一度まわす！";
+  button.addEventListener("click",runReveal);
+  target.append(image,copy,button);
  }
-
- async function loadPhoto(){
-  const response=await fetch(API+"/api/menu-photos");
-  if(!response.ok)throw new Error("saved photos unavailable");
-  const data=await response.json();
-  const photos=(Array.isArray(data.items)?data.items:[])
-   .filter(photo=>photo&&typeof photo.url==="string"&&photo.url.startsWith("https://"));
-  if(!photos.length)throw new Error("no saved photos");
-  const day=Math.floor(new Date(key+"T00:00:00").getTime()/86400000);
-  return photos[((day%photos.length)+photos.length)%photos.length];
- }
-
- async function reveal(){
-  let photo=null;
-  try{photo=await loadPhoto();}catch(error){console.warn("Saved photo unavailable:",error);}
-  const delays=[650,900,650,500];
-  for(let i=1;i<scenes.length;i++){
-   await new Promise(resolve=>setTimeout(resolve,delays[i-1]));
-   line.textContent=scenes[i];
-   art.classList.remove("reveal-pop");
-   void art.offsetWidth;
-   art.classList.add("reveal-pop");
-  }
-  await new Promise(resolve=>setTimeout(resolve,350));
-  if(photo)showPhoto(photo);
-  else{
+ async function runReveal(){
+  if(busy)return;
+  busy=true;
+  clearResult();
+  const button=target.querySelector(".reveal-again");
+  if(button)button.disabled=true;
+  bikeEl.textContent=bikes[Math.floor(Math.random()*bikes.length)];
+  line.textContent=scenes[0];
+  try{
+   if(!photos.length)await loadPhotos();
+   const photo=nextPhoto();
+   const delays=[650,900,650];
+   for(let i=1;i<scenes.length;i++){
+    await new Promise(resolve=>setTimeout(resolve,delays[i-1]));
+    line.textContent=scenes[i];
+    art.classList.remove("reveal-pop");
+    void art.offsetWidth;
+    art.classList.add("reveal-pop");
+   }
+   await new Promise(resolve=>setTimeout(resolve,350));
+   showPhoto(photo);
+  }catch(error){
+   console.warn("Saved photo unavailable:",error);
    const note=document.createElement("p");
    note.className="reveal-note";
    note.textContent="今日の写真は準備中です。";
    target.appendChild(note);
-  }
+   const retry=document.createElement("button");
+   retry.type="button";
+   retry.className="reveal-again";
+   retry.textContent="もう一度ためす";
+   retry.addEventListener("click",runReveal);
+   target.appendChild(retry);
+  }finally{busy=false;}
  }
- reveal();
+ runReveal();
 })();</script>
 
 <script>
