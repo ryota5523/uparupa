@@ -90,7 +90,7 @@
 <a class="app-icon app-greeting" href="greetings.html" id="open-greeting"><span class="app-glyph"><span class="app-fallback">photo_library</span><img class="app-photo" alt="" loading="lazy"></span><b>Greeting</b></a>
 <a class="app-icon app-camera" href="ar-camera.html"><span class="app-glyph"><span class="app-fallback">photo_camera</span><img class="app-photo" alt="" loading="lazy"></span><b>AR Camera</b></a>
 <a class="app-icon app-memo" href="memo.html"><span class="app-glyph"><span class="app-fallback">auto_stories</span><img class="app-photo" alt="" loading="lazy"></span><b>推し活メモ</b></a>
-<a class="app-icon app-goods" href="https://store.plusmember.jp/hinatazaka46/products/list.php?name=%E5%A4%A7%E9%87%8E%E3%80%80%E6%84%9B%E5%AE%9F" id="open-goods"><span class="app-glyph"><span class="app-fallback">shopping_bag</span><img class="app-photo" alt="" loading="lazy"></span><b>公式グッズ</b></a>
+<a class="app-icon app-goods" href="https://store.plusmember.jp/hinatazaka46/products/list.php?name=%E5%A4%A7%E9%87%8E%E3%80%80%E6%84%9B%E5%AE%9F" id="open-goods" target="_blank" rel="noopener"><span class="app-glyph"><span class="app-fallback">shopping_bag</span><img class="app-photo" alt="" loading="lazy"></span><b>公式グッズ</b></a>
 </div></section>
 <section id="app"><h2>Install</h2>
 <p>ホーム画面に追加すると、アイコンから全画面で開けます。公式サイトへのリンクは、アプリ内のブラウザで開きます。</p>
@@ -286,64 +286,7 @@
 </script>
 <script src="egg.js" defer></script>
 
-<div id="goods-store-modal" aria-hidden="true">
-  <div id="goods-store-panel" role="dialog" aria-modal="true" aria-label="日向坂46公式グッズストア">
-    <div id="goods-store-toolbar">
-      <strong>大野愛実ちゃん 公式グッズ</strong>
-      <div>
-        <button id="goods-store-search" type="button">大野愛実のグッズに戻る</button>
-        <a href="https://store.plusmember.jp/hinatazaka46/products/list.php?name=%E5%A4%A7%E9%87%8E%E3%80%80%E6%84%9B%E5%AE%9F" target="_blank" rel="noopener">別タブで開く ↗</a>
-        <button id="goods-store-close" type="button">閉じる ✕</button>
-      </div>
-    </div>
-    <p id="goods-store-note">ログイン・注文は公式ストア側で行ってね。画面が表示されない場合は「別タブで開く」を使ってね。</p>
-    <iframe id="goods-store-frame" title="日向坂46公式グッズストア" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
-  </div>
-</div>
-<style>
-#goods-store-modal{position:fixed;inset:0;z-index:10000;display:none;background:rgba(24,15,18,.72);padding:clamp(6px,2vw,20px);box-sizing:border-box}
-#goods-store-modal.open{display:flex;align-items:center;justify-content:center}
-#goods-store-panel{display:flex;flex-direction:column;width:min(100%,1200px);height:min(94vh,1000px);background:#fff;overflow:hidden}
-#goods-store-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;background:#e60012;color:#fff}
-#goods-store-toolbar strong{font-size:.95rem}
-#goods-store-toolbar>div{display:flex;align-items:center;gap:10px}
-#goods-store-toolbar a{color:#fff;font-size:.82rem;font-weight:700}
-#goods-store-search{border:1px solid #fff;background:transparent;color:#fff;padding:8px 10px;font-size:.8rem;font-weight:700;cursor:pointer}
-#goods-store-close{border:0;background:#fff;color:#4a241d;padding:9px 13px;font-weight:700;cursor:pointer}
-#goods-store-note{margin:0;padding:8px 12px;color:#4a241d;background:#fff7f7;font-size:.76rem}
-#goods-store-frame{width:100%;flex:1;min-height:0;border:0;background:#fff}
-@media(max-width:600px){#goods-store-modal{padding:0}#goods-store-panel{width:100%;height:100%;height:100dvh}#goods-store-toolbar{padding:calc(env(safe-area-inset-top) + 9px) 10px 9px}#goods-store-toolbar strong{font-size:.8rem}#goods-store-toolbar>div{gap:8px}#goods-store-toolbar a{font-size:.72rem}#goods-store-search{padding:7px 8px;font-size:.7rem}#goods-store-close{padding:8px 10px}}
-</style>
-<script>
-(function(){
-  var link=document.getElementById("open-goods");
-  var modal=document.getElementById("goods-store-modal");
-  var frame=document.getElementById("goods-store-frame");
-  var close=document.getElementById("goods-store-close");
-  var search=document.getElementById("goods-store-search");
-  if(!link||!modal||!frame||!close||!search)return;
-  var storeUrl=link.href;
-  search.addEventListener("click",function(){
-    frame.src=storeUrl;
-  });
-  function openStore(event){
-    event.preventDefault();
-    if(!frame.src)frame.src=storeUrl;
-    modal.classList.add("open");
-    modal.setAttribute("aria-hidden","false");
-    document.body.style.overflow="hidden";
-  }
-  function closeStore(){
-    modal.classList.remove("open");
-    modal.setAttribute("aria-hidden","true");
-    document.body.style.overflow="";
-  }
-  link.addEventListener("click",openStore);
-  close.addEventListener("click",closeStore);
-  modal.addEventListener("click",function(event){if(event.target===modal)closeStore();});
-  document.addEventListener("keydown",function(event){if(event.key==="Escape")closeStore();});
-})();
-</script>
+
 <div id="greeting-page-modal" aria-hidden="true">
   <div id="greeting-page-panel" role="dialog" aria-modal="true" aria-label="Greetingカード一覧">
     <button id="greeting-page-close" type="button">閉じる ✕</button>
