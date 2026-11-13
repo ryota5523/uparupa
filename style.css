@@ -130,8 +130,24 @@ h1{-webkit-user-select:none;user-select:none;touch-action:manipulation}
   margin:24px -18px 0;
   padding:28px 22px 30px;
 }
-.wrap>section:nth-of-type(odd){background:#fff7f7}
-.wrap>section:nth-of-type(even){background:#fff}
+.wrap>section:nth-of-type(odd){
+  background:#e60012;
+  color:#fff;
+  --text:#fff;
+  --sub:rgba(255,255,255,.84);
+  --line:rgba(255,255,255,.32);
+  --soft:rgba(255,255,255,.12);
+  --card:transparent;
+}
+.wrap>section:nth-of-type(even){
+  background:#fff;
+  color:#4a241d;
+  --text:#4a241d;
+  --sub:#80645e;
+  --line:#f2d6d6;
+  --soft:#fff7f7;
+  --card:#fff;
+}
 .wrap>section.hero{
   background:#e60012;
   color:#fff;
@@ -155,3 +171,21 @@ h1{-webkit-user-select:none;user-select:none;touch-action:manipulation}
 }
 .home-row{border-bottom:1px solid #f2d6d6}
 .home-schedule-group+.home-schedule-group{border-top:1px solid #f2d6d6}
+
+
+/* Pino package palette: alternate red and white section backgrounds */
+.wrap>section:nth-of-type(odd) .home-eyebrow,
+.wrap>section:nth-of-type(odd) .daily-date,
+.wrap>section:nth-of-type(odd) .daily-copy p,
+.wrap>section:nth-of-type(odd) .home-sub,
+.wrap>section:nth-of-type(odd) .home-row .date,
+.wrap>section:nth-of-type(odd) .home-row a,
+.wrap>section:nth-of-type(odd) .reveal-line,
+.wrap>section:nth-of-type(odd) .reveal-art,
+.wrap>section:nth-of-type(odd) .reveal-note,
+.wrap>section:nth-of-type(odd) .menu-caption,
+.wrap>section:nth-of-type(odd) .home-empty{
+  color:#fff;
+}
+.wrap>section:nth-of-type(odd) .home-row{border-bottom-color:rgba(255,255,255,.35)}
+.wrap>section:nth-of-type(odd) .home-schedule-group+.home-schedule-group{border-top-color:rgba(255,255,255,.35)}
