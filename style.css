@@ -1,10 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800;900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=block");
 
-:root{--bg:#fff;--card:#fff;--text:#222;--sub:#777;--accent:#e8384f;--accent2:#ffe9ec;--red:#e8384f;--line:#f3dfe2;--soft:#fff6f7;--navbg:rgba(255,255,255,.92);--shadow:0 6px 20px rgba(232,56,79,.10);box-sizing:border-box;color-scheme:light}
+:root{--bg:#fff;--card:#fff;--text:#222;--sub:#777;--accent:#c41230;--accent2:#f7e8eb;--red:#c41230;--line:#eadde0;--soft:#faf6f7;--navbg:rgba(255,255,255,.96);--shadow:0 6px 20px rgba(80,20,30,.06);box-sizing:border-box;color-scheme:light}
 html{scroll-padding-top:70px}
 *{box-sizing:border-box}
-body{margin:0;color:var(--text);font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;line-height:1.8;background:#fff radial-gradient(circle at 92% -4%,rgba(232,56,79,.10),transparent 40%) no-repeat}
+body{margin:0;color:var(--text);font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN","Hiragino Sans",Meiryo,system-ui,sans-serif;line-height:1.8;background:#fff}
 .wrap{max-width:780px;margin:0 auto;padding:0 18px 56px}
 header{text-align:center;padding:30px 0 6px}
 .badge{display:inline-block;background:var(--accent);color:#fff;font-size:.8rem;font-weight:700;padding:3px 16px;border-radius:99px;letter-spacing:.12em}
