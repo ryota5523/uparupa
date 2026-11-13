@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>大野愛実 ファンサイト（非公式）｜日向坂46</title><link rel="stylesheet" href="style.css"><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#e8384f"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="まなみん"><meta name="apple-mobile-web-app-status-bar-style" content="default">
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>大野愛実 ファンサイト（非公式）｜日向坂46</title><link rel="stylesheet" href="style.css"><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#e60012"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="まなみん"><meta name="apple-mobile-web-app-status-bar-style" content="default">
 <style>
 #greeting-page-modal{position:fixed;inset:0;z-index:9999;background:rgba(24,15,18,.68);display:none;align-items:center;justify-content:center;padding:clamp(8px,3vw,28px);box-sizing:border-box}
 #greeting-page-modal.open{display:flex}
 #greeting-page-panel{position:relative;width:min(100%,1050px);height:min(92vh,900px);background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 18px 70px rgba(0,0,0,.3)}
 #greeting-page-frame{width:100%;height:100%;border:0;background:#fff}
-#greeting-page-close{position:absolute;right:12px;top:12px;z-index:2;border:0;border-radius:999px;background:#e8384f;color:white;font-size:15px;font-weight:700;padding:10px 16px;box-shadow:0 2px 10px #0003;cursor:pointer}
+#greeting-page-close{position:absolute;right:12px;top:12px;z-index:2;border:0;border-radius:999px;background:#e60012;color:white;font-size:15px;font-weight:700;padding:10px 16px;box-shadow:0 2px 10px #0003;cursor:pointer}
 @media(max-width:600px){#greeting-page-modal{padding:0}#greeting-page-panel{width:100%;height:100%;border-radius:0}#greeting-page-close{top:calc(env(safe-area-inset-top) + 10px);right:12px}}
 
 </style>
 <style>
-.home-daily{background:linear-gradient(145deg,#fff1f3,#fff);border:1px solid #f4d8dd;border-radius:22px;padding:clamp(18px,3vw,28px);margin:22px 0;box-shadow:0 8px 28px rgba(130,40,60,.07)}
-.home-eyebrow{font-size:.72rem;letter-spacing:.16em;color:#c94b63;font-weight:800}
+.home-daily{background:linear-gradient(145deg,#fff9f5,#fff);border:1px solid #f0d9d5;border-radius:22px;padding:clamp(18px,3vw,28px);margin:22px 0;box-shadow:0 8px 28px rgba(130,40,60,.07)}
+.home-eyebrow{font-size:.72rem;letter-spacing:.16em;color:#e60012;font-weight:800}
 .home-daily h2{margin:6px 0 4px;font-size:1.45rem}
-.home-daily .daily-date{font-size:.8rem;color:#987b82;margin-bottom:14px}
+.home-daily .daily-date{font-size:.8rem;color:#806b65;margin-bottom:14px}
 .daily-content{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:18px;align-items:center}
 .daily-content img{width:100%;max-height:340px;object-fit:contain;border-radius:14px;background:#fff}
 .daily-copy{min-width:0}.daily-copy h3{margin:0 0 8px;font-size:1.1rem}.daily-copy p{color:var(--sub);line-height:1.8}
@@ -24,36 +24,36 @@
 .home-row .date{font-size:.8rem;color:var(--accent);font-weight:700}
 .home-row a{font-weight:700;text-decoration:none}
 .home-empty{padding:18px;border-radius:14px;background:var(--soft);color:var(--sub);font-size:.9rem}
-.manami-reveal{grid-column:1/-1;text-align:center;padding:18px 8px 10px;color:#574047;animation:reveal-in .35s ease both}
-.reveal-line{font-size:1.05rem;font-weight:800;letter-spacing:.12em;min-height:1.8em;color:#c94b63}
-.reveal-art[hidden]{display:none!important}.reveal-art{display:inline-block;text-align:left;white-space:pre;overflow:visible;font-family:ui-monospace,"SFMono-Regular",monospace;font-size:clamp(.66rem,2.7vw,.95rem);line-height:1.7;margin:8px auto 0;color:#574047}
+.manami-reveal{grid-column:1/-1;text-align:center;padding:18px 8px 10px;color:#4a241d;animation:reveal-in .35s ease both}
+.reveal-line{font-size:1.05rem;font-weight:800;letter-spacing:.12em;min-height:1.8em;color:#e60012}
+.reveal-art[hidden]{display:none!important}.reveal-art{display:inline-block;text-align:left;white-space:pre;overflow:visible;font-family:ui-monospace,"SFMono-Regular",monospace;font-size:clamp(.66rem,2.7vw,.95rem);line-height:1.7;margin:8px auto 0;color:#4a241d}
 .reveal-pop{animation:reveal-pop .38s ease}
 .revealed-photo{grid-column:1/-1;display:block;width:100%;max-height:420px;object-fit:contain;border-radius:16px;background:#fff;animation:reveal-in .65s ease both}
-.reveal-note{grid-column:1/-1;text-align:center;color:var(--sub);font-size:.88rem}.reveal-again{grid-column:1/-1;justify-self:center;margin:14px auto 4px;border:0;border-radius:999px;padding:12px 25px;background:linear-gradient(135deg,#e87891,#c94b63);color:#fff;font-size:.92rem;font-weight:800;letter-spacing:.04em;box-shadow:0 5px 14px rgba(180,65,91,.2);cursor:pointer;transition:transform .15s ease,opacity .15s ease}.reveal-again:active{transform:scale(.96)}.reveal-again:disabled{opacity:.55;cursor:wait}.reveal-share{grid-column:1/-1;justify-self:center;margin:4px auto 12px;border:0;border-radius:999px;padding:12px 25px;background:#111;color:#fff;font-size:.92rem;font-weight:800;letter-spacing:.02em;box-shadow:0 5px 14px rgba(0,0,0,.16);cursor:pointer}.reveal-share:active{transform:scale(.96)}.reveal-share:disabled{opacity:.55;cursor:wait}
+.reveal-note{grid-column:1/-1;text-align:center;color:var(--sub);font-size:.88rem}.reveal-again{grid-column:1/-1;justify-self:center;margin:14px auto 4px;border:0;border-radius:999px;padding:12px 25px;background:linear-gradient(135deg,#e60012,#e60012);color:#fff;font-size:.92rem;font-weight:800;letter-spacing:.04em;box-shadow:0 5px 14px rgba(74,31,22,.12);cursor:pointer;transition:transform .15s ease,opacity .15s ease}.reveal-again:active{transform:scale(.96)}.reveal-again:disabled{opacity:.55;cursor:wait}.reveal-share{grid-column:1/-1;justify-self:center;margin:4px auto 12px;border:0;border-radius:999px;padding:12px 25px;background:#111;color:#fff;font-size:.92rem;font-weight:800;letter-spacing:.02em;box-shadow:0 5px 14px rgba(0,0,0,.16);cursor:pointer}.reveal-share:active{transform:scale(.96)}.reveal-share:disabled{opacity:.55;cursor:wait}
 @keyframes reveal-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes reveal-pop{0%{transform:scale(.94)}65%{transform:scale(1.04)}100%{transform:scale(1)}}
 
 @media(max-width:640px){.daily-content{grid-template-columns:1fr}.daily-content img{max-height:280px}}
 </style>
 <style>
-.app-menu{margin:34px 0 28px;padding:20px 16px 22px;background:linear-gradient(155deg,#fff7f8 0%,#fff 70%);border:1px solid #f2dfe2;border-radius:25px;box-shadow:0 10px 30px rgba(126,44,61,.07)}
+.app-menu{margin:34px 0 28px;padding:20px 16px 22px;background:linear-gradient(155deg,#fff9f5 0%,#fff 70%);border:1px solid #f0d9d5;border-radius:25px;box-shadow:0 10px 30px rgba(126,44,61,.07)}
 .menu-heading{display:flex;align-items:end;justify-content:space-between;gap:10px;margin-bottom:18px}
 .menu-heading h2{margin:4px 0 0;font-size:1.22rem}
-.menu-caption{font-size:.62rem;letter-spacing:.15em;color:#bd8a93;font-weight:800}
+.menu-caption{font-size:.62rem;letter-spacing:.15em;color:#806b65;font-weight:800}
 .app-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px 9px}
 .app-icon{display:flex;min-width:0;flex-direction:column;align-items:center;gap:7px;text-decoration:none;color:#4c3a3e;text-align:center}
-.app-icon .app-glyph{position:relative;width:clamp(58px,16vw,76px);height:clamp(58px,16vw,76px);display:grid;place-items:center;overflow:hidden;border-radius:20px;color:white;font-family:"Material Symbols Rounded","Material Symbols Outlined",sans-serif;font-size:31px;font-weight:400;background:linear-gradient(145deg,#d96b82,#b92d4b);box-shadow:0 6px 15px rgba(70,30,40,.18);transition:transform .18s ease}
+.app-icon .app-glyph{position:relative;width:clamp(58px,16vw,76px);height:clamp(58px,16vw,76px);display:grid;place-items:center;overflow:hidden;border-radius:20px;color:white;font-family:"Material Symbols Rounded","Material Symbols Outlined",sans-serif;font-size:31px;font-weight:400;background:linear-gradient(145deg,#e60012,#9f0010);box-shadow:0 6px 15px rgba(70,30,40,.18);transition:transform .18s ease}
 .app-icon .app-photo{display:block;width:100%;height:100%;object-fit:cover;object-position:center 28%;position:absolute;inset:0}
 .app-icon .app-glyph:has(.app-photo[src=""]){font-size:31px}
 .app-icon:active .app-glyph{transform:scale(.92)}
 .app-icon b{font-size:.72rem;font-weight:700;white-space:nowrap;text-shadow:0 1px 0 #fff}
 .app-icon{gap:8px}
 .app-icon b{font-size:.72rem;font-weight:700;white-space:nowrap}
-.app-profile .app-glyph{background:linear-gradient(145deg,#d96b82,#b92d4b)}
+.app-profile .app-glyph{background:linear-gradient(145deg,#e60012,#9f0010)}
 .app-schedule .app-glyph{background:linear-gradient(145deg,#e69a65,#cf633f)}
 .app-news .app-glyph{background:linear-gradient(145deg,#7f9fca,#5478ae)}
 .app-works .app-glyph{background:linear-gradient(145deg,#8d82c6,#6257a2)}
-.app-blog .app-glyph{background:linear-gradient(145deg,#d77c9d,#b94f79)}
+.app-blog .app-glyph{background:linear-gradient(145deg,#c90012,#b94f79)}
 .app-greeting .app-glyph{background:linear-gradient(145deg,#d6a75e,#b98535)}
 .app-camera .app-glyph{background:linear-gradient(145deg,#6da99b,#438477)}
 .app-memo .app-glyph{background:linear-gradient(145deg,#7b9bc2,#4c6e9b)}
