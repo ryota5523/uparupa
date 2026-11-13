@@ -1,0 +1,26 @@
+name: Hourly official site sync
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hourly-official-site-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Sync official site data
+        env:
+          SYNC_URL: https://manami-site-worker.yellowworker.workers.dev/api/sync
+        run: |
+          curl --fail-with-body --silent --show-error \
+            --retry 2 --retry-delay 10 --max-time 300 \
+            --request POST "$SYNC_URL"
