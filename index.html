@@ -273,9 +273,9 @@
  }).then(data=>{
   const items=(data.items||[]).filter(x=>x&&x.url);
   if(!items.length)return;
-  // R2の写真を重複させず、各メニューに1枚ずつ割り当てる
+  // R2の写真を各メニューに割り当てる。写真数よりメニューが多い場合も写真を表示する
   photos.forEach((img,index)=>{
-   const photo=items[index];
+   const photo=items[index%items.length];
    if(!photo)return;
    img.src=photo.url;
    img.style.objectPosition="center 25%";
