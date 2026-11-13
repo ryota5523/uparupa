@@ -10,10 +10,10 @@
 
 </style>
 <style>
-.home-daily{background:linear-gradient(145deg,#fff9f5,#fff);border:1px solid #f0d9d5;border-radius:22px;padding:clamp(18px,3vw,28px);margin:22px 0;box-shadow:0 8px 28px rgba(130,40,60,.07)}
+.home-daily{background:linear-gradient(145deg,#fff7f7,#fff);border:1px solid #f2d6d6;border-radius:22px;padding:clamp(18px,3vw,28px);margin:22px 0;box-shadow:0 8px 28px rgba(74,31,22,.07)}
 .home-eyebrow{font-size:.72rem;letter-spacing:.16em;color:#e60012;font-weight:800}
 .home-daily h2{margin:6px 0 4px;font-size:1.45rem}
-.home-daily .daily-date{font-size:.8rem;color:#806b65;margin-bottom:14px}
+.home-daily .daily-date{font-size:.8rem;color:#80645e;margin-bottom:14px}
 .daily-content{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:18px;align-items:center}
 .daily-content img{width:100%;max-height:340px;object-fit:contain;border-radius:14px;background:#fff}
 .daily-copy{min-width:0}.daily-copy h3{margin:0 0 8px;font-size:1.1rem}.daily-copy p{color:var(--sub);line-height:1.8}
@@ -36,27 +36,27 @@
 @media(max-width:640px){.daily-content{grid-template-columns:1fr}.daily-content img{max-height:280px}}
 </style>
 <style>
-.app-menu{margin:34px 0 28px;padding:20px 16px 22px;background:linear-gradient(155deg,#fff9f5 0%,#fff 70%);border:1px solid #f0d9d5;border-radius:25px;box-shadow:0 10px 30px rgba(126,44,61,.07)}
+.app-menu{margin:34px 0 28px;padding:20px 16px 22px;background:linear-gradient(155deg,#fff7f7 0%,#fff 70%);border:1px solid #f2d6d6;border-radius:25px;box-shadow:0 10px 30px rgba(74,31,22,.07)}
 .menu-heading{display:flex;align-items:end;justify-content:space-between;gap:10px;margin-bottom:18px}
 .menu-heading h2{margin:4px 0 0;font-size:1.22rem}
-.menu-caption{font-size:.62rem;letter-spacing:.15em;color:#806b65;font-weight:800}
+.menu-caption{font-size:.62rem;letter-spacing:.15em;color:#80645e;font-weight:800}
 .app-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px 9px}
 .app-icon{display:flex;min-width:0;flex-direction:column;align-items:center;gap:7px;text-decoration:none;color:#4c3a3e;text-align:center}
-.app-icon .app-glyph{position:relative;width:clamp(58px,16vw,76px);height:clamp(58px,16vw,76px);display:grid;place-items:center;overflow:hidden;border-radius:20px;color:white;font-family:"Material Symbols Rounded","Material Symbols Outlined",sans-serif;font-size:31px;font-weight:400;background:linear-gradient(145deg,#e60012,#9f0010);box-shadow:0 6px 15px rgba(70,30,40,.18);transition:transform .18s ease}
+.app-icon .app-glyph{position:relative;width:clamp(58px,16vw,76px);height:clamp(58px,16vw,76px);display:grid;place-items:center;overflow:hidden;border-radius:20px;color:white;font-family:"Material Symbols Rounded","Material Symbols Outlined",sans-serif;font-size:31px;font-weight:400;background:linear-gradient(145deg,#e60012,#a9000d);box-shadow:0 6px 15px rgba(70,30,40,.18);transition:transform .18s ease}
 .app-icon .app-photo{display:block;width:100%;height:100%;object-fit:cover;object-position:center 28%;position:absolute;inset:0}
 .app-icon .app-glyph:has(.app-photo[src=""]){font-size:31px}
 .app-icon:active .app-glyph{transform:scale(.92)}
 .app-icon b{font-size:.72rem;font-weight:700;white-space:nowrap;text-shadow:0 1px 0 #fff}
 .app-icon{gap:8px}
 .app-icon b{font-size:.72rem;font-weight:700;white-space:nowrap}
-.app-profile .app-glyph{background:linear-gradient(145deg,#e60012,#9f0010)}
-.app-schedule .app-glyph{background:linear-gradient(145deg,#e69a65,#cf633f)}
-.app-news .app-glyph{background:linear-gradient(145deg,#7f9fca,#5478ae)}
-.app-works .app-glyph{background:linear-gradient(145deg,#8d82c6,#6257a2)}
-.app-blog .app-glyph{background:linear-gradient(145deg,#c90012,#b94f79)}
-.app-greeting .app-glyph{background:linear-gradient(145deg,#d6a75e,#b98535)}
-.app-camera .app-glyph{background:linear-gradient(145deg,#6da99b,#438477)}
-.app-memo .app-glyph{background:linear-gradient(145deg,#7b9bc2,#4c6e9b)}
+.app-profile .app-glyph{background:linear-gradient(145deg,#e60012,#a9000d)}
+.app-schedule .app-glyph{background:linear-gradient(145deg,#a6533d,#6b3028)}
+.app-news .app-glyph{background:linear-gradient(145deg,#b94b4b,#7a2525)}
+.app-works .app-glyph{background:linear-gradient(145deg,#9a4a45,#6b3028)}
+.app-blog .app-glyph{background:linear-gradient(145deg,#c90012,#6b3028)}
+.app-greeting .app-glyph{background:linear-gradient(145deg,#8a4a35,#4a241d)}
+.app-camera .app-glyph{background:linear-gradient(145deg,#a64b3c,#6b3028)}
+.app-memo .app-glyph{background:linear-gradient(145deg,#8a4a35,#4a241d)}
 @media(min-width:640px){.app-grid{grid-template-columns:repeat(7,minmax(0,1fr));gap:12px}.app-menu{padding:24px}.app-icon b{font-size:.78rem}}
 </style></head><body><div class="appbar"><a href="index.html"><img src="logo.png" alt="" class="logo"><span><b>MANAMI</b><small>大野愛実 ファンサイト（非公式）</small></span></a></div><div class="wrap">
 <header><span class="badge">日向坂46 五期生</span><p class="kana">おおの まなみ</p><h1>大野愛実</h1><p class="tag">負けない！泣かない！実らせたい！</p>
