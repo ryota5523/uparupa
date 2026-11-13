@@ -128,7 +128,7 @@
  const art=document.createElement("div");
  art.className="manami-reveal";
  art.setAttribute("aria-live","polite");
- art.innerHTML='<div class="reveal-line" id="reveal-line">ｸﾞﾙｸﾞﾙ</div><pre class="reveal-art">   ∧＿∧         ╭◜◝   ◜◝   ◜◝ ╮\n꒰ ˶ ɞ̴̶̷ ༝ ɞ̴̶̷ ˶꒱ .oO  大好きな一日\n  /づ~ <span id="reveal-bike"></span>   ╰◟◞   ◟◞   ◟◞ ╯</pre>';
+ art.innerHTML='<div class="reveal-line" id="reveal-line">ｸﾞﾙｸﾞﾙ</div><pre class="reveal-art">   ∧＿∧         ╭◜◝   ◜◝   ◜◝ ╮\n꒰ ˶ ɞ̴̶̷ ༝ ɞ̴̶̷ ˶꒱ .oO  <span id="reveal-title">今日のまなみん</span>\n  /づ~ <span id="reveal-bike"></span>   ╰◟◞   ◟◞   ◟◞ ╯</pre>';
  target.innerHTML="";
  target.appendChild(art);
  const line=art.querySelector("#reveal-line");
@@ -191,6 +191,7 @@
   try{
    if(!photos.length)await loadPhotos();
    const photo=nextPhoto();
+   art.querySelector("#reveal-title").textContent=photo.title||"今日のまなみん";
    const delays=[650,900,650];
    for(let i=1;i<scenes.length;i++){
     await new Promise(resolve=>setTimeout(resolve,delays[i-1]));
