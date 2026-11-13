@@ -243,3 +243,12 @@ h1{-webkit-user-select:none;user-select:none;touch-action:manipulation}
 #links .links a{color:#fff;border-color:rgba(255,255,255,.6)}
 #links .links a small{color:rgba(255,255,255,.84)}
 #links .links a i{color:#fff}
+
+
+/* Keep the member name readable on the red header */
+.wrap>header h1{
+  background:none;
+  -webkit-background-clip:initial;
+  background-clip:initial;
+  color:#fff;
+}
