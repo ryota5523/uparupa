@@ -70,6 +70,11 @@
 .blog-empty{padding:22px 16px;border:1px dashed #e9cbd1;border-radius:16px;background:#fff9fa;color:var(--blog-muted);text-align:center;font-size:.88rem}
 .blog-footnote{margin:16px 2px 0;color:var(--blog-muted);font-size:.76rem;line-height:1.8}
 .blog-loading{padding:22px;text-align:center;color:var(--blog-muted)}
+.blog-pagination{display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;margin:18px 0 8px}
+.blog-page-button{min-width:38px;height:38px;padding:0 11px;border:1px solid #efc7cf;border-radius:11px;background:#fff;color:var(--blog-red);font:800 .82rem inherit;cursor:pointer}
+.blog-page-button.active{background:var(--blog-red);border-color:var(--blog-red);color:#fff}
+.blog-page-button:disabled{opacity:.35;cursor:default}
+.blog-page-info{width:100%;text-align:center;color:var(--blog-muted);font-size:.72rem}
 @media(max-width:520px){.blog-links{grid-template-columns:1fr 1fr}.blog-tools{grid-template-columns:1fr}.blog-card{grid-template-columns:66px minmax(0,1fr) 36px;padding:13px 11px;gap:10px}.blog-card .thumb{width:66px;height:66px}.blog-head .head-bottom{margin-top:18px}.blog-feature .feature-body{padding:17px}}
 
 .blog-image-wrap{position:relative}
@@ -126,6 +131,7 @@
 </div>
 <div class="blog-results"><span id="blog-result-count">記事を読み込み中</span><span>NEWEST FIRST</span></div>
 <div id="blog-list" class="blog-list"><div class="blog-loading">ブログを読み込んでいます…</div></div>
+<div id="blog-pagination" class="blog-pagination" aria-label="ブログページ切り替え"></div>
 <p class="blog-footnote">記事をタップすると、サイト内の専用ページで本文と写真を読めます。</p>
 </main>
 
@@ -148,6 +154,9 @@
   const search=document.getElementById("blog-search");
   const month=document.getElementById("blog-month");
   const count=document.getElementById("blog-result-count");
+  const pagination=document.getElementById("blog-pagination");
+  const PAGE_SIZE=10;
+  let currentPage=1;
   const favoriteList=document.getElementById("favorite-list");
   const FAVORITES_KEY="manami-blog-favorites-v1";
   const photoPanel=document.getElementById("blog-photo-panel");
@@ -284,8 +293,27 @@
     });
     count.innerHTML='<strong>'+filtered.length+'</strong> 件の記事';
     list.innerHTML="";
+    pagination.innerHTML="";
+    const totalPages=Math.max(1,Math.ceil(filtered.length/PAGE_SIZE));
+    currentPage=Math.min(currentPage,totalPages);
     if(!filtered.length){const empty=document.createElement("div");empty.className="blog-empty";empty.textContent="該当する記事が見つからなかったよ。検索ワードを変えてみてね。";list.appendChild(empty);return;}
-    filtered.forEach(p=>{
+    const start=(currentPage-1)*PAGE_SIZE;
+    const visible=filtered.slice(start,start+PAGE_SIZE);
+    const info=document.createElement("span");info.className="blog-page-info";info.textContent=currentPage+" / "+totalPages+" ページ";pagination.appendChild(info);
+    if(totalPages>1){
+      const addPageButton=(label,page,active=false,disabled=false)=>{
+        const button=document.createElement("button");button.type="button";button.className="blog-page-button"+(active?" active":"");button.textContent=label;button.disabled=disabled;button.setAttribute("aria-label",page+"ページ目");
+        button.addEventListener("click",()=>{currentPage=page;renderList();document.getElementById("blog-list").scrollIntoView({behavior:"smooth",block:"start"});});
+        pagination.appendChild(button);
+      };
+      addPageButton("‹",Math.max(1,currentPage-1),false,currentPage===1);
+      const first=Math.max(1,currentPage-2),last=Math.min(totalPages,currentPage+2);
+      if(first>1){addPageButton("1",1);if(first>2){const dots=document.createElement("span");dots.textContent="…";pagination.appendChild(dots);}}
+      for(let page=first;page<=last;page++)addPageButton(String(page),page,page===currentPage);
+      if(last<totalPages){if(last<totalPages-1){const dots=document.createElement("span");dots.textContent="…";pagination.appendChild(dots);}addPageButton(String(totalPages),totalPages);}
+      addPageButton("›",Math.min(totalPages,currentPage+1),false,currentPage===totalPages);
+    }
+    visible.forEach(p=>{
       const d=safeDate(p.published_at);
       const a=document.createElement("a");a.className="blog-card";a.href=articlePageUrl(safeUrl(p.url),p.title,d.full);a.dataset.blogArticle=safeUrl(p.url);
       const day=document.createElement("span");day.className="thumb";
@@ -307,8 +335,8 @@
     months.forEach(key=>{const o=document.createElement("option");o.value=key;o.textContent=key.replace("-","年")+"月";month.appendChild(o);});
   }
   renderFavorites();
-  search.addEventListener("input",renderList);
-  month.addEventListener("change",renderList);
+  search.addEventListener("input",()=>{currentPage=1;renderList();});
+  month.addEventListener("change",()=>{currentPage=1;renderList();});
   fetch(API).then(r=>{if(!r.ok)throw new Error("API error");return r.json();})
     .then(data=>{
       if(!data.ok||!Array.isArray(data.items))throw new Error("Invalid response");
