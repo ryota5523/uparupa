@@ -104,6 +104,70 @@
 .blog-article-body a{color:var(--blog-red);text-decoration:underline}
 .blog-article-body blockquote{margin:16px 0;padding:8px 14px;border-left:3px solid var(--blog-red);background:#fff7f8}
 .blog-article-loading,.blog-article-error{padding:28px 12px;text-align:center;color:var(--blog-muted)}
+
+/* Blog page: match the site's simple pino red, white and chocolate palette */
+:root{--blog-red:#e60012;--blog-red-dark:#b9000e;--blog-red-soft:#fff5f5;--blog-ink:#4a241d;--blog-muted:#80645e}
+#blog-main{margin:0 -18px}
+.blog-page-head{margin:0;padding:30px 22px 28px;background:#e60012;color:#fff}
+.blog-page-en{font-size:.65rem;font-weight:800;letter-spacing:.16em;opacity:.88}
+.blog-page-head h1{margin:5px 0 0;color:#fff;background:none;font-size:clamp(2.5rem,10vw,3.4rem);letter-spacing:.04em}
+.blog-page-head p{margin:3px 0 0;color:#fff;font-size:.86rem}
+.blog-section-title{margin:0;padding:22px 22px 12px;background:#fff;color:#4a241d}
+.blog-section-title h2{font-size:1.12rem;color:#4a241d}
+.blog-section-title h2:before{background:#e60012;width:5px}
+.blog-section-title span{color:#e60012}
+#featured{margin:0;padding:0 22px 24px;border:0;border-radius:0;background:#fff;box-shadow:none}
+.blog-feature{border:0;border-radius:0;background:#fff;box-shadow:none}
+.blog-feature .feature-image{aspect-ratio:16/9;border-radius:0;background:#f7eeee}
+.blog-feature .feature-body{padding:16px 0 8px}
+.blog-feature .feature-label{border-radius:0;background:#e60012}
+.blog-feature .feature-date{color:#80645e}
+.blog-feature a{color:#4a241d}
+.blog-feature a:after{color:#e60012}
+.blog-feature .feature-foot{border-top:1px solid #f2d6d6;color:#80645e}
+#saved+.blog-list{margin:0;padding:0 22px 24px;background:#e60012;color:#fff}
+#saved+.blog-list .blog-card{border-bottom-color:rgba(255,255,255,.3);color:#fff}
+#saved+.blog-list .card-date,#saved+.blog-list .card-title{color:#fff}
+#saved+.blog-list .daybox{background:rgba(255,255,255,.16);color:#fff}
+#saved+.blog-list .favorite-toggle{background:#fff;color:#e60012}
+#saved+.blog-list .saved-empty{border:1px dashed rgba(255,255,255,.55);border-radius:0;color:#fff}
+#saved+.blog-list .blog-card{background:transparent;border-color:rgba(255,255,255,.3);border-radius:0;box-shadow:none}
+#blog-main>.blog-section-title:nth-of-type(3){background:#fff}
+.blog-tools{margin:0;padding:0 22px 12px;background:#fff;grid-template-columns:minmax(0,1fr) minmax(120px,.65fr)}
+.blog-search,.blog-select{border:1px solid #e8d6d2;border-radius:0;background:#fff;color:#4a241d;box-shadow:none}
+.blog-search:focus{border-color:#e60012;box-shadow:0 0 0 2px rgba(230,0,18,.08)}
+.blog-results{margin:0;padding:4px 22px 12px;background:#fff;color:#80645e}
+.blog-results strong{color:#e60012}
+#blog-list{padding:0 22px 12px;background:#fff}
+.blog-list{gap:0}
+.blog-card{grid-template-columns:66px minmax(0,1fr) 36px;gap:12px;padding:13px 0;border:0;border-bottom:1px solid #f2d6d6;border-radius:0;background:#fff;color:#4a241d;box-shadow:none}
+.blog-card:hover{border-color:#e60012;box-shadow:none}
+.blog-card .thumb{width:66px;height:66px;border-radius:0;background:#e60012}
+.blog-card .daybox{border-radius:0;background:#fff1f1;color:#e60012}
+.blog-card .card-date{color:#80645e}
+.blog-card .card-title{color:#4a241d}
+.blog-card .favorite-toggle{border-radius:0;background:#fff1f1;color:#e60012}
+.blog-card .favorite-toggle.active{background:#e60012;color:#fff}
+.blog-all-photos{border:0;border-radius:0;background:transparent;color:#e60012;padding:5px 0;text-decoration:underline}
+.blog-pagination{margin:0;padding:12px 22px 18px;background:#fff}
+.blog-page-button{border:1px solid #e60012;border-radius:0;background:#fff;color:#e60012}
+.blog-page-button.active{background:#e60012;color:#fff}
+.blog-footnote{margin:0;padding:0 22px 24px;background:#fff;color:#80645e}
+.blog-empty,.saved-empty{border-radius:0}
+.blog-photo-panel{background:rgba(25,12,16,.96)}
+.blog-photo-grid img{border-radius:0}
+.blog-article-view{background:#fff}
+.blog-article-title{color:#4a241d}
+.blog-article-body{color:#4a241d}
+.blog-article-body a{color:#e60012}
+@media(max-width:520px){
+  .blog-page-head{padding:26px 18px 24px}
+  .blog-section-title{padding:20px 18px 10px}
+  #featured{padding:0 18px 22px}
+  #saved+.blog-list,#blog-list{padding-left:18px;padding-right:18px}
+  .blog-tools,.blog-results,.blog-pagination,.blog-footnote{padding-left:18px;padding-right:18px}
+}
+
 </style>
 </head>
 <body>
@@ -119,6 +183,8 @@
 </nav>
 
 <main id="blog-main">
+<div class="blog-page-head"><span class="blog-page-en">MANAMI OHNO / OFFICIAL BLOG ARCHIVE</span><h1>Blog</h1><p>大野愛実ちゃんのブログを、ここに。</p></div>
+
 <div class="blog-section-title"><h2>Latest Letter</h2><span>FEATURED</span></div>
 <div id="featured" class="blog-feature"><div class="blog-loading">最新の記事を探しています…</div></div>
 
