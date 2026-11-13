@@ -128,7 +128,7 @@
  const art=document.createElement("div");
  art.className="manami-reveal";
  art.setAttribute("aria-live","polite");
- art.innerHTML='<div class="reveal-line" id="reveal-line">ｸﾞﾙｸﾞﾙ</div><pre class="reveal-art">   ∧＿∧         ╭◜◝   ◜◝   ◜◝ ╮\n꒰ ˶ ɞ̴̶̷ ༝ ɞ̴̶̷ ˶꒱ .oO  <span id="reveal-title">今日のまなみん</span>\n  /づ~ <span id="reveal-bike"></span>   ╰◟◞   ◟◞   ◟◞ ╯</pre>';
+ art.innerHTML='<div class="reveal-line" id="reveal-line">ｸﾞﾙｸﾞﾙ</div><pre class="reveal-art" id="reveal-art" hidden>   ∧＿∧         ╭◜◝   ◜◝   ◜◝ ╮\n꒰ ˶ ɞ̴̶̷ ༝ ɞ̴̶̷ ˶꒱ .oO  <span id="reveal-title">今日のまなみん</span>\n  /づ~ <span id="reveal-bike"></span>   ╰◟◞   ◟◞   ◟◞ ╯</pre>';
  target.innerHTML="";
  target.appendChild(art);
  const line=art.querySelector("#reveal-line");
@@ -238,6 +238,7 @@
    for(let i=1;i<scenes.length;i++){
     await new Promise(resolve=>setTimeout(resolve,delays[i-1]));
     line.textContent=scenes[i];
+    if(scenes[i]==="ｼﾞｬｼﾞｬｰﾝ！")art.querySelector("#reveal-art").hidden=false;
     art.classList.remove("reveal-pop");
     void art.offsetWidth;
     art.classList.add("reveal-pop");
