@@ -3,7 +3,11 @@
 <style>
 .memo-hero{margin:22px 0;padding:23px;border-radius:22px;background:linear-gradient(135deg,#9f102b,#e8384f);color:#fff}.memo-hero h2{margin:4px 0 5px;color:#fff}.memo-hero h2:before{display:none}.memo-hero p{margin:0;color:#ffe8ec;font-size:.86rem}.memo-form{display:grid;gap:12px}.memo-form label{display:grid;gap:5px;font-size:.82rem;font-weight:700;color:#76535a}.memo-form input,.memo-form select,.memo-form textarea{width:100%;padding:11px 12px;border:1px solid #ead5d9;border-radius:12px;background:#fff;font:inherit;font-size:.9rem;color:#30252a}.memo-form textarea{min-height:100px;resize:vertical}.memo-submit{border:0;border-radius:13px;padding:13px;background:#c91532;color:#fff;font:inherit;font-weight:800;cursor:pointer}.memo-note{font-size:.75rem;color:#987b82;margin:0}.memo-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}.memo-tabs{display:flex;gap:7px}.memo-tabs button,.month-nav button{border:1px solid #efd5da;border-radius:99px;padding:7px 13px;background:#fff;color:#94505e;font:inherit;font-size:.8rem}.memo-tabs button.active{background:#c91532;color:#fff;border-color:#c91532}.month-nav{display:flex;align-items:center;gap:12px}.month-nav strong{min-width:100px;text-align:center}.memo-calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin-top:14px}.memo-calendar .weekday{text-align:center;font-size:.7rem;color:#987b82;padding:5px 0}.memo-day{min-height:48px;border:1px solid #f1e2e5;border-radius:10px;background:#fff;color:#49383d;font:inherit;position:relative}.memo-day.selected{background:#c91532;color:#fff;border-color:#c91532}.memo-day.has:after{content:"";position:absolute;bottom:5px;left:50%;width:5px;height:5px;border-radius:50%;background:#e66c82;transform:translateX(-50%)}.memo-day.selected.has:after{background:#fff}.memo-list{display:grid;gap:10px}.memo-entry{display:grid;grid-template-columns:76px minmax(0,1fr) 32px;gap:12px;align-items:start;padding:13px;border:1px solid #f0dfe2;border-radius:16px;background:#fff}.memo-entry img,.memo-photo-placeholder{width:76px;height:76px;object-fit:cover;border-radius:11px;background:#fff1f3}.memo-photo-placeholder{display:grid;place-items:center;font-size:.7rem;color:#c91532}.memo-entry .memo-date{font-size:.72rem;color:#c91532;font-weight:800}.memo-entry h3{margin:2px 0 4px;color:#33272b;font-size:.98rem}.memo-entry p{margin:0;color:#806e73;font-size:.83rem;white-space:pre-wrap;overflow-wrap:anywhere}.memo-entry button{border:0;background:#fff0f2;color:#c91532;border-radius:10px;padding:7px;cursor:pointer}.memo-empty{padding:20px;border-radius:14px;background:#fff7f8;color:#987b82;text-align:center;font-size:.86rem}.memo-status{font-size:.8rem;color:#c91532;min-height:1.3em}.memo-actions{display:flex;gap:7px;flex-wrap:wrap}.memo-actions button{border:1px solid #efd5da;border-radius:11px;padding:8px 11px;background:#fff;color:#a33b50;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer}.memo-entry .memo-entry-actions{display:grid;gap:5px}.memo-entry .memo-entry-actions button{font-size:.75rem}.memo-entry .memo-entry-actions .edit{background:#fff5f6}
 .memo-chat-editor{display:grid;gap:10px;padding:13px;border:1px solid #ead5d9;border-radius:14px;background:#fffafa}
-.memo-chat-preview{display:grid;gap:8px;max-height:260px;overflow:auto;padding:4px}
+.memo-chat-preview{display:grid;gap:8px;max-height:360px;overflow:auto;padding:14px;border-radius:12px;background:linear-gradient(145deg,#e9f2ed,#dce9e2);background-size:cover;background-position:center}
+.memo-chat-assets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.memo-chat-assets label{font-size:.72rem!important;min-width:0}
+.memo-chat-assets input{font-size:.7rem!important;padding:7px!important}
+.memo-chat-export{border:0;border-radius:10px;padding:10px 13px;background:#4a241d;color:#fff;font:inherit;font-weight:700;cursor:pointer}
 .memo-chat-line{display:flex;flex-direction:column;max-width:88%;gap:3px}
 .memo-chat-line.mine{margin-left:auto;align-items:flex-end}
 .memo-chat-line.manami{margin-right:auto;align-items:flex-start}
@@ -31,10 +35,17 @@
 <label id="memo-text-label">感想・思い出<textarea id="memo-text" maxlength="3000" placeholder="楽しかったこと、印象に残ったこと…"></textarea></label>
 <div id="memo-chat-editor" class="memo-chat-editor" hidden>
 <strong style="font-size:.86rem;color:#76535a">ミーグリの会話</strong>
+<div class="memo-chat-assets">
+<label>背景画像<input type="file" id="memo-chat-bg" accept="image/*"></label>
+<label>まなみんの写真<input type="file" id="memo-chat-manami" accept="image/*"></label>
+<label>自分のアイコン<input type="file" id="memo-chat-me" accept="image/*"></label>
+</div>
+<p class="memo-note">画像を選ばなければ、デフォルト背景とアイコンで表示するよ。</p>
 <div class="memo-chat-preview" id="memo-chat-preview"><div class="memo-empty">会話を追加すると、ここにトーク形式で表示されるよ。</div></div>
 <div class="memo-chat-controls"><span style="font-size:.76rem;color:#987b82">話した人：</span><button type="button" class="active" data-chat-speaker="me">自分</button><button type="button" data-chat-speaker="manami">まなみん</button></div>
 <textarea id="memo-chat-input" maxlength="1000" placeholder="会話を入力してね…"></textarea>
 <button type="button" class="memo-chat-add" id="memo-chat-add">＋ メッセージを追加</button>
+<button type="button" class="memo-chat-export" id="memo-chat-export">トーク画面を画像で保存</button>
 <p class="memo-note">自分とまなみんの発言を交互に追加して、トーク履歴を作れるよ。</p>
 </div>
 <label>写真を添える<input type="file" id="memo-photo" accept="image/*"></label>
