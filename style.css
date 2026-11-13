@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800;900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=block");
 
-:root{--bg:#fff;--card:#fff;--text:#222;--sub:#777;--accent:#c41230;--accent2:#f7e8eb;--red:#c41230;--line:#eadde0;--soft:#faf6f7;--navbg:rgba(255,255,255,.96);--shadow:0 6px 20px rgba(80,20,30,.06);box-sizing:border-box;color-scheme:light}
+:root{--bg:#fff;--card:#fff;--text:#4a241d;--sub:#806b65;--accent:#e60012;--accent2:#fff0ed;--red:#e60012;--line:#f0d9d5;--soft:#fff9f5;--navbg:rgba(255,255,255,.97);--shadow:0 6px 20px rgba(74,31,22,.06);box-sizing:border-box;color-scheme:light}
 html{scroll-padding-top:70px}
 *{box-sizing:border-box}
 body{margin:0;color:var(--text);font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN","Hiragino Sans",Meiryo,system-ui,sans-serif;line-height:1.8;background:#fff}
@@ -9,7 +9,7 @@ body{margin:0;color:var(--text);font-family:"Noto Sans JP","Hiragino Kaku Gothic
 header{text-align:center;padding:30px 0 6px}
 .badge{display:inline-block;background:var(--accent);color:#fff;font-size:.8rem;font-weight:700;padding:3px 16px;border-radius:99px;letter-spacing:.12em}
 .kana{color:var(--sub);margin:.6em 0 0;letter-spacing:.35em;font-size:.9rem}
-h1{font-size:clamp(2.8rem,12vw,4.4rem);font-weight:900;margin:.05em 0 .1em;letter-spacing:.08em;line-height:1.15;background:linear-gradient(90deg,#e8384f,#ff7a8a);-webkit-background-clip:text;background-clip:text;color:transparent}
+h1{font-size:clamp(2.8rem,12vw,4.4rem);font-weight:900;margin:.05em 0 .1em;letter-spacing:.08em;line-height:1.15;background:linear-gradient(90deg,#e60012,#b80012);-webkit-background-clip:text;background-clip:text;color:transparent}
 .tag{margin:.2em 0 0;font-size:1.05rem;font-weight:700}
 .facts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:18px 0 6px}
 .facts span{background:var(--card);border:1px solid var(--line);border-radius:99px;padding:3px 14px;font-size:.88rem;box-shadow:var(--shadow)}
@@ -19,11 +19,11 @@ h2::before{content:"";width:8px;height:1.3em;border-radius:99px;background:var(-
 h3{margin:22px 0 8px;font-size:1.02rem;color:var(--sub)}
 dl{display:grid;grid-template-columns:7.5em 1fr;gap:10px 12px;margin:0}
 dt{color:var(--sub);font-weight:700} dd{margin:0}
-.hero{background:linear-gradient(135deg,#e8384f,#ff6b7d);color:#fff;padding:26px 22px 28px;box-shadow:0 12px 30px rgba(232,56,79,.28)}
+.hero{background:linear-gradient(135deg,#e60012,#c90012);color:#fff;padding:26px 22px 28px;box-shadow:0 12px 30px rgba(74,31,22,.12)}
 .hero h2{display:block;font-size:2.2rem;font-weight:900;margin:.3em 0 .1em;letter-spacing:.06em}
 .hero h2::before{display:none}
 .hero p{margin:.3em 0}.hero .hs{opacity:.92;font-size:.92rem}
-.pill{display:inline-block;background:#fff;color:#e8384f;font-size:.72rem;font-weight:700;padding:1px 12px;border-radius:99px;letter-spacing:.1em;animation:pulse 2s infinite}
+.pill{display:inline-block;background:#fff;color:#e60012;font-size:.72rem;font-weight:700;padding:1px 12px;border-radius:99px;letter-spacing:.1em;animation:pulse 2s infinite}
 @keyframes pulse{50%{transform:scale(1.07)}}
 .video{position:relative;width:100%;aspect-ratio:16/9;margin:16px 0 8px;border-radius:14px;overflow:hidden;background:#000}
 .video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
@@ -49,7 +49,7 @@ ol.tl{list-style:none;margin:0;padding:0 0 0 18px;border-left:3px solid var(--li
 ol.tl li{position:relative;margin:0 0 20px;padding-left:14px}
 ol.tl li::before{content:"";position:absolute;left:-27px;top:.55em;width:13px;height:13px;border-radius:50%;background:var(--accent);border:3px solid var(--card)}
 .date{font-size:.82rem;color:var(--sub)}
-.cat{font-size:.72rem;background:#ffe9ec;color:#e8384f;border-radius:6px;padding:0 7px;margin-left:6px;font-weight:700}
+.cat{font-size:.72rem;background:#fff0ed;color:#e60012;border-radius:6px;padding:0 7px;margin-left:6px;font-weight:700}
 .ttl{font-weight:700}.desc{font-size:.92rem;color:var(--sub);margin:2px 0 0}
 .item{padding:14px 0;border-bottom:1px dashed var(--line)}.item:last-child{border-bottom:0}
 .item a{color:var(--text);font-weight:700;text-decoration:none}.item a:hover{color:var(--accent)}
