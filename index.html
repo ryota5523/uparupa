@@ -183,9 +183,8 @@
  async function runReveal(){
   if(busy)return;
   busy=true;
-  clearResult();
-  const button=target.querySelector(".reveal-again");
-  if(button)button.disabled=true;
+  target.innerHTML="";
+  target.appendChild(art);
   bikeEl.textContent=bikes[Math.floor(Math.random()*bikes.length)];
   line.textContent=scenes[0];
   try{
@@ -216,7 +215,13 @@
    target.appendChild(retry);
   }finally{busy=false;}
  }
- runReveal();
+ const startButton=document.createElement("button");
+ startButton.type="button";
+ startButton.className="reveal-again";
+ startButton.textContent="今日のまなみんをまわす！";
+ startButton.addEventListener("click",runReveal);
+ target.innerHTML="";
+ target.appendChild(startButton);
 })();</script>
 
 <script>
