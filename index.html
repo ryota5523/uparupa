@@ -115,91 +115,42 @@
  const key=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0");
  dateEl.textContent=now.getFullYear()+"年"+(now.getMonth()+1)+"月"+now.getDate()+"日";
 
- function safeUrl(value){
-  try{const u=new URL(value);return u.protocol==="https:"&&/(^|\\.)hinatazaka46\\.com$/i.test(u.hostname)?u.href:"";}
-  catch(e){return "";}
- }
- function validBlogPhoto(src){
-  try{
-   const u=new URL(src);
-   return u.protocol==="https:"
-    &&u.hostname==="cdn.hinatazaka46.com"
-    &&/\\/diary\\/official\\/member\\//i.test(u.pathname)
-    &&/\\.(jpe?g|png|webp)$/i.test(u.pathname)
-    &&!/(logo|icon|avatar|banner|header)/i.test(u.pathname);
-  }catch(e){return false;}
- }
- function directBlogPhoto(post){
-  const candidates=[post.image_url,post.thumbnail_url,post.thumbnail,post.image,post.img,post.og_image,post.ogImage];
-  return candidates.find(src=>typeof src==="string"&&validBlogPhoto(src))||"";
- }
- async function findArticleImage(post){
-  const direct=directBlogPhoto(post);
-  if(direct)return direct;
-  const url=safeUrl(post.url);
-  if(!url)return "";
-  try{
-   const response=await fetch("https://r.jina.ai/"+url,{
-    headers:{
-     "Accept":"text/plain",
-     "X-Target-Selector":".c-blog-article__text",
-     "X-Respond-With":"markdown"
-    }
-   });
-   if(!response.ok)throw new Error("reader unavailable");
-   const body=await response.text();
-   const markdown=[...body.matchAll(/!?\\[[^\\]]*\\]\\(<?(https:\\/\\/[^\\s)>]+)>?\\)/g)].map(m=>m[1]);
-   const html=[...body.matchAll(/<img[^>]+src=["'](https:\\/\\/[^"']+)["']/gi)].map(m=>m[1]);
-   return [...new Set([...markdown,...html])].find(validBlogPhoto)||"";
-  }catch(e){return "";}
- }
- function showBlog(post,src){
+ function showPhoto(photo){
   target.innerHTML="";
   const image=document.createElement("img");
-  image.src=src;
-  image.alt="大野愛実のブログ写真";
-  image.loading="lazy";
-  image.referrerPolicy="no-referrer";
-  image.onerror=()=>{
-   target.innerHTML='<div class="home-empty">今日のブログ写真を読み込めませんでした。</div>';
-  };
+  image.src=photo.url;
+  image.alt="保存済みの大野愛実の写真";
+  image.loading="eager";
+  image.onerror=()=>{target.innerHTML='<div class="home-empty">写真を読み込めませんでした。</div>';};
   const copy=document.createElement("div");
   copy.className="daily-copy";
   const heading=document.createElement("h3");
-  heading.textContent=post.title||"大野愛実 公式ブログ";
-  const link=document.createElement("a");
-  link.href=safeUrl(post.url);
-  link.target="_blank";
-  link.rel="noopener";
-  link.textContent="このブログを読む →";
-  copy.append(heading,link);
+  heading.textContent=photo.title||"今日のまなみん";
+  const note=document.createElement("p");
+  note.textContent="保存してある写真から、今日の1枚をお届けします。";
+  copy.append(heading,note);
   target.append(image,copy);
  }
+
  async function load(){
   try{
-   const response=await fetch(API+"/api/blogs");
-   if(!response.ok)throw new Error("blog API unavailable");
+   const response=await fetch(API+"/api/menu-photos");
+   if(!response.ok)throw new Error("saved photo API unavailable");
    const data=await response.json();
-   const posts=(Array.isArray(data.items)?data.items:[])
-    .filter(post=>safeUrl(post.url))
-    .sort((a,b)=>String(b.published_at||"").localeCompare(String(a.published_at||"")));
-   if(!posts.length)throw new Error("no blog posts");
+   const photos=(Array.isArray(data.items)?data.items:[])
+    .filter(photo=>photo&&typeof photo.url==="string"&&photo.url.startsWith("https://"));
+   if(!photos.length)throw new Error("no saved photos");
+   // 同じ日には同じ写真、日付が変わると別の写真を表示
    const day=Math.floor(new Date(key+"T00:00:00").getTime()/86400000);
-   const offset=((day%posts.length)+posts.length)%posts.length;
-   for(let i=0;i<posts.length;i++){
-    const post=posts[(offset+i)%posts.length];
-    const src=await findArticleImage(post);
-    if(src){showBlog(post,src);return;}
-   }
-   throw new Error("no blog photos");
+   const index=((day%photos.length)+photos.length)%photos.length;
+   showPhoto(photos[index]);
   }catch(error){
-   console.warn("Today's blog photo unavailable:",error);
-   target.innerHTML='<div class="home-empty">今日のブログ写真を準備中です。</div>';
+   console.warn("Today's saved photo unavailable:",error);
+   target.innerHTML='<div class="home-empty">保存済みの写真を読み込めませんでした。</div>';
   }
  }
  load();
-})();
-</script>
+})();</script>
 
 <script>
 (function(){
