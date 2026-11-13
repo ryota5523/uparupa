@@ -213,11 +213,6 @@
    msg.textContent="写真を読み込めなかったみたい。また見にきてね。";
    target.appendChild(msg);
   };
-  const copy=document.createElement("div");
-  copy.className="daily-copy";
-  const heading=document.createElement("h3");
-  heading.textContent=title;
-  copy.appendChild(heading);
   const button=document.createElement("button");
   button.type="button";
   button.className="reveal-again";
@@ -228,7 +223,7 @@
   shareButton.className="reveal-share";
   shareButton.textContent="Xに画像付きで投稿";
   shareButton.addEventListener("click",()=>shareToX(photo,shareButton));
-  target.append(image,copy,shareButton,button);
+  target.append(image,shareButton,button);
  }
  async function runReveal(){
   if(busy)return;
