@@ -291,6 +291,7 @@
     <div id="goods-store-toolbar">
       <strong>大野愛実ちゃん 公式グッズ</strong>
       <div>
+        <button id="goods-store-search" type="button">大野愛実のグッズに戻る</button>
         <a href="https://store.plusmember.jp/hinatazaka46/products/list.php?name=%E5%A4%A7%E9%87%8E%E3%80%80%E6%84%9B%E5%AE%9F" target="_blank" rel="noopener">別タブで開く ↗</a>
         <button id="goods-store-close" type="button">閉じる ✕</button>
       </div>
@@ -307,10 +308,11 @@
 #goods-store-toolbar strong{font-size:.95rem}
 #goods-store-toolbar>div{display:flex;align-items:center;gap:10px}
 #goods-store-toolbar a{color:#fff;font-size:.82rem;font-weight:700}
+#goods-store-search{border:1px solid #fff;background:transparent;color:#fff;padding:8px 10px;font-size:.8rem;font-weight:700;cursor:pointer}
 #goods-store-close{border:0;background:#fff;color:#4a241d;padding:9px 13px;font-weight:700;cursor:pointer}
 #goods-store-note{margin:0;padding:8px 12px;color:#4a241d;background:#fff7f7;font-size:.76rem}
 #goods-store-frame{width:100%;flex:1;min-height:0;border:0;background:#fff}
-@media(max-width:600px){#goods-store-modal{padding:0}#goods-store-panel{width:100%;height:100%;height:100dvh}#goods-store-toolbar{padding:calc(env(safe-area-inset-top) + 9px) 10px 9px}#goods-store-toolbar strong{font-size:.8rem}#goods-store-toolbar>div{gap:8px}#goods-store-toolbar a{font-size:.72rem}#goods-store-close{padding:8px 10px}}
+@media(max-width:600px){#goods-store-modal{padding:0}#goods-store-panel{width:100%;height:100%;height:100dvh}#goods-store-toolbar{padding:calc(env(safe-area-inset-top) + 9px) 10px 9px}#goods-store-toolbar strong{font-size:.8rem}#goods-store-toolbar>div{gap:8px}#goods-store-toolbar a{font-size:.72rem}#goods-store-search{padding:7px 8px;font-size:.7rem}#goods-store-close{padding:8px 10px}}
 </style>
 <script>
 (function(){
@@ -318,8 +320,12 @@
   var modal=document.getElementById("goods-store-modal");
   var frame=document.getElementById("goods-store-frame");
   var close=document.getElementById("goods-store-close");
-  if(!link||!modal||!frame||!close)return;
+  var search=document.getElementById("goods-store-search");
+  if(!link||!modal||!frame||!close||!search)return;
   var storeUrl=link.href;
+  search.addEventListener("click",function(){
+    frame.src=storeUrl;
+  });
   function openStore(event){
     event.preventDefault();
     if(!frame.src)frame.src=storeUrl;
