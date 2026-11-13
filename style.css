@@ -189,3 +189,57 @@ h1{-webkit-user-select:none;user-select:none;touch-action:manipulation}
 }
 .wrap>section:nth-of-type(odd) .home-row{border-bottom-color:rgba(255,255,255,.35)}
 .wrap>section:nth-of-type(odd) .home-schedule-group+.home-schedule-group{border-top-color:rgba(255,255,255,.35)}
+
+
+/* Home color order: red header, white Today's Manamin, then alternating bands */
+.wrap>header{
+  background:#e60012;
+  color:#fff;
+  margin:0 -18px;
+  padding:30px 18px 26px;
+}
+.wrap>header .badge{
+  background:#fff;
+  color:#e60012;
+}
+.wrap>header .kana,
+.wrap>header .intro{color:#fff}
+#today-manami{
+  background:#fff !important;
+  color:#4a241d;
+  --text:#4a241d;
+  --sub:#80645e;
+  --line:#f2d6d6;
+  --soft:#fff7f7;
+  --card:#fff;
+}
+#today-manami .home-eyebrow,
+#today-manami .daily-date,
+#today-manami .daily-copy p,
+#today-manami .reveal-line,
+#today-manami .reveal-art,
+#today-manami .reveal-note{color:#4a241d}
+#pickup-video{background:#e60012;color:#fff;--text:#fff;--sub:rgba(255,255,255,.84);--line:rgba(255,255,255,.32);--soft:rgba(255,255,255,.12);--card:transparent}
+#home-schedule{background:#fff;color:#4a241d;--text:#4a241d;--sub:#80645e;--line:#f2d6d6;--soft:#fff7f7;--card:#fff}
+#app-menu{background:#e60012;color:#fff;--text:#fff;--sub:rgba(255,255,255,.84);--line:rgba(255,255,255,.32);--soft:rgba(255,255,255,.12);--card:transparent}
+#app{background:#fff;color:#4a241d;--text:#4a241d;--sub:#80645e;--line:#f2d6d6;--soft:#fff7f7;--card:#fff}
+#links{background:#e60012;color:#fff;--text:#fff;--sub:rgba(255,255,255,.84);--line:rgba(255,255,255,.32);--soft:rgba(255,255,255,.12);--card:transparent}
+#pickup-video .home-eyebrow,
+#pickup-video .home-sub,
+#pickup-video h2,
+#app-menu .home-eyebrow,
+#app-menu .menu-caption,
+#links h2{color:#fff}
+#pickup-video h2::before,#app-menu h2::before,#links h2::before{background:#fff}
+#pickup-video .movie h3{color:#fff}
+#pickup-video .hero{background:#fff;color:#e60012}
+#pickup-video .hero h2::before{display:none}
+#pickup-video .hero .hs{color:#6b3028}
+#pickup-video .hero .pill{background:#e60012;color:#fff}
+#pickup-video .hero .hl a{color:#e60012;border-color:#e60012}
+#pickup-video .hero .hl a:hover{background:#fff1f1}
+#app-menu .app-icon{color:#fff}
+#app-menu .app-icon b{text-shadow:none}
+#links .links a{color:#fff;border-color:rgba(255,255,255,.6)}
+#links .links a small{color:rgba(255,255,255,.84)}
+#links .links a i{color:#fff}
