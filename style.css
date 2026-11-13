@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800;900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=block");
 
-:root{--bg:#fff;--card:#fff;--text:#4a241d;--sub:#806b65;--accent:#e60012;--accent2:#fff0ed;--red:#e60012;--line:#f0d9d5;--soft:#fff9f5;--navbg:rgba(255,255,255,.97);--shadow:0 6px 20px rgba(74,31,22,.06);box-sizing:border-box;color-scheme:light}
+:root{--bg:#fff;--card:#fff;--text:#4a241d;--sub:#806b65;--accent:#e60012;--accent2:#fff1f1;--red:#e60012;--line:#f2d6d6;--soft:#fff7f7;--navbg:rgba(255,255,255,.97);--shadow:0 6px 20px rgba(74,31,22,.06);box-sizing:border-box;color-scheme:light}
 html{scroll-padding-top:70px}
 *{box-sizing:border-box}
 body{margin:0;color:var(--text);font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN","Hiragino Sans",Meiryo,system-ui,sans-serif;line-height:1.8;background:#fff}
@@ -9,7 +9,7 @@ body{margin:0;color:var(--text);font-family:"Noto Sans JP","Hiragino Kaku Gothic
 header{text-align:center;padding:30px 0 6px}
 .badge{display:inline-block;background:var(--accent);color:#fff;font-size:.8rem;font-weight:700;padding:3px 16px;border-radius:99px;letter-spacing:.12em}
 .kana{color:var(--sub);margin:.6em 0 0;letter-spacing:.35em;font-size:.9rem}
-h1{font-size:clamp(2.8rem,12vw,4.4rem);font-weight:900;margin:.05em 0 .1em;letter-spacing:.08em;line-height:1.15;background:linear-gradient(90deg,#e60012,#b80012);-webkit-background-clip:text;background-clip:text;color:transparent}
+h1{font-size:clamp(2.8rem,12vw,4.4rem);font-weight:900;margin:.05em 0 .1em;letter-spacing:.08em;line-height:1.15;background:linear-gradient(90deg,#e60012,#a9000d);-webkit-background-clip:text;background-clip:text;color:transparent}
 .tag{margin:.2em 0 0;font-size:1.05rem;font-weight:700}
 .facts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:18px 0 6px}
 .facts span{background:var(--card);border:1px solid var(--line);border-radius:99px;padding:3px 14px;font-size:.88rem;box-shadow:var(--shadow)}
@@ -130,10 +130,10 @@ h1{-webkit-user-select:none;user-select:none;touch-action:manipulation}
   margin:24px -18px 0;
   padding:28px 22px 30px;
 }
-.wrap>section:nth-of-type(odd){background:#f5f5f5}
+.wrap>section:nth-of-type(odd){background:#fff7f7}
 .wrap>section:nth-of-type(even){background:#fff}
 .wrap>section.hero{
-  background:#c41230;
+  background:#e60012;
   color:#fff;
   border:0;
   border-radius:0;
@@ -143,7 +143,7 @@ h1{-webkit-user-select:none;user-select:none;touch-action:manipulation}
   border:0;
   border-radius:0;
   box-shadow:none;
-  background:#f5f5f5;
+  background:#fff7f7;
 }
 .home-row,.home-empty{
   border:0;
@@ -153,5 +153,5 @@ h1{-webkit-user-select:none;user-select:none;touch-action:manipulation}
   padding-left:0;
   padding-right:0;
 }
-.home-row{border-bottom:1px solid #e5e5e5}
-.home-schedule-group+.home-schedule-group{border-top:1px solid #ddd}
+.home-row{border-bottom:1px solid #f2d6d6}
+.home-schedule-group+.home-schedule-group{border-top:1px solid #f2d6d6}
