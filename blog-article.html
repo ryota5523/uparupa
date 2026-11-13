@@ -150,7 +150,7 @@
   }
   async function load(){
     try{
-      const response=await fetch("https://r.jina.ai/"+officialUrl.href,{headers:{"Accept":"text/plain"}});
+      const response=await fetch("https://r.jina.ai/"+officialUrl.href,{headers:{"Accept":"text/plain","X-Target-Selector":".c-blog-article__text","X-Respond-With":"markdown","X-No-Cache":"true"}});
       if(!response.ok)throw new Error("reader error");
       let source=await response.text();
       const marker=source.indexOf("Markdown Content:");
