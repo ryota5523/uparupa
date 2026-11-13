@@ -24,6 +24,15 @@
 .home-row .date{font-size:.8rem;color:var(--accent);font-weight:700}
 .home-row a{font-weight:700;text-decoration:none}
 .home-empty{padding:18px;border-radius:14px;background:var(--soft);color:var(--sub);font-size:.9rem}
+.manami-reveal{grid-column:1/-1;text-align:center;padding:18px 8px 10px;color:#574047;animation:reveal-in .35s ease both}
+.reveal-line{font-size:1.05rem;font-weight:800;letter-spacing:.12em;min-height:1.8em;color:#c94b63}
+.reveal-art{display:inline-block;text-align:left;white-space:pre;overflow:visible;font-family:ui-monospace,"SFMono-Regular",monospace;font-size:clamp(.66rem,2.7vw,.95rem);line-height:1.7;margin:8px auto 0;color:#574047}
+.reveal-pop{animation:reveal-pop .38s ease}
+.revealed-photo{grid-column:1/-1;display:block;width:100%;max-height:420px;object-fit:contain;border-radius:16px;background:#fff;animation:reveal-in .65s ease both}
+.reveal-note{grid-column:1/-1;text-align:center;color:var(--sub);font-size:.88rem}
+@keyframes reveal-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes reveal-pop{0%{transform:scale(.94)}65%{transform:scale(1.04)}100%{transform:scale(1)}}
+
 @media(max-width:640px){.daily-content{grid-template-columns:1fr}.daily-content img{max-height:280px}}
 </style>
 <style>
@@ -115,41 +124,76 @@
  const key=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0");
  dateEl.textContent=now.getFullYear()+"年"+(now.getMonth()+1)+"月"+now.getDate()+"日";
 
+ const bikes=["🏍️","🛵","🏍️","🚲","🏍️","🛺"];
+ const bike=bikes[Math.floor(Math.random()*bikes.length)];
+ const scenes=[
+  "ｸﾞﾙｸﾞﾙ",
+  "ｶﾞﾗｶﾞﾗｶﾞﾗｶﾞﾗ ...",
+  "ﾊﾟｶｯ  !!",
+  "ｼﾞｬｼﾞｬｰﾝ！"
+ ];
+ const art=document.createElement("div");
+ art.className="manami-reveal";
+ art.setAttribute("aria-live","polite");
+ art.innerHTML='<div class="reveal-line" id="reveal-line">ｸﾞﾙｸﾞﾙ</div><pre class="reveal-art">   ∧＿∧         ╭◜◝   ◜◝   ◜◝ ╮\n꒰ ˶ ɞ̴̶̷ ༝ ɞ̴̶̷ ˶꒱ .oO  大好きな一日\n  /づ~ <span id="reveal-bike"></span>   ╰◟◞   ◟◞   ◟◞ ╯</pre>';
+ target.innerHTML="";
+ target.appendChild(art);
+ const line=art.querySelector("#reveal-line");
+ art.querySelector("#reveal-bike").textContent=bike;
+
  function showPhoto(photo){
-  target.innerHTML="";
   const image=document.createElement("img");
+  image.className="revealed-photo";
   image.src=photo.url;
-  image.alt="保存済みの大野愛実の写真";
+  image.alt="大野愛実の写真";
   image.loading="eager";
-  image.onerror=()=>{target.innerHTML='<div class="home-empty">写真を読み込めませんでした。</div>';};
+  image.onerror=()=>{
+   image.remove();
+   const msg=document.createElement("p");
+   msg.className="reveal-note";
+   msg.textContent="写真を読み込めなかったみたい。また見にきてね。";
+   art.appendChild(msg);
+  };
   const copy=document.createElement("div");
   copy.className="daily-copy";
   const heading=document.createElement("h3");
   heading.textContent=photo.title||"今日のまなみん";
-  const note=document.createElement("p");
-  note.textContent="保存してある写真から、今日の1枚をお届けします。";
-  copy.append(heading,note);
+  copy.appendChild(heading);
   target.append(image,copy);
  }
 
- async function load(){
-  try{
-   const response=await fetch(API+"/api/menu-photos");
-   if(!response.ok)throw new Error("saved photo API unavailable");
-   const data=await response.json();
-   const photos=(Array.isArray(data.items)?data.items:[])
-    .filter(photo=>photo&&typeof photo.url==="string"&&photo.url.startsWith("https://"));
-   if(!photos.length)throw new Error("no saved photos");
-   // 同じ日には同じ写真、日付が変わると別の写真を表示
-   const day=Math.floor(new Date(key+"T00:00:00").getTime()/86400000);
-   const index=((day%photos.length)+photos.length)%photos.length;
-   showPhoto(photos[index]);
-  }catch(error){
-   console.warn("Today's saved photo unavailable:",error);
-   target.innerHTML='<div class="home-empty">保存済みの写真を読み込めませんでした。</div>';
+ async function loadPhoto(){
+  const response=await fetch(API+"/api/menu-photos");
+  if(!response.ok)throw new Error("saved photos unavailable");
+  const data=await response.json();
+  const photos=(Array.isArray(data.items)?data.items:[])
+   .filter(photo=>photo&&typeof photo.url==="string"&&photo.url.startsWith("https://"));
+  if(!photos.length)throw new Error("no saved photos");
+  const day=Math.floor(new Date(key+"T00:00:00").getTime()/86400000);
+  return photos[((day%photos.length)+photos.length)%photos.length];
+ }
+
+ async function reveal(){
+  let photo=null;
+  try{photo=await loadPhoto();}catch(error){console.warn("Saved photo unavailable:",error);}
+  const delays=[650,900,650,500];
+  for(let i=1;i<scenes.length;i++){
+   await new Promise(resolve=>setTimeout(resolve,delays[i-1]));
+   line.textContent=scenes[i];
+   art.classList.remove("reveal-pop");
+   void art.offsetWidth;
+   art.classList.add("reveal-pop");
+  }
+  await new Promise(resolve=>setTimeout(resolve,350));
+  if(photo)showPhoto(photo);
+  else{
+   const note=document.createElement("p");
+   note.className="reveal-note";
+   note.textContent="今日の写真は準備中です。";
+   target.appendChild(note);
   }
  }
- load();
+ reveal();
 })();</script>
 
 <script>
