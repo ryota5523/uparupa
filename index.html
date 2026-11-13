@@ -152,6 +152,11 @@
   lastIndex=index;
   return photos[index];
  }
+ function nextTitle(){
+  const titles=[...new Set(photos.map(photo=>(photo.title||"").trim()).filter(Boolean))];
+  if(!titles.length)return "今日のまなみん";
+  return titles[Math.floor(Math.random()*titles.length)];
+ }
  function clearResult(){
   target.querySelectorAll(".revealed-photo,.daily-copy,.reveal-note,.reveal-again").forEach(el=>el.remove());
  }
@@ -193,7 +198,7 @@
    button.disabled=false;
   }
  }
- function showPhoto(photo){
+ function showPhoto(photo,title){
   const image=document.createElement("img");
   image.className="revealed-photo";
   image.src=photo.url;
@@ -209,7 +214,7 @@
   const copy=document.createElement("div");
   copy.className="daily-copy";
   const heading=document.createElement("h3");
-  heading.textContent=photo.title||"今日のまなみん";
+  heading.textContent=title;
   copy.appendChild(heading);
   const button=document.createElement("button");
   button.type="button";
@@ -233,7 +238,8 @@
   try{
    if(!photos.length)await loadPhotos();
    const photo=nextPhoto();
-   art.querySelector("#reveal-title").textContent=photo.title||"今日のまなみん";
+   const title=nextTitle();
+   art.querySelector("#reveal-title").textContent=title;
    const delays=[650,900,650];
    for(let i=1;i<scenes.length;i++){
     await new Promise(resolve=>setTimeout(resolve,delays[i-1]));
@@ -244,7 +250,7 @@
     art.classList.add("reveal-pop");
    }
    await new Promise(resolve=>setTimeout(resolve,350));
-   showPhoto(photo);
+   showPhoto(photo,title);
   }catch(error){
    console.warn("Saved photo unavailable:",error);
    const note=document.createElement("p");
