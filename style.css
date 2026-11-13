@@ -254,37 +254,35 @@ h1{-webkit-user-select:none;user-select:none;touch-action:manipulation}
 }
 
 
-/* Pickup videos: horizontal swipe carousel */
+/* Pickup videos: full-width horizontal swipe carousel, square edges */
 #pickup-video{overflow:hidden}
 #pickup-video .pickup-video-track{
   display:flex;
-  gap:16px;
+  gap:0;
+  width:calc(100% + 44px);
+  margin:0 -22px;
   overflow-x:auto;
   overscroll-behavior-x:contain;
   scroll-snap-type:x mandatory;
-  scroll-padding:16px;
+  scroll-padding:0;
   -webkit-overflow-scrolling:touch;
-  padding:4px 2px 14px;
+  padding:0 0 14px;
   scrollbar-width:thin;
 }
-#pickup-video .pickup-video-track>.movie,
-#pickup-video .pickup-video-track>.hero{
-  flex:0 0 min(86%,440px);
+#pickup-video .pickup-video-track>.movie{
+  flex:0 0 100%;
   min-width:0;
   margin:0;
+  padding:16px 22px;
   scroll-snap-align:start;
   box-sizing:border-box;
-}
-#pickup-video .pickup-video-track>.movie{
-  padding:16px;
-  border-radius:16px;
+  border-radius:0;
   background:#fff;
   color:#6b3028;
 }
 #pickup-video .pickup-video-track>.movie h3{color:#6b3028;margin:0 0 12px}
-#pickup-video .pickup-video-track>.hero{border-radius:16px}
-#pickup-video .pickup-video-track .video{margin:0 0 10px}
-@media(min-width:760px){
-  #pickup-video .pickup-video-track>.movie,
-  #pickup-video .pickup-video-track>.hero{flex-basis:440px}
+#pickup-video .pickup-video-track .video{
+  margin:0;
+  border-radius:0;
 }
+#pickup-video .pickup-video-track .video iframe{border-radius:0}
