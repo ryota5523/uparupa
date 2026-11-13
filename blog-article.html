@@ -33,6 +33,30 @@
 .article-neighbor.disabled{visibility:hidden}
 @media(max-width:420px){.article-neighbors{gap:7px}.article-neighbor{padding:10px}}
 @media(max-width:600px){.article-shell{padding-top:4px}.article-body{font-size:.96rem}.article-body img{border-radius:10px}}
+
+/* Blog article: quiet white reading page with pino red and chocolate text */
+:root{--article-red:#e60012;--article-ink:#4a241d;--article-muted:#80645e}
+.article-shell{padding-top:0}
+.article-back{margin:16px 0 20px;padding:8px 0;border:0;border-radius:0;background:transparent;color:#e60012}
+.article-label{padding:0;border-radius:0;background:transparent;color:#e60012;letter-spacing:.16em}
+.article-title{color:#4a241d;font-weight:800}
+.article-meta{padding-bottom:16px;border-bottom:1px solid #f2d6d6;color:#80645e}
+.article-body{color:#4a241d}
+.article-body h2{border-left:4px solid #e60012}
+.article-body img{border-radius:0;background:#fff}
+.article-body a{color:#e60012}
+.article-body blockquote{border-left:3px solid #e60012;border-radius:0;background:#fff7f7}
+.article-loading,.article-error{color:#80645e}
+.article-official{border-radius:0;background:#e60012;color:#fff}
+.article-end{border-top:1px solid #f2d6d6}
+.article-neighbor{padding:12px;border:0;border-top:1px solid #f2d6d6;border-radius:0;background:#fff;color:#4a241d}
+.article-neighbor small{color:#e60012}
+@media(max-width:600px){
+  .article-shell{padding-top:0}
+  .article-body{font-size:.96rem}
+  .article-body img{border-radius:0}
+}
+
 </style>
 </head>
 <body>
