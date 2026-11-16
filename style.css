@@ -122,24 +122,15 @@ h1{-webkit-user-select:none;user-select:none;touch-action:manipulation}
 @media (prefers-reduced-motion:reduce){.peek .say{animation:none}.peek.out .say{animation:none;opacity:0}}
 
 
-/* Flat section bands: separate content with background tones, not cards */
+/* Flat section bands: alternate white and red without gaps */
 .wrap>section{
   border:0;
   border-radius:0;
   box-shadow:none;
-  margin:24px -18px 0;
+  margin:0 -18px;
   padding:28px 22px 30px;
 }
 .wrap>section:nth-of-type(odd){
-  background:#e60012;
-  color:#fff;
-  --text:#fff;
-  --sub:rgba(255,255,255,.84);
-  --line:rgba(255,255,255,.32);
-  --soft:rgba(255,255,255,.12);
-  --card:transparent;
-}
-.wrap>section:nth-of-type(even){
   background:#fff;
   color:#4a241d;
   --text:#4a241d;
@@ -147,6 +138,15 @@ h1{-webkit-user-select:none;user-select:none;touch-action:manipulation}
   --line:#f2d6d6;
   --soft:#fff7f7;
   --card:#fff;
+}
+.wrap>section:nth-of-type(even){
+  background:#e60012;
+  color:#fff;
+  --text:#fff;
+  --sub:rgba(255,255,255,.84);
+  --line:rgba(255,255,255,.32);
+  --soft:rgba(255,255,255,.12);
+  --card:transparent;
 }
 .wrap>section.hero{
   background:#e60012;
@@ -173,39 +173,8 @@ h1{-webkit-user-select:none;user-select:none;touch-action:manipulation}
 .home-schedule-group+.home-schedule-group{border-top:1px solid #f2d6d6}
 
 
-/* Pino package palette: alternate red and white section backgrounds */
-.wrap>section:nth-of-type(odd):not(#today-manami):not(#home-schedule) .home-eyebrow,
-.wrap>section:nth-of-type(odd):not(#today-manami):not(#home-schedule) .daily-date,
-.wrap>section:nth-of-type(odd):not(#today-manami):not(#home-schedule) .daily-copy p,
-.wrap>section:nth-of-type(odd):not(#today-manami):not(#home-schedule) .home-sub,
-.wrap>section:nth-of-type(odd):not(#today-manami):not(#home-schedule) .home-row .date,
-.wrap>section:nth-of-type(odd):not(#today-manami):not(#home-schedule) .home-row a,
-.wrap>section:nth-of-type(odd):not(#today-manami):not(#home-schedule) .reveal-line,
-.wrap>section:nth-of-type(odd):not(#today-manami):not(#home-schedule) .reveal-art,
-.wrap>section:nth-of-type(odd):not(#today-manami):not(#home-schedule) .reveal-note,
-.wrap>section:nth-of-type(odd):not(#today-manami):not(#home-schedule) .menu-caption,
-.wrap>section:nth-of-type(odd):not(#today-manami):not(#home-schedule) .home-empty{
-  color:#fff;
-}
-.wrap>section:nth-of-type(odd) .home-row{border-bottom-color:rgba(255,255,255,.35)}
-.wrap>section:nth-of-type(odd) .home-schedule-group+.home-schedule-group{border-top-color:rgba(255,255,255,.35)}
-
-
-/* Home color order: red header, white Today's Manamin, then alternating bands */
-.wrap>header{
-  background:#e60012;
-  color:#fff;
-  margin:0 -18px;
-  padding:30px 18px 26px;
-}
-.wrap>header .badge{
-  background:#fff;
-  color:#e60012;
-}
-.wrap>header .kana,
-.wrap>header .intro{color:#fff}
-#today-manami{
-  background:#fff !important;
+/* Text and separators follow each section's actual background */
+#today-manami,#home-schedule,#app{
   color:#4a241d;
   --text:#4a241d;
   --sub:#80645e;
@@ -213,17 +182,20 @@ h1{-webkit-user-select:none;user-select:none;touch-action:manipulation}
   --soft:#fff7f7;
   --card:#fff;
 }
+#pickup-video,#app-menu,#links{
+  color:#fff;
+  --text:#fff;
+  --sub:rgba(255,255,255,.84);
+  --line:rgba(255,255,255,.32);
+  --soft:rgba(255,255,255,.12);
+  --card:transparent;
+}
 #today-manami .home-eyebrow,
 #today-manami .daily-date,
 #today-manami .daily-copy p,
 #today-manami .reveal-line,
 #today-manami .reveal-art,
 #today-manami .reveal-note{color:#4a241d}
-#pickup-video{background:#e60012;color:#fff;--text:#fff;--sub:rgba(255,255,255,.84);--line:rgba(255,255,255,.32);--soft:rgba(255,255,255,.12);--card:transparent}
-#home-schedule{background:#fff;color:#4a241d;--text:#4a241d;--sub:#80645e;--line:#f2d6d6;--soft:#fff7f7;--card:#fff}
-#app-menu{background:#e60012;color:#fff;--text:#fff;--sub:rgba(255,255,255,.84);--line:rgba(255,255,255,.32);--soft:rgba(255,255,255,.12);--card:transparent}
-#app{background:#fff;color:#4a241d;--text:#4a241d;--sub:#80645e;--line:#f2d6d6;--soft:#fff7f7;--card:#fff}
-#links{background:#e60012;color:#fff;--text:#fff;--sub:rgba(255,255,255,.84);--line:rgba(255,255,255,.32);--soft:rgba(255,255,255,.12);--card:transparent}
 #pickup-video .home-eyebrow,
 #pickup-video .home-sub,
 #pickup-video h2,
@@ -243,6 +215,27 @@ h1{-webkit-user-select:none;user-select:none;touch-action:manipulation}
 #links .links a{color:#fff;border-color:rgba(255,255,255,.6)}
 #links .links a small{color:rgba(255,255,255,.84)}
 #links .links a i{color:#fff}
+
+
+/* Header red, then white / red bands in order */
+.wrap>header{
+  background:#e60012;
+  color:#fff;
+  margin:0 -18px;
+  padding:30px 18px 26px;
+}
+.wrap>header .badge{
+  background:#fff;
+  color:#e60012;
+}
+.wrap>header .kana,
+.wrap>header .intro{color:#fff}
+#today-manami{background:#fff !important}
+#pickup-video{background:#e60012}
+#home-schedule{background:#fff}
+#app-menu{background:#e60012}
+#app{background:#fff}
+#links{background:#e60012}
 
 
 /* Keep the member name readable on the red header */
