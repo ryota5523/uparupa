@@ -263,7 +263,7 @@
   }).then(data=>{
     if(!data||data.ok===false||!Array.isArray(data.items))throw new Error("Invalid blog response");
     const blogEvents=data.items.map(post=>{
-      const date=String(post.published_at||"").match(/^(\\d{4}-\\d{2}-\\d{2})/);
+      const date=String(post.published_at||"").match(/^(\d{4}-\d{2}-\d{2})/);
       if(!date)return null;
       return {event_date:date[1],title:"ブログ｜"+String(post.title||"タイトル未設定"),category:"ブログ",url:post.url||"https://www.hinatazaka46.com/s/official/diary/member/list?ima=0000&ct=38"};
     }).filter(Boolean);
