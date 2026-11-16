@@ -403,17 +403,26 @@
     target.appendChild(el);
   }
   function empty(target,message){target.innerHTML='<div class="home-empty">'+message+'</div>';}
-  fetch(API).then(r=>r.ok?r.json():Promise.reject()).then(data=>{
-    const items=Array.isArray(data.items)?data.items:[];
+  function normalizeItems(data){
+    if(Array.isArray(data))return data;
+    if(data&&data.ok===false)throw new Error(data.error||"schedule API error");
+    if(data&&Array.isArray(data.items))return data.items;
+    if(data&&Array.isArray(data.results))return data.results;
+    return [];
+  }
+  fetch(API+"?t="+Date.now(),{cache:"no-store"}).then(r=>{
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    return r.json();
+  }).then(data=>{
+    const items=normalizeItems(data).filter(x=>x&&/^\d{4}-\d{2}-\d{2}$/.test(String(x.event_date||"")));
     const thisWeek=items.filter(x=>x.event_date>=start&&x.event_date<=end).sort((a,b)=>a.event_date.localeCompare(b.event_date));
     weekly.innerHTML="";
     if(thisWeek.length)thisWeek.forEach(x=>row(weekly,x.event_date,x.title,x.url));
     else empty(weekly,"今週の出演予定はありません。");
-  }).catch(()=>empty(weekly,"出演情報を読み込めませんでした。"));
-  const upcoming=meetDates.filter(d=>d>=todayKey).sort();
-  meet.innerHTML="";
-  if(upcoming.length)upcoming.forEach(d=>row(meet,d,"ミート＆グリート",null));
-  else empty(meet,"今後の開催予定はありません。");
+  }).catch(error=>{
+    console.warn("Schedule load failed:",error);
+    empty(weekly,"出演情報を読み込めませんでした。時間をおいて再度お試しください。");
+  });
 })();
 </script>
 </body></html>
