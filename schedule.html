@@ -99,6 +99,7 @@
 <button class="calendar-filter" type="button" data-filter="ミーグリ" aria-pressed="false">ミーグリ</button>
 <button class="calendar-filter" type="button" data-filter="ライブ" aria-pressed="false">ライブ</button>
 <button class="calendar-filter" type="button" data-filter="その他" aria-pressed="false">その他</button>
+<button class="calendar-filter" type="button" data-filter="ブログ" aria-pressed="false">ブログ</button>
 </div>
 <div class="calendar-grid" id="calendar-weekdays">
 <div class="calendar-weekday">日</div><div class="calendar-weekday">月</div><div class="calendar-weekday">火</div><div class="calendar-weekday">水</div><div class="calendar-weekday">木</div><div class="calendar-weekday">金</div><div class="calendar-weekday">土</div>
@@ -164,6 +165,7 @@
   function categoryOf(item){
     const raw=String(item.category||item.type||item.event_type||item.kind||"").trim();
     const value=(raw+" "+String(item.title||"")).toLowerCase();
+    if(raw==="ブログ"||/ブログ/.test(raw))return "ブログ";
     if(/ミーグリ|個別トーク|オンライン.*トーク|オンライン.*ミート/.test(value))return "ミーグリ";
     if(/ライブ|コンサート|フェス|公演|ツアー/.test(value))return "ライブ";
     if(/出演|放送|配信|テレビ|ラジオ|雑誌|発売|掲載|番組/.test(value))return "出演";
@@ -255,6 +257,21 @@
     console.warn("Schedule load failed:",error);
     selectedEvents.innerHTML='<div class="no-events">スケジュールを読み込めませんでした。時間をおいて再度お試しください。</div>';
   });
+  fetch("https://manami-site-worker.yellowworker.workers.dev/api/blogs?t="+Date.now(),{cache:"no-store"}).then(r=>{
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    return r.json();
+  }).then(data=>{
+    if(!data||data.ok===false||!Array.isArray(data.items))throw new Error("Invalid blog response");
+    const blogEvents=data.items.map(post=>{
+      const date=String(post.published_at||"").match(/^(\\d{4}-\\d{2}-\\d{2})/);
+      if(!date)return null;
+      return {event_date:date[1],title:"ブログ｜"+String(post.title||"タイトル未設定"),category:"ブログ",url:post.url||"https://www.hinatazaka46.com/s/official/diary/member/list?ima=0000&ct=38"};
+    }).filter(Boolean);
+    const unique=new Map(events.map(item=>[String(item.event_date)+"|"+String(item.title||""),item]));
+    blogEvents.forEach(item=>unique.set(item.event_date+"|"+item.title,item));
+    events=[...unique.values()].sort((a,b)=>a.event_date.localeCompare(b.event_date));
+    renderCalendar();renderSelected();renderUpcoming();
+  }).catch(error=>console.warn("Blog dates load failed:",error));
 })();
 </script>
 <script src="egg.js" defer></script>
