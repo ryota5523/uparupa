@@ -145,6 +145,13 @@
     {event_date:"2026-12-23",title:"ひなくり2026｜愛知・クロコくんホール（日本ガイシホール）（開場17:00／開演18:30）",category:"ライブ",url:"https://www.hinatazaka46.com/s/official/page/hinachri2026"},
     {event_date:"2026-12-24",title:"ひなくり2026｜愛知・クロコくんホール（日本ガイシホール）（開場17:00／開演18:30）",category:"ライブ",url:"https://www.hinatazaka46.com/s/official/page/hinachri2026"}
   ];
+  const officialOtherEvents=[
+    {event_date:"2026-11-19",title:"日向坂46 CAFE 2026｜新宿・大阪 開催開始（〜2027年1月17日）",category:"その他",url:"https://www.hinatazaka46.com/s/official/news/detail/G00244"},
+    {event_date:"2026-11-21",title:"日向坂46 CAFE 2026 キッチンカー｜兵庫・神戸ワールド記念ホール（11月21日〜23日）",category:"その他",url:"https://www.hinatazaka46.com/s/official/news/detail/G00244"},
+    {event_date:"2026-11-26",title:"日向坂46 CAFE 2026｜愛知・福岡・原宿 開催開始（愛知/福岡〜2027年1月17日、原宿〜1月24日）",category:"その他",url:"https://www.hinatazaka46.com/s/official/news/detail/G00244"},
+    {event_date:"2026-12-09",title:"日向坂46 CAFE 2026 キッチンカー｜東京・国立代々木競技場 第一体育館（12月9日〜11日）",category:"その他",url:"https://www.hinatazaka46.com/s/official/news/detail/G00244"},
+    {event_date:"2026-12-22",title:"日向坂46 CAFE 2026 キッチンカー｜愛知・クロコくんホール（日本ガイシホール）（12月22日〜24日）",category:"その他",url:"https://www.hinatazaka46.com/s/official/news/detail/G00244"}
+  ];
   const key=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
   const jpDate=d=>d.getFullYear()+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日（"+["日","月","火","水","木","金","土"][d.getDay()]+"）";
   const safe=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -233,7 +240,7 @@
     if(data&&data.ok===false)throw new Error(data.error||"schedule API error");
     const items=Array.isArray(data)?data:(Array.isArray(data?.items)?data.items:(Array.isArray(data?.results)?data.results:[]));
     const apiEvents=items.filter(x=>x&&/^\d{4}-\d{2}-\d{2}$/.test(String(x.event_date||"")));
-    const merged=[...apiEvents,...officialLiveEvents];
+    const merged=[...apiEvents,...officialLiveEvents,...officialOtherEvents];
     const unique=new Map();
     merged.forEach(item=>unique.set(String(item.event_date)+"|"+String(item.title||""),item));
     events=[...unique.values()].sort((a,b)=>a.event_date.localeCompare(b.event_date));
