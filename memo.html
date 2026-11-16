@@ -59,7 +59,7 @@
 <div class="memo-chat-controls"><span style="font-size:.76rem;color:#987b82">話した人：</span><button type="button" class="active" data-chat-speaker="me">自分</button><button type="button" data-chat-speaker="manami">まなみん</button></div>
 <textarea id="memo-chat-input" maxlength="1000" placeholder="会話を入力してね…"></textarea>
 <button type="button" class="memo-chat-add" id="memo-chat-add">＋ メッセージを追加</button>
-<button type="button" class="memo-chat-export" id="memo-chat-export">トーク画面を画像で保存</button>
+<button type="button" class="memo-chat-export" id="memo-chat-export">トーク画像を作成</button><div id="memo-chat-save-area" hidden style="display:grid;gap:8px"><p class="memo-note">画像を長押しして「写真に保存」もできるよ。</p><img id="memo-chat-export-preview" alt="作成したミーグリトーク画像" style="display:block;width:100%;height:auto;border:1px solid #ead5d9;border-radius:10px"><button type="button" class="memo-chat-export" id="memo-chat-share">共有・写真に保存</button></div>
 <p class="memo-note">自分とまなみんの発言を交互に追加して、トーク履歴を作れるよ。</p>
 </div>
 <p class="memo-note">メモと写真はこの端末のブラウザ内に保存されます。サーバーには送信しません。ブラウザのデータを消去すると一緒に消えるので注意してね。</p>
@@ -71,7 +71,7 @@
 <footer><p>このページのメモ・写真は端末内だけに保存されます。</p></footer></div>
 <script>
 (function(){
-const DB="manami-memories-v1",STORE="entries";let db,entries=[],month=new Date(),selected="",editingId=null,objectUrls=[],draftUrls=[],chatDraft=[],chatSpeaker="me",chatBackground=null,manamiAvatar=null,myAvatar=null,chatBackgroundPreviewUrl="",manamiAvatarPreviewUrl="",myAvatarPreviewUrl="";const $=id=>document.getElementById(id),form=$("memo-form"),list=$("memo-list"),cal=$("memo-calendar");
+const DB="manami-memories-v1",STORE="entries";let db,entries=[],month=new Date(),selected="",editingId=null,objectUrls=[],draftUrls=[],chatDraft=[],chatSpeaker="me",chatBackground=null,manamiAvatar=null,myAvatar=null,chatBackgroundPreviewUrl="",manamiAvatarPreviewUrl="",myAvatarPreviewUrl="",exportedTalkBlob=null,exportedTalkUrl="";const $=id=>document.getElementById(id),form=$("memo-form"),list=$("memo-list"),cal=$("memo-calendar");
 $("memo-date").value=new Date().toLocaleDateString("sv-SE");
 function openDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB,1);req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains(STORE))req.result.createObjectStore(STORE,{keyPath:"id"});};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});}
 function request(mode,action,item){return new Promise((resolve,reject)=>{const tx=db.transaction(STORE,mode),store=tx.objectStore(STORE),req=action==="all"?store.getAll():action==="put"?store.put(item):store.delete(item);if(action==="all"){req.onsuccess=()=>resolve(req.result||[]);req.onerror=()=>reject(req.error);}else{tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||new Error("DB transaction aborted"));}});}
@@ -108,9 +108,10 @@ async function exportTalkImage(){
  ctx.fillStyle=mine?"#9edc9a":"#fff";ctx.strokeStyle="#d8e2dc";ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(bx,y,bw,bh,18);ctx.fill();ctx.stroke();
  ctx.fillStyle="#30292b";ctx.font="27px sans-serif";ctx.textAlign="left";item.lines.forEach((t,i)=>ctx.fillText(t,bx+bp,y+bp+28+i*row));y+=Math.max(64,bh)+34;
  }
- const a=document.createElement("a");a.download="ミーグリトーク.png";a.href=canvas.toDataURL("image/png");a.click();$("memo-status").textContent="トーク画面を画像に保存したよ ♡";
+ canvas.toBlob(blob=>{if(!blob){$("memo-status").textContent="画像を作成できませんでした。";return;}if(exportedTalkUrl)URL.revokeObjectURL(exportedTalkUrl);exportedTalkBlob=blob;exportedTalkUrl=URL.createObjectURL(blob);$("memo-chat-export-preview").src=exportedTalkUrl;$("memo-chat-save-area").hidden=false;$("memo-status").textContent="画像ができたよ。下のボタンから共有するか、画像を長押しして保存してね ♡";}, "image/png");
 }
 $("memo-chat-export").onclick=exportTalkImage;
+$("memo-chat-share").onclick=async()=>{if(!exportedTalkBlob)return;const file=new File([exportedTalkBlob],"ミーグリトーク.png",{type:"image/png"});try{if(navigator.canShare&&navigator.canShare({files:[file]})&&navigator.share){await navigator.share({files:[file],title:"ミーグリトーク"});}else{const a=document.createElement("a");a.href=exportedTalkUrl;a.download="ミーグリトーク.png";a.click();$("memo-status").textContent="画像を表示したよ。表示された画像を長押しして保存してね。";}}catch(err){if(err.name!=="AbortError")$("memo-status").textContent="共有を開けなかったよ。画像を長押しして保存してね。";}};
 $("memo-chat-add").onclick=()=>{const text=$("memo-chat-input").value.trim();if(!text)return;chatDraft.push({speaker:chatSpeaker,text});$("memo-chat-input").value="";renderChatDraft();};
 $("memo-chat-preview").addEventListener("click",e=>{const b=e.target.closest("[data-chat-remove]");if(!b)return;chatDraft.splice(Number(b.dataset.chatRemove),1);renderChatDraft();});
 document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-view]").forEach(x=>x.classList.toggle("active",x===b));$("calendar-wrap").hidden=b.dataset.view!=="calendar";selected="";renderList();});
