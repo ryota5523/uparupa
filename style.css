@@ -174,17 +174,17 @@ h1{-webkit-user-select:none;user-select:none;touch-action:manipulation}
 
 
 /* Pino package palette: alternate red and white section backgrounds */
-.wrap>section:nth-of-type(odd) .home-eyebrow,
-.wrap>section:nth-of-type(odd) .daily-date,
-.wrap>section:nth-of-type(odd) .daily-copy p,
-.wrap>section:nth-of-type(odd) .home-sub,
-.wrap>section:nth-of-type(odd) .home-row .date,
-.wrap>section:nth-of-type(odd) .home-row a,
-.wrap>section:nth-of-type(odd) .reveal-line,
-.wrap>section:nth-of-type(odd) .reveal-art,
-.wrap>section:nth-of-type(odd) .reveal-note,
-.wrap>section:nth-of-type(odd) .menu-caption,
-.wrap>section:nth-of-type(odd) .home-empty{
+.wrap>section:nth-of-type(odd):not(#today-manami):not(#home-schedule) .home-eyebrow,
+.wrap>section:nth-of-type(odd):not(#today-manami):not(#home-schedule) .daily-date,
+.wrap>section:nth-of-type(odd):not(#today-manami):not(#home-schedule) .daily-copy p,
+.wrap>section:nth-of-type(odd):not(#today-manami):not(#home-schedule) .home-sub,
+.wrap>section:nth-of-type(odd):not(#today-manami):not(#home-schedule) .home-row .date,
+.wrap>section:nth-of-type(odd):not(#today-manami):not(#home-schedule) .home-row a,
+.wrap>section:nth-of-type(odd):not(#today-manami):not(#home-schedule) .reveal-line,
+.wrap>section:nth-of-type(odd):not(#today-manami):not(#home-schedule) .reveal-art,
+.wrap>section:nth-of-type(odd):not(#today-manami):not(#home-schedule) .reveal-note,
+.wrap>section:nth-of-type(odd):not(#today-manami):not(#home-schedule) .menu-caption,
+.wrap>section:nth-of-type(odd):not(#today-manami):not(#home-schedule) .home-empty{
   color:#fff;
 }
 .wrap>section:nth-of-type(odd) .home-row{border-bottom-color:rgba(255,255,255,.35)}
