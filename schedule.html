@@ -263,9 +263,11 @@
   }).then(data=>{
     if(!data||data.ok===false||!Array.isArray(data.items))throw new Error("Invalid blog response");
     const blogEvents=data.items.map(post=>{
-      const date=String(post.published_at||"").match(/^(\d{4}-\d{2}-\d{2})/);
+      const rawDate=String(post.published_at||post.date||post.created_at||"").trim();
+      const date=rawDate.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
       if(!date)return null;
-      return {event_date:date[1],title:"ブログ｜"+String(post.title||"タイトル未設定"),category:"ブログ",url:post.url||"https://www.hinatazaka46.com/s/official/diary/member/list?ima=0000&ct=38"};
+      const eventDate=date[1]+"-"+String(date[2]).padStart(2,"0")+"-"+String(date[3]).padStart(2,"0");
+      return {event_date:eventDate,title:"ブログ｜"+String(post.title||"タイトル未設定"),category:"ブログ",url:post.url||"https://www.hinatazaka46.com/s/official/diary/member/list?ima=0000&ct=38"};
     }).filter(Boolean);
     const unique=new Map(events.map(item=>[String(item.event_date)+"|"+String(item.title||""),item]));
     blogEvents.forEach(item=>unique.set(item.event_date+"|"+item.title,item));
