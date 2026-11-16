@@ -77,7 +77,51 @@
   <div class="movie"><h3>ホ・オノポノ</h3><div class="video"><iframe src="https://www.youtube.com/embed/UT3XpjbnDLs" title="ホ・オノポノ" loading="lazy" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div></div>
   <div class="movie"><h3>テザリングおんなのこ</h3><div class="video"><iframe src="https://www.youtube.com/embed/7xgQhcWya_U" title="テザリングおんなのこ" loading="lazy" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div></div>
 </div>
+<div class="pickup-video-controls" aria-label="おすすめ動画のスライド操作">
+  <div class="pickup-video-progress"><span id="pickup-video-progress-bar"></span></div>
+  <div class="pickup-video-control-row">
+    <span class="pickup-video-count"><b id="pickup-video-current">01</b><i>/</i><span id="pickup-video-total">07</span></span>
+    <div class="pickup-video-dots" id="pickup-video-dots" aria-label="スライドを選択"></div>
+    <div class="pickup-video-arrows"><button type="button" id="pickup-video-prev" aria-label="前の動画">←</button><button type="button" id="pickup-video-next" aria-label="次の動画">→</button></div>
+  </div>
+</div>
 </section>
+<script>
+(function(){
+ const track=document.querySelector("#pickup-video .pickup-video-track");
+ const current=document.getElementById("pickup-video-current");
+ const total=document.getElementById("pickup-video-total");
+ const bar=document.getElementById("pickup-video-progress-bar");
+ const dots=document.getElementById("pickup-video-dots");
+ const prev=document.getElementById("pickup-video-prev");
+ const next=document.getElementById("pickup-video-next");
+ if(!track||!current||!total||!bar||!dots||!prev||!next)return;
+ const slides=[...track.querySelectorAll(".movie")];
+ total.textContent=String(slides.length).padStart(2,"0");
+ slides.forEach((slide,index)=>{
+  const dot=document.createElement("button");
+  dot.type="button";dot.setAttribute("aria-label",(index+1)+"番目の動画を表示");
+  dot.addEventListener("click",()=>slides[index].scrollIntoView({behavior:"smooth",block:"nearest",inline:"start"}));
+  dots.appendChild(dot);
+ });
+ let ticking=false;
+ function update(){
+  const center=track.scrollLeft+track.clientWidth/2;
+  let index=0,best=Infinity;
+  slides.forEach((slide,i)=>{const c=slide.offsetLeft+slide.offsetWidth/2;const d=Math.abs(c-center);if(d<best){best=d;index=i;}});
+  current.textContent=String(index+1).padStart(2,"0");
+  bar.style.width=((index+1)/slides.length*100)+"%";
+  [...dots.children].forEach((dot,i)=>{dot.classList.toggle("active",i===index);dot.setAttribute("aria-current",i===index?"true":"false");});
+  prev.disabled=index===0;next.disabled=index===slides.length-1;
+  ticking=false;
+ }
+ track.addEventListener("scroll",()=>{if(!ticking){requestAnimationFrame(update);ticking=true;}},{passive:true});
+ prev.addEventListener("click",()=>{track.scrollBy({left:-(slides[0].getBoundingClientRect().width+14),behavior:"smooth"});});
+ next.addEventListener("click",()=>{track.scrollBy({left:slides[0].getBoundingClientRect().width+14,behavior:"smooth"});});
+ window.addEventListener("resize",update);
+ update();
+})();
+</script>
 <section class="home-section" id="home-schedule">
   <div class="home-eyebrow">SCHEDULE</div><h2>出演情報・ミーグリ</h2>
   <div class="home-schedule-group"><h3>今週の出演情報</h3><p class="home-sub">今週（月曜〜日曜）の予定</p><div id="home-weekly" class="home-list"><div class="home-empty">出演情報を読み込み中…</div></div></div>
