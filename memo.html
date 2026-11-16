@@ -95,20 +95,25 @@ $("memo-chat-manami").onchange=e=>{manamiAvatar=e.target.files[0]||null;updateDr
 $("memo-chat-me").onchange=e=>{myAvatar=e.target.files[0]||null;updateDraftAssetPreview();};
 async function exportTalkImage(){
  if(!chatDraft.length){$("memo-status").textContent="先に会話を追加してね。";return;}
- const canvas=document.createElement("canvas"),ctx=canvas.getContext("2d"),W=900,pad=48,row=38,bp=22;
+ const canvas=document.createElement("canvas"),ctx=canvas.getContext("2d"),W=900,H=1600,pad=48,row=38,bp=22,gap=34,avatarSize=60;
+ canvas.width=W;canvas.height=H;
  ctx.font="27px sans-serif";
  const items=chatDraft.map(m=>{const lines=[];let s="";for(const ch of m.text){if(ctx.measureText(s+ch).width>540&&s){lines.push(s);s=ch;}else{s+=ch;}}if(s)lines.push(s);return {m,lines};});
- canvas.width=W;canvas.height=120+items.reduce((n,x)=>n+Math.max(64,x.lines.length*row+bp*2)+34,0);
- ctx.fillStyle="#e5eee8";ctx.fillRect(0,0,W,canvas.height);
- if(chatBackground){try{const bg=await createImageBitmap(chatBackground);ctx.drawImage(bg,0,0,W,canvas.height);}catch(e){}}
- async function avatar(blob,x,y,defaultSrc){ctx.save();ctx.beginPath();ctx.arc(x+30,y+30,30,0,Math.PI*2);ctx.clip();try{let im;if(blob){im=await createImageBitmap(blob);}else{im=await new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=defaultSrc;});}ctx.drawImage(im,x,y,60,60);}catch(e){ctx.fillStyle="#fff";ctx.fillRect(x,y,60,60);}ctx.restore();}
- let y=48;
- for(const item of items){const mine=item.m.speaker==="me",bw=Math.max(150,Math.min(590,Math.max(...item.lines.map(t=>ctx.measureText(t).width))+bp*2)),bh=item.lines.length*row+bp*2,bx=mine?W-pad-bw-74:pad+74;
- await avatar(mine?myAvatar:manamiAvatar,mine?W-pad-60:pad,y+2,mine?"https://uparu-pa.vercel.app/bird.png?v=2":"https://uparu-pa.vercel.app/icon-192.png?v=2");
- ctx.fillStyle=mine?"#9edc9a":"#fff";ctx.strokeStyle="#d8e2dc";ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(bx,y,bw,bh,18);ctx.fill();ctx.stroke();
- ctx.fillStyle="#30292b";ctx.font="27px sans-serif";ctx.textAlign="left";item.lines.forEach((t,i)=>ctx.fillText(t,bx+bp,y+bp+28+i*row));y+=Math.max(64,bh)+34;
+ const naturalHeight=items.reduce((n,x)=>n+Math.max(64,x.lines.length*row+bp*2)+gap,0);
+ const scale=Math.min(1,(H-pad*2)/Math.max(1,naturalHeight));
+ ctx.fillStyle="#e5eee8";ctx.fillRect(0,0,W,H);
+ if(chatBackground){try{const bg=await createImageBitmap(chatBackground);const ratio=Math.max(W/bg.width,H/bg.height),bw=bg.width*ratio,bh=bg.height*ratio;ctx.drawImage(bg,(W-bw)/2,(H-bh)/2,bw,bh);}catch(e){}}
+ async function avatar(blob,x,y,defaultSrc,size){ctx.save();ctx.beginPath();ctx.arc(x+size/2,y+size/2,size/2,0,Math.PI*2);ctx.clip();try{let im;if(blob){im=await createImageBitmap(blob);}else{im=await new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=defaultSrc;});}ctx.drawImage(im,x,y,size,size);}catch(e){ctx.fillStyle="#fff";ctx.fillRect(x,y,size,size);}ctx.restore();}
+ let y=pad;
+ for(const item of items){
+  const mine=item.m.speaker==="me",scaledAvatar=avatarSize*scale,scaledBp=bp*scale,scaledRow=row*scale,scaledGap=gap*scale;
+  const textWidths=item.lines.map(t=>ctx.measureText(t).width),bw=Math.max(150,Math.min(590,Math.max(...textWidths)+bp*2))*scale,bh=(item.lines.length*row+bp*2)*scale,bx=mine?W-pad-bw-scaledAvatar-18*scale:pad+scaledAvatar+18*scale;
+  await avatar(mine?myAvatar:manamiAvatar,mine?W-pad-scaledAvatar:pad,y+2*scale,mine?"https://uparu-pa.vercel.app/bird.png?v=2":"https://uparu-pa.vercel.app/icon-192.png?v=2",scaledAvatar);
+  ctx.fillStyle=mine?"#9edc9a":"#fff";ctx.strokeStyle="#d8e2dc";ctx.lineWidth=2*scale;ctx.beginPath();ctx.roundRect(bx,y,bw,bh,18*scale);ctx.fill();ctx.stroke();
+  ctx.fillStyle="#30292b";ctx.font=(27*scale)+"px sans-serif";ctx.textAlign="left";item.lines.forEach((t,i)=>ctx.fillText(t,bx+scaledBp,y+scaledBp+28*scale+i*scaledRow));
+  y+=Math.max(64*scale,bh)+scaledGap;
  }
- canvas.toBlob(blob=>{if(!blob){$("memo-status").textContent="画像を作成できませんでした。";return;}if(exportedTalkUrl)URL.revokeObjectURL(exportedTalkUrl);exportedTalkBlob=blob;exportedTalkUrl=URL.createObjectURL(blob);$("memo-chat-export-preview").src=exportedTalkUrl;$("memo-chat-save-area").hidden=false;$("memo-status").textContent="画像ができたよ。下のボタンから共有するか、画像を長押しして保存してね ♡";}, "image/png");
+ canvas.toBlob(blob=>{if(!blob){$("memo-status").textContent="画像を作成できませんでした。";return;}if(exportedTalkUrl)URL.revokeObjectURL(exportedTalkUrl);exportedTalkBlob=blob;exportedTalkUrl=URL.createObjectURL(blob);$("memo-chat-export-preview").src=exportedTalkUrl;$("memo-chat-save-area").hidden=false;$("memo-status").textContent="トーク画面と同じ縦長サイズで画像ができたよ。下のボタンから共有するか、画像を長押しして保存してね ♡";}, "image/png");
 }
 $("memo-chat-export").onclick=exportTalkImage;
 $("memo-chat-share").onclick=async()=>{if(!exportedTalkBlob)return;const file=new File([exportedTalkBlob],"ミーグリトーク.png",{type:"image/png"});try{if(navigator.canShare&&navigator.canShare({files:[file]})&&navigator.share){await navigator.share({files:[file],title:"ミーグリトーク"});}else{const a=document.createElement("a");a.href=exportedTalkUrl;a.download="ミーグリトーク.png";a.click();$("memo-status").textContent="画像を表示したよ。表示された画像を長押しして保存してね。";}}catch(err){if(err.name!=="AbortError")$("memo-status").textContent="共有を開けなかったよ。画像を長押しして保存してね。";}};
