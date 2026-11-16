@@ -58,7 +58,14 @@
 .app-camera .app-glyph{background:linear-gradient(145deg,#a64b3c,#6b3028)}
 .app-memo .app-glyph{background:linear-gradient(145deg,#8a4a35,#4a241d)}
 @media(min-width:640px){.app-grid{grid-template-columns:repeat(7,minmax(0,1fr));gap:12px}.app-menu{padding:24px}.app-icon b{font-size:.78rem}}
-</style></head><body><div class="appbar"><a href="index.html"><img src="logo.png" alt="" class="logo"><span><b>MANAMI</b><small>大野愛実 ファンサイト（非公式）</small></span></a></div><div class="wrap">
+</style>
+<style>
+#home-meet .home-row{display:flex;align-items:center;flex-wrap:wrap;gap:4px 12px}
+#home-meet .home-row .date{flex:1 0 100%}
+#home-meet .meet-report-link{display:inline-flex;align-items:center;justify-content:center;margin-top:5px;padding:5px 13px;background:#e60012;color:#fff!important;font-size:.78rem;font-weight:800;text-decoration:none;border:1px solid #e60012}
+#home-meet .meet-report-link:active{opacity:.75}
+</style>
+</head><body><div class="appbar"><a href="index.html"><img src="logo.png" alt="" class="logo"><span><b>MANAMI</b><small>大野愛実 ファンサイト（非公式）</small></span></a></div><div class="wrap">
 <header><span class="badge">日向坂46 五期生</span><p class="kana">おおの まなみ</p><h1>大野愛実</h1><p class="tag">負けない！泣かない！実らせたい！</p>
 <p class="intro">東京都出身<span id="age">19</span>歳 大野愛実ちゃんのファンサイトです</p></header>
 <nav><a href="index.html" class="on"><i class="ms">home</i>Home</a><a href="profile.html"><i class="ms">person</i>Profile</a><a href="schedule.html"><i class="ms">calendar_month</i>Schedule</a><a href="news.html"><i class="ms">newspaper</i>News</a><a href="works.html"><i class="ms">movie</i>Works</a><a href="blog.html"><i class="ms">edit_note</i>Blog</a></nav>
@@ -382,7 +389,15 @@
     const dt=document.createElement("div");dt.className="date";dt.textContent=fmt(date);
     const name=document.createElement(url?"a":"div");name.textContent=title;
     if(url){name.href=url;name.target="_blank";name.rel="noopener";}
-    el.append(dt,name);target.appendChild(el);
+    el.append(dt,name);
+    if(title==="ミート＆グリート"){
+      const report=document.createElement("a");
+      report.className="meet-report-link";
+      report.href="memo.html?date="+encodeURIComponent(date)+"&type="+encodeURIComponent("ミーグリ");
+      report.textContent="レポを書く";
+      el.appendChild(report);
+    }
+    target.appendChild(el);
   }
   function empty(target,message){target.innerHTML='<div class="home-empty">'+message+'</div>';}
   fetch(API).then(r=>r.ok?r.json():Promise.reject()).then(data=>{
