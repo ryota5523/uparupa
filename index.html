@@ -379,7 +379,10 @@
   const weekly=document.getElementById("home-weekly");
   const meet=document.getElementById("home-meet");
   if(!weekly||!meet)return;
-  const meetDates=["2026-10-04","2026-10-11","2026-10-18","2026-10-25","2026-11-01","2026-12-06"];
+  // Scheduleページに掲載している手動登録のミーグリ日程
+  const manualMeetEvents=[
+    {event_date:"2027-01-11",title:"リアルミート＆グリート｜幕張メッセ",url:"https://www.hinatazaka46.com/s/official/news/detail/S00365?ima=0000"}
+  ];
   const today=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Tokyo"}));
   const dateKey=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
   const todayKey=dateKey(today);
@@ -415,10 +418,25 @@
     return r.json();
   }).then(data=>{
     const items=normalizeItems(data).filter(x=>x&&/^\d{4}-\d{2}-\d{2}$/.test(String(x.event_date||"")));
-    const thisWeek=items.filter(x=>x.event_date>=start&&x.event_date<=end).sort((a,b)=>a.event_date.localeCompare(b.event_date));
+    const thisWeek=items.filter(x=>x.event_date>=start&&x.event_date<=end && !/ミーグリ|ミート＆グリート/.test(String(x.category||"")+" "+String(x.title||""))).sort((a,b)=>a.event_date.localeCompare(b.event_date));
     weekly.innerHTML="";
     if(thisWeek.length)thisWeek.forEach(x=>row(weekly,x.event_date,x.title,x.url));
     else empty(weekly,"今週の出演予定はありません。");
+
+    // API登録分とScheduleページの手動登録分をまとめてHOMEのミーグリ欄へ表示
+    const meetEvents=[...items.filter(x=>/ミーグリ|ミート＆グリート/.test(String(x.category||"")+" "+String(x.title||""))),...manualMeetEvents];
+    const uniqueMeet=new Map();
+    meetEvents.filter(x=>x.event_date>=todayKey).forEach(x=>uniqueMeet.set(x.event_date+"|"+x.title,x));
+    const sortedMeet=[...uniqueMeet.values()].sort((a,b)=>a.event_date.localeCompare(b.event_date));
+    meet.innerHTML="";
+    if(sortedMeet.length){
+      sortedMeet.forEach(x=>{
+        const title=/ミート＆グリート/.test(String(x.title||""))?"ミート＆グリート":x.title;
+        row(meet,x.event_date,title,x.url);
+      });
+    }else{
+      empty(meet,"今後のミーグリ開催予定はありません。");
+    }
   }).catch(error=>{
     console.warn("Schedule load failed:",error);
     empty(weekly,"出演情報を読み込めませんでした。時間をおいて再度お試しください。");
