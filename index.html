@@ -440,6 +440,10 @@
   }).catch(error=>{
     console.warn("Schedule load failed:",error);
     empty(weekly,"出演情報を読み込めませんでした。時間をおいて再度お試しください。");
+    meet.innerHTML="";
+    const fallback=officialMeetDates.filter(date=>date>=todayKey).sort();
+    if(fallback.length)fallback.forEach(date=>row(meet,date,"ミート＆グリート","https://fortunemusic.jp/hinatazaka_202609/"));
+    else empty(meet,"今後のミーグリ開催予定はありません。");
   });
 })();
 </script>
