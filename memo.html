@@ -75,7 +75,7 @@ $("memo-date").value=new Date().toLocaleDateString("sv-SE");
 const memoParams=new URLSearchParams(location.search);
 const requestedDate=memoParams.get("date"),requestedType=memoParams.get("type");
 if(requestedDate&&/^\d{4}-\d{2}-\d{2}$/.test(requestedDate))$("memo-date").value=requestedDate;
-if(requestedType==="ミーグリ")$("memo-type").value="ミーグリ";
+if(["ライブ","ミーグリ","イベント","聖地巡礼","その他"].includes(requestedType))$("memo-type").value=requestedType;
 function openDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB,1);req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains(STORE))req.result.createObjectStore(STORE,{keyPath:"id"});};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});}
 function request(mode,action,item){return new Promise((resolve,reject)=>{const tx=db.transaction(STORE,mode),store=tx.objectStore(STORE),req=action==="all"?store.getAll():action==="put"?store.put(item):store.delete(item);if(action==="all"){req.onsuccess=()=>resolve(req.result||[]);req.onerror=()=>reject(req.error);}else{tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||new Error("DB transaction aborted"));}});}
 function esc(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
