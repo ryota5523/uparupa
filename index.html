@@ -379,7 +379,8 @@
   const weekly=document.getElementById("home-weekly");
   const meet=document.getElementById("home-meet");
   if(!weekly||!meet)return;
-  // ミーグリ日程はD1の/api/schedulesから取得
+  // 18thシングル 大野愛実参加ミーグリ日程（公式発表）
+  const officialMeetDates=["2026-10-04","2026-10-11","2026-10-18","2026-10-25","2026-11-01","2026-12-06"];
   const today=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Tokyo"}));
   const dateKey=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
   const todayKey=dateKey(today);
@@ -421,7 +422,9 @@
     else empty(weekly,"今週の出演予定はありません。");
 
     // API登録分とScheduleページの手動登録分をまとめてHOMEのミーグリ欄へ表示
-    const meetEvents=items.filter(x=>/ミーグリ|ミート＆グリート/.test(String(x.category||"")+" "+String(x.title||"")));
+    const apiMeetEvents=items.filter(x=>/ミーグリ|ミート＆グリート/.test(String(x.category||"")+" "+String(x.title||"")));
+    const officialMeetEvents=officialMeetDates.map(date=>({event_date:date,title:"ミート＆グリート",category:"ミーグリ",url:"https://fortunemusic.jp/hinatazaka_202609/"}));
+    const meetEvents=[...apiMeetEvents,...officialMeetEvents];
     const uniqueMeet=new Map();
     meetEvents.filter(x=>x.event_date>=todayKey).forEach(x=>uniqueMeet.set(x.event_date+"|"+x.title,x));
     const sortedMeet=[...uniqueMeet.values()].sort((a,b)=>a.event_date.localeCompare(b.event_date));
