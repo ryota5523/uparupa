@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>聖地巡礼マップ｜大野愛実 ファンサイト</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<meta name="theme-color" content="#c91532">
+<style>
+.map-intro{color:#806e73;font-size:.86rem;line-height:1.8}
+.map-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin:14px 0}
+.map-count{font-size:.8rem;color:#987b82}
+#pilgrimage-map{height:min(62vh,620px);min-height:360px;border-radius:16px;border:1px solid #ead5d9;z-index:1}
+.map-list{display:grid;gap:10px;margin-top:16px}
+.map-place{padding:13px;border:1px solid #f0dfe2;border-radius:14px;background:#fff}
+.map-place h3{margin:0 0 5px;font-size:.96rem;color:#49383d}
+.map-place p{margin:3px 0;color:#806e73;font-size:.8rem;overflow-wrap:anywhere}
+.map-place button,.map-place a{display:inline-block;margin:7px 6px 0 0;padding:7px 11px;border:1px solid #efd5da;border-radius:10px;background:#fff;color:#a33b50;font:inherit;font-size:.76rem;font-weight:700;text-decoration:none}
+.map-empty{padding:20px;border-radius:14px;background:#fff7f8;color:#987b82;text-align:center;font-size:.86rem}
+.map-status{min-height:1.3em;color:#c91532;font-size:.8rem}
+.leaflet-popup-content{line-height:1.6}
+.leaflet-popup-content b{color:#c91532}
+@media(max-width:600px){#pilgrimage-map{height:55vh;min-height:340px}}
+</style>
+</head>
+<body>
+<div class="appbar"><a href="index.html"><img src="logo.png" alt="" class="logo"><span><b>MANAMI</b><small>大野愛実 ファンサイト（非公式）</small></span></a></div>
+<div class="wrap">
+<header><span class="badge">YOUR FAN LIFE</span><h1>聖地巡礼マップ</h1><p class="kana">Places to visit</p></header>
+<nav><a href="index.html"><i class="ms">home</i>Home</a><a href="memo.html"><i class="ms">auto_stories</i>推し活メモ</a><a href="schedule.html"><i class="ms">calendar_month</i>Schedule</a></nav>
+<section>
+<h2>思い出から広がる聖地マップ 📍</h2>
+<p class="map-intro">推し活メモでカテゴリ「聖地巡礼」を選んで保存すると、ここに自動で表示されるよ。住所を登録すると地図上にピンが立つよ。</p>
+<div class="map-toolbar"><span class="map-count" id="map-count">スポットを読み込み中…</span><a class="button" href="memo.html?type=聖地巡礼">＋ 聖地を登録する</a></div>
+<div id="pilgrimage-map"></div>
+<p id="map-status" class="map-status" aria-live="polite"></p>
+<div id="map-list" class="map-list"><div class="map-empty">聖地巡礼メモを読み込み中…</div></div>
+</section>
+<footer><p>メモと位置情報はこの端末のブラウザ内に保存されます。地図表示のため、住所を地図サービスに照会します。</p></footer>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function(){
+"use strict";
+const DB="manami-memories-v1",STORE="entries";
+const $=id=>document.getElementById(id);
+const map=L.map("pilgrimage-map").setView([35.6812,139.7671],5);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);
+const markers=L.featureGroup().addTo(map);
+function openDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB,1);req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});}
+function allEntries(db){return new Promise((resolve,reject)=>{const req=db.transaction(STORE,"readonly").objectStore(STORE).getAll();req.onsuccess=()=>resolve(req.result||[]);req.onerror=()=>reject(req.error);});}
+function saveEntry(db,item){return new Promise((resolve,reject)=>{const tx=db.transaction(STORE,"readwrite");tx.objectStore(STORE).put(item);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});}
+function esc(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function popup(item){return '<div><b>'+esc(item.place||item.title||"聖地")+'</b><br>'+esc(item.address||"住所未登録")+'<br><small>'+esc(item.date||"")+'</small>'+(item.text?'<p>'+esc(item.text)+'</p>':"")+'</div>';}
+async function geocode(item,db){
+ if(Number.isFinite(Number(item.lat))&&Number.isFinite(Number(item.lon)))return item;
+ if(!item.address)return item;
+ const url="https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&accept-language=ja&q="+encodeURIComponent(item.address);
+ const response=await fetch(url,{headers:{"Accept":"application/json"}});
+ if(!response.ok)throw new Error("住所検索に失敗しました");
+ const results=await response.json();
+ if(results.length){item.lat=Number(results[0].lat);item.lon=Number(results[0].lon);await saveEntry(db,item);}
+ return item;
+}
+function addMarker(item){
+ const marker=L.marker([item.lat,item.lon]).bindPopup(popup(item));
+ marker.addTo(markers);
+}
+function renderList(items){
+ const el=$("map-list");el.innerHTML="";
+ if(!items.length){el.innerHTML='<div class="map-empty">まだ聖地が登録されていないよ。推し活メモから最初のスポットを追加してね ♡</div>';return;}
+ items.forEach(item=>{
+  const card=document.createElement("article");card.className="map-place";
+  const title=document.createElement("h3");title.textContent=item.place||item.title||"聖地";
+  const date=document.createElement("p");date.textContent=item.date||"";
+  const address=document.createElement("p");address.textContent=item.address||"住所未登録";
+  card.append(title,date,address);
+  if(item.text){const note=document.createElement("p");note.textContent=item.text;card.append(note);}
+  if(Number.isFinite(Number(item.lat))&&Number.isFinite(Number(item.lon))){
+   const show=document.createElement("button");show.type="button";show.textContent="地図で見る";show.onclick=()=>{map.setView([item.lat,item.lon],16);markers.eachLayer(m=>{const p=m.getLatLng();if(p.lat===item.lat&&p.lng===item.lon)m.openPopup();});};card.append(show);
+   const route=document.createElement("a");route.href="https://www.google.com/maps/dir/?api=1&destination="+encodeURIComponent(item.lat+","+item.lon);route.target="_blank";route.rel="noopener";route.textContent="ルート";
+   card.append(route);
+  }else{const note=document.createElement("p");note.textContent=item.address?"地図上の場所を特定できなかったよ。住所をもう少し詳しくしてみてね。":"住所を推し活メモに追加すると地図に表示できるよ。";card.append(note);}
+  el.append(card);
+ });
+}
+async function init(){
+ try{
+  const db=await openDB();
+  const all=(await allEntries(db)).filter(x=>x.type==="聖地巡礼").sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+  $("map-count").textContent=all.length+"件の聖地";
+  if(!all.length){renderList([]);return;}
+  const located=[];
+  for(let i=0;i<all.length;i++){
+   const item=all[i];
+   $("map-status").textContent="地図の場所を確認中… "+(i+1)+"/"+all.length;
+   try{
+    const resolved=await geocode(item,db);
+    if(Number.isFinite(Number(resolved.lat))&&Number.isFinite(Number(resolved.lon))){addMarker(resolved);located.push(resolved);}
+   }catch(error){console.warn(error);}
+   if(i<all.length-1)await new Promise(resolve=>setTimeout(resolve,1100));
+  }
+  renderList(all);
+  if(located.length){map.fitBounds(markers.getBounds().pad(.18));$("map-status").textContent=located.length+"件を地図に表示したよ。";}
+  else{$("map-status").textContent="住所が登録されたスポットがまだないよ。推し活メモに住所を追加してね。";}
+ }catch(error){
+  $("map-count").textContent="読み込みできませんでした";
+  $("map-status").textContent="このブラウザに推し活メモのデータが見つからなかったよ。メモを保存した端末・ブラウザで開いてね。";
+  $("map-list").innerHTML='<div class="map-empty">推し活メモを一度開いてから、もう一度試してね。</div>';
+ }
+}
+init();
+})();
+</script>
+</body>
+</html>
