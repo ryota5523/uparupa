@@ -379,10 +379,7 @@
   const weekly=document.getElementById("home-weekly");
   const meet=document.getElementById("home-meet");
   if(!weekly||!meet)return;
-  // Scheduleページに掲載している手動登録のミーグリ日程
-  const manualMeetEvents=[
-    {event_date:"2027-01-11",title:"リアルミート＆グリート｜幕張メッセ",url:"https://www.hinatazaka46.com/s/official/news/detail/S00365?ima=0000"}
-  ];
+  // ミーグリ日程はD1の/api/schedulesから取得
   const today=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Tokyo"}));
   const dateKey=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
   const todayKey=dateKey(today);
@@ -424,7 +421,7 @@
     else empty(weekly,"今週の出演予定はありません。");
 
     // API登録分とScheduleページの手動登録分をまとめてHOMEのミーグリ欄へ表示
-    const meetEvents=[...items.filter(x=>/ミーグリ|ミート＆グリート/.test(String(x.category||"")+" "+String(x.title||""))),...manualMeetEvents];
+    const meetEvents=items.filter(x=>/ミーグリ|ミート＆グリート/.test(String(x.category||"")+" "+String(x.title||"")));
     const uniqueMeet=new Map();
     meetEvents.filter(x=>x.event_date>=todayKey).forEach(x=>uniqueMeet.set(x.event_date+"|"+x.title,x));
     const sortedMeet=[...uniqueMeet.values()].sort((a,b)=>a.event_date.localeCompare(b.event_date));
