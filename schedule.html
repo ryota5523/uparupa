@@ -156,9 +156,7 @@
   const archivedOtherEvents=[
     {event_date:"2026-11-07",title:"氣志團万博2026 ～房総爆音リゾート～｜日向坂46出演（千葉・幕張メッセ 国際展示場4〜7ホール／開場9:00・開演10:30）",category:"その他",url:"https://kishidanbanpaku.com/s/kbpk/?ima=3637"}
   ];
-  const officialMeetEvents=[
-    {event_date:"2027-01-11",title:"リアルミート＆グリート｜幕張メッセ",category:"ミーグリ",url:"https://www.hinatazaka46.com/s/official/news/detail/S00365?ima=0000"}
-  ];
+  // ミーグリ日程はD1の/api/schedulesから取得（手動配列は置かない）
   const key=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
   const jpDate=d=>d.getFullYear()+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日（"+["日","月","火","水","木","金","土"][d.getDay()]+"）";
   const safe=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -248,7 +246,7 @@
     if(data&&data.ok===false)throw new Error(data.error||"schedule API error");
     const items=Array.isArray(data)?data:(Array.isArray(data?.items)?data.items:(Array.isArray(data?.results)?data.results:[]));
     const apiEvents=items.filter(x=>x&&/^\d{4}-\d{2}-\d{2}$/.test(String(x.event_date||"")));
-    const merged=[...apiEvents,...officialLiveEvents,...officialOtherEvents,...archivedOtherEvents,...officialMeetEvents];
+    const merged=[...apiEvents,...officialLiveEvents,...officialOtherEvents,...archivedOtherEvents];
     const unique=new Map();
     merged.forEach(item=>unique.set(String(item.event_date)+"|"+String(item.title||""),item));
     events=[...unique.values()].sort((a,b)=>a.event_date.localeCompare(b.event_date));
