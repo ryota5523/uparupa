@@ -168,6 +168,20 @@
   .blog-tools,.blog-results,.blog-pagination,.blog-footnote{padding-left:18px;padding-right:18px}
 }
 
+/* Blog bottom navigation: full-bleed viewport sizing, matching shared pages */
+@media(max-width:780px){
+  body>nav{
+    position:fixed!important;
+    left:0!important;
+    right:0!important;
+    bottom:0!important;
+    width:100vw!important;
+    margin:0!important;
+    box-sizing:border-box!important;
+    border-radius:0!important;
+    padding:5px 8px calc(7px + env(safe-area-inset-bottom,0px))!important;
+  }
+}
 </style>
 <link rel="stylesheet" href="style.css?v=shared-20261118"></head>
 <body>
