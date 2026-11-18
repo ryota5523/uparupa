@@ -31,7 +31,7 @@
 .quiz-intro p{margin:0;color:var(--sub);font-size:.88rem;line-height:1.8}
 .quiz-start,.quiz-next,.quiz-retry{display:block;width:100%;border:0;border-radius:12px;background:var(--accent);color:#fff;font:inherit;font-weight:800;padding:14px 16px;margin-top:18px;cursor:pointer}
 .quiz-start:active,.quiz-next:active,.quiz-retry:active{opacity:.85}
-.quiz-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--sub);font-size:.8rem;font-weight:700;margin-bottom:12px}.quiz-score-live{padding:6px 11px;border-radius:99px;background:var(--accent2);color:var(--accent);font-weight:900;font-variant-numeric:tabular-nums}
+.quiz-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--sub);font-size:.8rem;font-weight:700;margin-bottom:12px}.quiz-score-live{padding:6px 11px;border-radius:99px;background:var(--accent2);color:var(--accent);font-weight:900;font-variant-numeric:tabular-nums}.quiz-record{margin:13px auto 0;padding:9px 14px;width:fit-content;border-radius:10px;background:var(--soft);color:var(--sub);font-size:.84rem;font-weight:800}.quiz-record strong{color:var(--accent);font-variant-numeric:tabular-nums}
 .quiz-progress{height:7px;background:var(--accent2);border-radius:99px;overflow:hidden;margin-bottom:20px}
 .quiz-progress span{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .2s}
 .quiz-question{font-size:1.08rem;line-height:1.65;color:var(--text);font-weight:800;margin:0 0 17px}
@@ -82,11 +82,11 @@
 <p>全10問の4択クイズ！<br>10問全問正解で「大野愛実王」に認定！</p>
 </div>
 <button class="quiz-start" id="quizStart">挑戦する！</button>
-<p class="quiz-small">問題は現在登録されている候補から出題されます。</p>
+<p class="quiz-record">あなたの最高記録：<strong id="quizBestIntro">0 / 10</strong></p><p class="quiz-small">問題は現在登録されている候補から出題されます。</p>
 </section>
 
 <section class="quiz-panel" id="quizGame" hidden>
-<div class="quiz-meta"><span id="quizCount">第1問 / 10問</span><span class="quiz-score-live" id="quizScore" aria-live="polite">正解数 0 / 10</span></div>
+<div class="quiz-meta"><span id="quizCount">第1問 / 10問</span><span class="quiz-score-live" id="quizScore" aria-live="polite">最高記録 0 / 10</span></div>
 <div class="quiz-progress"><span id="quizProgress"></span></div>
 <h2 class="quiz-question" id="quizQuestion"></h2>
 <div class="quiz-options" id="quizOptions"></div>
@@ -99,7 +99,7 @@
 <div class="result-icon" id="quizResultIcon">🏁</div>
 <h2 id="quizResultTitle">結果発表！</h2>
 <div class="quiz-score" id="quizFinalScore">0 / 10</div>
-<p id="quizResultMessage"></p>
+<p id="quizResultMessage"></p><p class="quiz-record">今回の最高記録：<strong id="quizBestResult">0 / 10</strong></p>
 <button class="quiz-retry" id="quizRetry">もう一度挑戦する</button>
 </div>
 </section>
@@ -122,7 +122,7 @@ const bank = [
 {q:"2025年4月30日放送、MRT宮崎放送「わけもん！！」で、大野愛実ちゃんが冒頭の自己紹介で言っていた好きなおにぎりの具は？",a:["チーズ明太","明太チーズ","チーズおかか","おかかチーズ"],c:2,e:"好きなおにぎりの具は「チーズおかか」です。"}
 ];
 const $ = id => document.getElementById(id);
-let questions = [], index = 0, score = 0, locked = false;
+let questions = [], index = 0, score = 0, locked = false;\nconst BEST_KEY = "manami-quiz-best-v1";\nfunction getBest(){try{return Number(localStorage.getItem(BEST_KEY))||0;}catch(e){return 0;}}\nfunction renderBest(){const best=getBest();$("quizBestIntro").textContent=best+" / 10";$("quizScore").textContent="最高記録 "+best+" / 10";$("quizBestResult").textContent=best+" / 10";}
 const shuffle = arr => { const a = arr.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
 function start(){
  questions=shuffle(bank).slice(0,10);index=0;score=0;
@@ -132,7 +132,7 @@ function start(){
 function showQuestion(){
  locked=false;const item=questions[index];
  $("quizCount").textContent="第"+(index+1)+"問 / 10問";
- $("quizScore").textContent="正解数 "+score+" / 10";
+ renderBest();
  $("quizProgress").style.width=(index/10*100)+"%";
  $("quizQuestion").textContent=item.q;
  $("quizOptions").innerHTML="";
@@ -149,7 +149,7 @@ function answer(choice){
  if(locked)return;locked=true;const item=questions[index];const buttons=[...$("quizOptions").querySelectorAll("button")];
  buttons.forEach((b,i)=>{b.disabled=true;if(i===item.c)b.classList.add("is-correct");else if(i===choice)b.classList.add("is-wrong");});
  const ok=choice===item.c;if(ok)score++;
- $("quizScore").textContent="正解 "+score;
+ renderBest();
  $("quizFeedback").className="quiz-feedback show";
  const heading=document.createElement("strong");heading.textContent=ok?"正解！":"残念！正解は「"+item.a[item.c]+"」";
  const detail=document.createElement("span");detail.textContent=item.e;
