@@ -1,5 +1,15 @@
 <!DOCTYPE html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Profile｜大野愛実 ファンサイト（非公式）</title><link rel="stylesheet" href="style.css"><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#e60012"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="まなみん"><meta name="apple-mobile-web-app-status-bar-style" content="default"><style>
+/* Official member profile */
+.member-profile{display:grid;grid-template-columns:minmax(180px, .85fr) 1.15fr;gap:22px;align-items:center}
+.member-profile-photo{width:100%;max-height:440px;object-fit:cover;object-position:center 22%;border-radius:16px;display:block;background:#fff7f7}
+.member-profile-copy .en{font-size:.78rem;letter-spacing:.16em;color:var(--sub);font-weight:800;margin:0 0 5px}
+.member-profile-copy h2{font-size:1.8rem;margin:0 0 3px}
+.member-profile-copy .reading{color:var(--sub);margin:0 0 18px}
+.member-profile-copy dl{display:grid;grid-template-columns:88px 1fr;gap:9px 12px;margin:0}
+.member-profile-copy dt{color:var(--sub);font-size:.88rem}
+.member-profile-copy dd{margin:0;font-weight:700}
+@media(max-width:560px){.member-profile{grid-template-columns:1fr;gap:16px}.member-profile-photo{max-height:480px;object-position:center 20%}.member-profile-copy h2{font-size:1.55rem}}
 #history{margin-top:30px}
 #history .chips{display:flex;gap:7px;overflow-x:auto;padding:2px 0 12px;scrollbar-width:none}
 #history .chips::-webkit-scrollbar{display:none}
@@ -7,18 +17,22 @@
 #history .chip[aria-pressed="true"]{background:#c92e49;border-color:#c92e49;color:#fff}
 #history .tl{padding-left:22px}
 </style><link rel="stylesheet" href="style.css?v=shared-20261118"></head><body><div class="appbar"><a href="index.html"><img src="logo.png" alt="" class="logo"><span><b>MANAMI</b><small>大野愛実 ファンサイト（非公式）</small></span></a></div><div class="wrap"><header><span class="badge">日向坂46 五期生</span><h1>Profile</h1><p class="kana">プロフィール</p></header><nav><a href="index.html"><i class="ms">home</i>Home</a><a href="profile.html" class="on"><i class="ms">person</i>Profile</a><a href="schedule.html"><i class="ms">calendar_month</i>Schedule</a><a href="news.html"><i class="ms">newspaper</i>News</a><a href="works.html"><i class="ms">movie</i>Works</a><a href="blog.html"><i class="ms">edit_note</i>Blog</a></nav>
-<section><h2>Basic Info</h2><dl>
-<dt>名前</dt><dd>大野愛実（おおの まなみ）</dd>
-<dt>愛称</dt><dd>まなみん</dd>
-<dt>生年月日</dt><dd>2007年5月5日（おうし座・亥年）</dd>
+<section class="member-profile" aria-label="大野愛実 公式プロフィール">
+<img class="member-profile-photo" src="https://cdn.hinatazaka46.com/images/14/b5a/4c1a7493699ab29cafc970f70d483/1000_1000_102400.jpg" alt="大野愛実 日向坂46公式プロフィール写真" fetchpriority="high">
+<div class="member-profile-copy">
+<p class="en">HINATAZAKA46 MEMBER</p>
+<h2>大野 愛実</h2>
+<p class="reading">おおの まなみ / MANAMI ONO</p>
+<dl>
+<dt>生年月日</dt><dd>2007年5月5日</dd>
+<dt>星座</dt><dd>おうし座</dd>
+<dt>身長</dt><dd>153cm</dd>
+<dt>出身地</dt><dd>東京都</dd>
 <dt>血液型</dt><dd>B型</dd>
-<dt>身長</dt><dd>153cm（本人いわく「成長中」）</dd>
-<dt>出身</dt><dd>東京都</dd>
-<dt>グループ</dt><dd>日向坂46（五期生）</dd>
-<dt>加入</dt><dd>2025年3月（五期生の1人目として発表）</dd>
-<dt>特技</dt><dd>ピアノ</dd>
-<dt>ペンライト</dt><dd>レッド×レッド（情熱の赤）</dd>
-</dl></section>
+</dl>
+<p style="margin:18px 0 0"><a href="https://www.hinatazaka46.com/s/official/artist/38?ima=0000" target="_blank" rel="noopener">日向坂46公式プロフィール ↗</a></p>
+</div>
+</section>
 <section><h2>Favorites &amp; Trivia</h2><dl>
 <dt>好きなもの</dt><dd>カニクリームコロッケ、ウーパールーパー</dd>
 <dt>おにぎりの具</dt><dd>チーズおかか</dd>
