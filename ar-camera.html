@@ -3,36 +3,46 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#e60012">
+<meta name="theme-color" content="#ffffff">
 <title>MANAMIN REAL AR｜大野愛実ファンサイト</title>
-<link rel="stylesheet" href="style.css">
 <style>
-:root{--ar-pink:var(--accent)}
-.ar-wrap{max-width:920px;margin:auto;padding:18px 14px calc(100px + env(safe-area-inset-bottom))}
-.ar-head{text-align:center;background:#e60012;color:#fff;margin:0 -18px;padding:30px 18px 26px;box-sizing:border-box}.ar-kicker{font-size:.7rem;letter-spacing:.2em;color:#fff;font-weight:900}.ar-head h1{color:#fff !important;background:none !important;background-clip:border-box !important;-webkit-background-clip:border-box !important;-webkit-text-fill-color:#fff !important}.ar-head h1 span{color:#fff !important;-webkit-text-fill-color:#fff !important}.ar-head p{color:#fff}.ar-head h1 span{color:#fff !important}.ar-head p{color:#fff !important}.ar-head h1{font-size:clamp(2rem,8vw,3rem);margin:5px 0}.ar-head p{color:var(--sub);font-size:.9rem;line-height:1.7;margin:0}
-.ar-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:16px;margin:14px 0;box-shadow:var(--shadow)}
-.ar-card h2{font-size:1.05rem;margin:0 0 10px}.ar-preview{min-height:260px;border-radius:16px;background:radial-gradient(circle at 50% 35%,#fff 0,#fff2f4 60%,#f8e7eb 100%);display:grid;place-items:center;overflow:hidden;position:relative}
-.ar-preview img{max-width:78%;max-height:340px;object-fit:contain;filter:drop-shadow(0 12px 14px #6c283222)}
-.ar-empty{text-align:center;color:#a17d85;padding:28px}.ar-empty .symbol{font-size:3rem;display:block;color:#df9aa7}
-.ar-buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.ar-btn{appearance:none;border:1px solid var(--line);border-radius:13px;background:#fff;color:var(--text);padding:12px 14px;font:inherit;font-weight:800;cursor:pointer;flex:1;min-width:130px}.ar-btn.primary{background:var(--ar-pink);border-color:var(--ar-pink);color:#fff}.ar-btn:disabled{opacity:.42;cursor:not-allowed}
-.ar-file{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}.ar-file-label{display:flex;align-items:center;justify-content:center;gap:8px;border:1px dashed #e5a2ae;border-radius:14px;background:#fff7f8;padding:15px;color:var(--ar-pink);font-weight:800;cursor:pointer}
-.ar-control{display:grid;grid-template-columns:75px 1fr 46px;gap:10px;align-items:center;margin:14px 0}.ar-control label{font-size:.82rem;font-weight:700;color:var(--sub)}.ar-control input{width:100%;accent-color:var(--ar-pink)}.ar-control output{text-align:right;font-variant-numeric:tabular-nums;font-size:.82rem}
-.ar-status{border-radius:13px;background:#fff5f6;padding:12px 14px;color:#87505b;font-size:.83rem;line-height:1.65;margin-top:12px}.ar-status.error{background:#fff0ec;color:#a33d2d}.ar-status.success{background:#eff9f2;color:#27663d}
-.ar-steps{display:grid;gap:10px}.ar-step{display:flex;gap:12px;align-items:flex-start;font-size:.86rem;line-height:1.65}.ar-num{width:25px;height:25px;border-radius:50%;background:#fde8ec;color:var(--ar-pink);display:grid;place-items:center;font-weight:900;flex:none}
-.ar-note{font-size:.78rem;color:var(--sub);line-height:1.7;margin:10px 0 0}.ar-back{display:inline-block;color:var(--ar-pink);font-weight:800;text-decoration:none;margin:2px 0 12px}
+/* AR固有のレイアウトのみ。色・文字・カード・ボタンは共通style.cssに統一 */
+.ar-wrap{padding:0 0 56px}
+.ar-head{padding:26px 0 8px;text-align:left}
+.ar-head h1{font-size:clamp(2rem,7vw,3rem)}
+.ar-head p{font-size:.9rem;line-height:1.7;margin:0}
+.ar-layout{display:grid;gap:0}
+.ar-buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
+.ar-btn{flex:1;min-width:130px;padding:11px 14px;font-weight:700;cursor:pointer}
+.ar-btn:disabled{opacity:.42;cursor:not-allowed}
+.ar-file{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+.ar-file-label{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;cursor:pointer}
+.ar-preview{min-height:260px;display:grid;place-items:center;overflow:hidden;position:relative}
+.ar-preview img{max-width:78%;max-height:340px;object-fit:contain;filter:drop-shadow(0 12px 14px rgba(74,31,22,.12))}
+.ar-empty{text-align:center;padding:28px}
+.ar-empty .symbol{display:block;font-size:3rem}
+.ar-control{display:grid;grid-template-columns:75px 1fr 46px;gap:10px;align-items:center;margin:14px 0}
+.ar-control label{font-size:.82rem;font-weight:700}
+.ar-control input{width:100%;accent-color:var(--accent)}
+.ar-control output{text-align:right;font-variant-numeric:tabular-nums;font-size:.82rem}
+.ar-status{padding:12px 14px;font-size:.83rem;line-height:1.65;margin-top:12px}
+.ar-steps{display:grid;gap:10px}
+.ar-step{display:flex;gap:12px;align-items:flex-start;font-size:.86rem;line-height:1.65}
+.ar-num{width:25px;height:25px;border-radius:50%;display:grid;place-items:center;font-weight:900;flex:none}
+.ar-note{font-size:.78rem;line-height:1.7;margin:10px 0 0}
+.ar-back{display:inline-block;font-weight:800;text-decoration:none;margin:14px 0 12px}
 #arQuickLook{position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none}
-@media(min-width:720px){.ar-layout{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}.ar-layout .ar-card{margin:0 0 14px}}
-
 .ar-library{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px}
-.ar-saved{border:1px solid var(--line);border-radius:14px;padding:8px;background:#fff;min-width:0}
-.ar-saved img{width:100%;height:116px;object-fit:contain;background:#fff6f7;border-radius:9px;display:block}
+.ar-saved{padding:8px;min-width:0}
+.ar-saved img{width:100%;height:116px;object-fit:contain;display:block}
 .ar-saved-name{font-size:.75rem;font-weight:800;overflow-wrap:anywhere;margin:6px 0}
-.ar-saved-actions{display:flex;gap:5px}.ar-saved-actions button{flex:1;min-width:0;padding:7px 4px;border:1px solid var(--line);border-radius:8px;background:#fff;font:inherit;font-size:.7rem;font-weight:800;color:var(--text)}
-.ar-empty-library{font-size:.82rem;color:var(--sub);padding:12px 2px;line-height:1.7}
+.ar-saved-actions{display:flex;gap:5px}
+.ar-saved-actions button{flex:1;min-width:0;padding:7px 4px;font-size:.7rem;font-weight:700}
+.ar-empty-library{font-size:.82rem;padding:12px 2px;line-height:1.7}
+@media(min-width:720px){.ar-layout{grid-template-columns:1fr 1fr;gap:14px;align-items:start}.ar-layout .ar-card{margin-top:18px}}
+@media(max-width:520px){.ar-card{padding:17px!important;margin-top:15px!important}.ar-wrap{width:calc(100% - 28px)}}
 </style>
-<link rel="stylesheet" href="style.css?v=ar-header-white-final-20261118"><style>
-
-/* AR PAGE: align every component with the shared site design system */
+<link rel="stylesheet" href="style.css?v=shared-20261118">
 .ar-wrap{max-width:780px;padding:0 0 56px}
 .ar-head{display:block;text-align:left;background:#e60012!important;color:#fff!important;margin:0 -18px!important;padding:30px 18px 26px!important;border:0;border-radius:0;box-shadow:none}
 .ar-head .ar-kicker,.ar-head h1,.ar-head h1 span,.ar-head p{color:#fff!important;-webkit-text-fill-color:#fff!important}
