@@ -444,4 +444,36 @@
 </script>
 <script id="manami-nav-active">
 (()=>{const current=location.pathname.split("/").pop()||"index.html";document.querySelectorAll("nav a[href]").forEach(a=>{const target=new URL(a.getAttribute("href"),location.href).pathname.split("/").pop();if(target===current){a.classList.add("on");a.setAttribute("aria-current","page");}else{a.classList.remove("on");a.removeAttribute("aria-current");}});})();
-</script></body></html>
+</script><script id="site-nav-prefetch">
+(()=> {
+  const seen = new Set();
+  const prefetch = (link) => {
+    if (!link || link.target === "_blank" || link.hasAttribute("download")) return;
+    const raw = link.getAttribute("href");
+    if (!raw || raw.startsWith("#") || raw.startsWith("mailto:") || raw.startsWith("tel:")) return;
+    let url;
+    try { url = new URL(raw, location.href); } catch (_) { return; }
+    if (url.origin !== location.origin || !/\.html$/i.test(url.pathname)) return;
+    if (url.pathname === location.pathname || seen.has(url.href)) return;
+    seen.add(url.href);
+    const hint = document.createElement("link");
+    hint.rel = "prefetch";
+    hint.as = "document";
+    hint.href = url.href;
+    document.head.appendChild(hint);
+  };
+  document.addEventListener("pointerover", event => {
+    const link = event.target.closest("nav a[href], .appbar a[href]");
+    if (link) prefetch(link);
+  }, {passive:true});
+  document.addEventListener("touchstart", event => {
+    const link = event.target.closest("nav a[href], .appbar a[href]");
+    if (link) prefetch(link);
+  }, {passive:true});
+  document.addEventListener("focusin", event => {
+    const link = event.target.closest("nav a[href], .appbar a[href]");
+    if (link) prefetch(link);
+  });
+})();
+</script>
+</body></html>
