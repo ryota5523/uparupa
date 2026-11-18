@@ -224,7 +224,7 @@
       const official=document.createElement("a");official.className="article-official";official.href=officialUrl.href;official.target="_blank";official.rel="noopener noreferrer";official.textContent="公式ブログで読む ↗";
       bodyEl.append(official);
     }catch(error){
-      bodyEl.innerHTML='<p class="article-error">記事本文を読み込めなかったよ。通信を確認して、もう一度開いてみてね。</p>';
+      bodyEl.innerHTML='<p class="article-error">記事本文を読み込めませんでした。通信状況を確認して、もう一度お試しください。</p>';
       const link=document.createElement("a");link.className="article-official";link.href=officialUrl.href;link.target="_blank";link.rel="noopener noreferrer";link.textContent="公式ブログで開く ↗";bodyEl.append(link);
     }
   }
