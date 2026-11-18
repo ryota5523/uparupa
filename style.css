@@ -396,3 +396,19 @@ footer{font-size:.76rem;padding-bottom:8px}
   nav a{font-size:.61rem}
   nav a i{font-size:21px}
 }
+
+
+/* HOME header: enforce the requested red banner over page-level styles */
+.wrap > header{
+  background:#e60012 !important;
+  color:#fff !important;
+  margin:0 -18px !important;
+  padding:30px 18px 26px !important;
+  box-sizing:border-box;
+}
+.wrap > header .badge{background:#fff !important;color:#e60012 !important}
+.wrap > header .kana,
+.wrap > header .intro,
+.wrap > header .tag,
+.wrap > header h1{color:#fff !important}
+.wrap > header h1{background:none !important;-webkit-background-clip:initial !important;background-clip:initial !important}
