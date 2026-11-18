@@ -185,7 +185,7 @@
   function renderUpcoming(){
     const list=visibleEvents().filter(e=>e.event_date>=key(today)).slice(0,6);
     upcomingList.innerHTML="";
-    if(!list.length){upcomingList.innerHTML='<div class="no-events">これからの予定はまだありません。新しい発表を待とう。</div>';return;}
+    if(!list.length){upcomingList.innerHTML='<div class="no-events">これからの予定はまだありません。新しい情報をお待ちください。</div>';return;}
     list.forEach(item=>{
       const row=document.createElement("div");row.className="schedule-event";
       const mark=document.createElement("span");mark.className="event-mark";
