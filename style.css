@@ -341,3 +341,58 @@ h1{-webkit-user-select:none;user-select:none;touch-action:manipulation}
 @media(prefers-reduced-motion:reduce){
  #pickup-video .pickup-video-track>.movie,#pickup-video .pickup-video-progress span,#pickup-video .pickup-video-dots button{transition:none}
 }
+
+
+/* ===== MANAMI shared design system ===== */
+:root{
+  --accent:#e60012;--accent2:#fff1f1;--red:#e60012;
+  --bg:#fff;--card:#fff;--soft:#fff7f7;--line:#f2d6d6;
+  --text:#4a241d;--sub:#806b65;--navbg:rgba(255,255,255,.97);
+  --shadow:0 5px 18px rgba(74,31,22,.055);
+  --radius-card:20px;--radius-control:12px;
+}
+html{scroll-padding-top:76px}
+body{background:var(--bg);color:var(--text);font-size:15px;line-height:1.75}
+.wrap,.ar-wrap,.admin-wrap,.article-shell{width:min(100% - 36px,780px);margin-left:auto;margin-right:auto}
+.wrap{padding:0 0 56px}
+.appbar{height:calc(58px + env(safe-area-inset-top,0px));background:var(--navbg);border-bottom:1px solid var(--line)}
+.appbar a{max-width:780px}
+.appbar b{font-size:1rem;letter-spacing:.12em;color:var(--accent)}
+.appbar small{font-size:.68rem;color:var(--sub)}
+.appbar img.logo{height:32px}
+body{padding-top:calc(58px + env(safe-area-inset-top,0px));padding-bottom:calc(78px + env(safe-area-inset-bottom,0px))}
+nav{grid-template-columns:repeat(6,minmax(0,1fr));width:100%;padding:5px max(8px,calc((100vw - 780px)/2)) calc(7px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);gap:2px}
+nav a{min-width:0;gap:2px;padding:5px 1px 3px;border-top:2px solid transparent;border-radius:8px 8px 0 0;color:var(--sub);font-size:.66rem;font-weight:700}
+nav a i{font-size:23px}
+nav a.on,nav a[aria-current="page"]{color:var(--accent);border-top-color:var(--accent);background:var(--soft)}
+header{padding:26px 0 8px}
+header h1,h1{font-size:clamp(2rem,7vw,3rem);line-height:1.2;letter-spacing:.045em;margin:.12em 0 .2em}
+header .badge,.badge{font-size:.72rem;padding:3px 13px;letter-spacing:.08em}
+.kana{font-size:.78rem;letter-spacing:.22em;margin:.35em 0 0}
+section,.ar-card,.greeting-card,.blog-card,.memo-card,.admin-card,.admin-panel,.calendar-shell,.article-content{
+  border-radius:var(--radius-card);border:1px solid var(--line);box-shadow:var(--shadow);
+}
+section{padding:20px;margin-top:18px;background:var(--card)}
+h2{font-size:1.16rem;line-height:1.45;margin-bottom:14px}
+h2::before{width:5px}
+h3{font-size:.98rem}
+button,.button,.btn,.memo-submit,.admin-button,.ar-button,input,select,textarea{
+  font:inherit;border-radius:var(--radius-control)
+}
+button,.button,.btn,.memo-submit,.admin-button,.ar-button{transition:background-color .18s,border-color .18s,transform .18s}
+input,select,textarea{border:1px solid var(--line);background:#fff;color:var(--text);padding:10px 12px;min-height:42px}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid rgba(230,0,18,.2);outline-offset:2px}
+a{ -webkit-tap-highlight-color:transparent }
+.item,.greeting-meta{border-color:var(--line)}
+.tile,.sticker,.links a,.chip{border-radius:14px}
+.tile{background:var(--soft);border:1px solid var(--line);box-shadow:none}
+.sticker{transform:none;border:1px solid var(--line);border-radius:16px}
+.sticker:nth-child(even){transform:none}
+footer{font-size:.76rem;padding-bottom:8px}
+@media(max-width:520px){
+  .wrap,.ar-wrap,.admin-wrap,.article-shell{width:calc(100% - 28px)}
+  section{padding:17px;margin-top:15px;border-radius:17px}
+  header{padding-top:22px}
+  nav a{font-size:.61rem}
+  nav a i{font-size:21px}
+}
