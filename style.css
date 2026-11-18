@@ -412,3 +412,9 @@ footer{font-size:.76rem;padding-bottom:8px}
 .wrap > header .tag,
 .wrap > header h1{color:#fff !important}
 .wrap > header h1{background:none !important;-webkit-background-clip:initial !important;background-clip:initial !important}
+
+/* Prevent the shared page bands from extending beyond the viewport on mobile */
+@media(max-width:520px){
+  .wrap>section{margin-left:-14px;margin-right:-14px}
+  .wrap>header{margin-left:-14px !important;margin-right:-14px !important}
+}
