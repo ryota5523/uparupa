@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Admin｜MANAMI</title>
 <link rel="stylesheet" href="style.css">
-<meta name="theme-color" content="#e8384f">
+<meta name="theme-color" content="#e60012">
 <style>
 :root{--admin-red:var(--accent);--admin-ink:var(--text);--admin-muted:var(--sub);--admin-line:var(--line)}
 .admin-wrap{max-width:980px;margin:0 auto;padding:26px 18px 70px}
@@ -47,7 +47,7 @@
 .admin-note{font-size:.72rem;color:#a08a90;line-height:1.7;margin:12px 0 0}
 @media(max-width:620px){.admin-form-grid{grid-template-columns:1fr}.admin-field.full{grid-column:auto}.admin-head{align-items:flex-start}.admin-item{align-items:flex-start}.admin-item-actions{flex-direction:column}.admin-item-actions button{padding:7px 9px}}
 </style>
-</head>
+<link rel="stylesheet" href="style.css?v=shared-20261118"></head>
 <body>
 <div class="appbar"><a href="index.html"><img src="logo.png" alt="" class="logo"><span><b>MANAMI</b><small>管理者メニュー</small></span></a></div>
 <main class="admin-wrap">
@@ -190,5 +190,5 @@
  init();
 })();
 </script>
-<nav><a href="index.html"><i class="ms">home</i>Home</a><a href="profile.html"><i class="ms">person</i>Profile</a><a href="schedule.html"><i class="ms">calendar_month</i>Schedule</a><a href="news.html"><i class="ms">newspaper</i>News</a><a href="works.html"><i class="ms">movie</i>Works</a><a href="blog.html"><i class="ms">edit_note</i>Blog</a></nav></body>
+<nav><a href="index.html"><i class="ms">home</i>Home</a><a href="profile.html"><i class="ms">person</i>Profile</a><a href="schedule.html"><i class="ms">calendar_month</i>Schedule</a><a href="news.html"><i class="ms">newspaper</i>News</a><a href="works.html"><i class="ms">movie</i>Works</a><a href="blog.html"><i class="ms">edit_note</i>Blog</a></nav><script id="manami-nav-active">(()=>{const current=location.pathname.split("/").pop()||"index.html";document.querySelectorAll("nav a[href]").forEach(a=>{const target=new URL(a.getAttribute("href"),location.href).pathname.split("/").pop();if(target===current){a.classList.add("on");a.setAttribute("aria-current","page");}else{a.classList.remove("on");a.removeAttribute("aria-current");}});})();</script></body>
 </html>
