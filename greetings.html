@@ -27,7 +27,7 @@
 <body>
 <div class="appbar"><a href="index.html"><img src="logo.png" alt="" class="logo"><span><b>MANAMI</b><small>大野愛実 ファンサイト（非公式）</small></span></a></div>
 <div class="wrap">
-<header><span class="badge">日向坂46 五期生</span><h1>Greeting</h1><p class="kana">グリーティングカード</p><p class="intro">大野愛実ちゃんのグリーティングカードを、保存した順にまとめています。</p></header>
+<header><span class="badge">日向坂46 五期生</span><h1>Greeting</h1><p class="kana">グリーティングカード</p><p class="intro">大野愛実さんのグリーティングカードを、保存した順にまとめています。</p></header>
 <nav>
 <a href="index.html"><i class="ms">home</i>Home</a>
 <a href="profile.html"><i class="ms">person</i>Profile</a>
@@ -38,7 +38,7 @@
 </nav>
 <section>
 <h2>Greeting Card Archive</h2>
-<p class="greeting-intro">カードをタップすると大きく表示できます。</p>
+<p class="greeting-intro">カードをタップすると拡大表示できます。</p>
 <div id="greeting-list" class="greeting-grid"><div class="greeting-empty">カードを読み込んでいます…</div></div>
 <p id="greeting-status" class="greeting-status"></p>
 </section>
@@ -95,7 +95,7 @@
     });
     status.textContent=items.length+"枚のカードを保存しています。";
   }).catch(error=>{
-    list.innerHTML='<div class="greeting-empty">カードを読み込めませんでした。少し時間をおいて再読み込みしてください。</div>';
+    list.innerHTML='<div class="greeting-empty">カードを読み込めませんでした。時間をおいてから、もう一度お試しください。</div>';
     status.textContent="取得エラー："+error.message;
   });
 })();
