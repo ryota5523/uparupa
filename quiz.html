@@ -13,10 +13,18 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <style>
-.quiz-hero{margin:24px 0 18px;padding:28px 20px;border-radius:20px;background:linear-gradient(145deg,#a9000d,#e60012 65%,#f05b63);color:#fff;text-align:center;box-shadow:0 10px 28px rgba(120,10,20,.14)}
-.quiz-crown{font-size:2.5rem;line-height:1.2}
-.quiz-hero h1{margin:9px 0 5px;font-size:clamp(1.8rem,7vw,2.4rem);letter-spacing:.04em}
-.quiz-hero p{margin:0;color:rgba(255,255,255,.92);font-size:.86rem}
+.quiz-hero{position:relative;isolation:isolate;overflow:hidden;margin:24px 0 18px;padding:25px 20px 23px;border:1px solid rgba(255,255,255,.28);border-radius:20px;background:radial-gradient(ellipse at 50% -35%,rgba(255,255,255,.23),transparent 58%),linear-gradient(145deg,#8f0010 0%,#c90012 48%,#e60012 100%);color:#fff;text-align:center;box-shadow:0 9px 24px rgba(120,10,20,.13)}
+.quiz-hero:before,.quiz-hero:after{content:"✦";position:absolute;z-index:-1;color:rgba(255,255,255,.13);font-size:5.5rem;line-height:1}
+.quiz-hero:before{top:8px;left:12px;transform:rotate(-15deg)}
+.quiz-hero:after{right:12px;bottom:4px;transform:rotate(15deg)}
+.quiz-hero-kicker{font-size:.64rem;font-weight:800;letter-spacing:.24em;color:rgba(255,255,255,.78)}
+.quiz-crown{margin:10px auto 3px;font-size:2.15rem;line-height:1.15;filter:drop-shadow(0 2px 3px rgba(70,0,0,.22))}
+.quiz-hero h1{margin:5px 0 8px;font-size:clamp(2rem,8vw,2.55rem);font-weight:900;letter-spacing:.08em;text-shadow:0 2px 0 rgba(80,0,0,.18)}
+.quiz-hero h1 span{display:inline-block;margin-left:3px;color:#ffe7a6}
+.quiz-hero-rule{display:flex;align-items:center;justify-content:center;gap:9px;width:min(150px,55%);margin:0 auto 9px;color:#ffe7a6;font-size:.58rem}
+.quiz-hero-rule i{height:1px;flex:1;background:linear-gradient(90deg,transparent,rgba(255,231,166,.8))}
+.quiz-hero-rule i:last-child{transform:rotate(180deg)}
+.quiz-hero p{margin:0;color:rgba(255,255,255,.94);font-size:.84rem;letter-spacing:.04em}
 .quiz-panel{padding:20px 17px;border:1px solid var(--line);border-radius:18px;background:var(--card);box-shadow:0 5px 18px rgba(74,36,29,.045)}
 .quiz-intro{text-align:center;padding:10px 2px 5px}
 .quiz-intro h2{margin:0 0 9px;font-size:1.2rem;color:var(--text)}
@@ -61,9 +69,11 @@
 </nav>
 <main>
 <section class="quiz-hero">
-<div class="quiz-crown">👑</div>
-<h1>大野愛実王</h1>
-<p>大野愛実ちゃんクイズに挑戦！</p>
+<div class="quiz-hero-kicker">MANAMI ONO QUIZ</div>
+<div class="quiz-crown" aria-hidden="true">👑</div>
+<h1>大野愛実<span>王</span></h1>
+<div class="quiz-hero-rule"><i></i><b>◆</b><i></i></div>
+<p>あなたはどれだけ知っている？</p>
 </section>
 
 <section class="quiz-panel" id="quizIntro">
