@@ -169,9 +169,10 @@
 #blog-list .blog-card .card-date,#favorite-list .blog-card .card-date{
   display:block;margin-top:auto;color:#80645e;font-size:.76rem;text-align:right;white-space:nowrap;
 }
-#blog-list .blog-card .favorite-toggle,#favorite-list .blog-card .favorite-toggle{
-  position:absolute;left:93px;bottom:9px;width:26px;height:26px;border:1px solid #fff;border-radius:50%;
-  background:rgba(255,255,255,.94);color:#e60012;font-size:15px;box-shadow:0 1px 5px #0002;
+#blog-list .blog-card .thumb,#favorite-list .blog-card .thumb{position:relative;overflow:hidden}
+#blog-list .blog-card .thumb .favorite-toggle,#favorite-list .blog-card .thumb .favorite-toggle{
+  position:absolute;right:6px;bottom:6px;left:auto;width:26px;height:26px;border:1px solid #fff;border-radius:50%;
+  background:rgba(255,255,255,.94);color:#e60012;font-size:15px;box-shadow:0 1px 5px #0002;z-index:2;
 }
 #blog-list .blog-card .favorite-toggle.active,#favorite-list .blog-card .favorite-toggle.active{background:#e60012;color:#fff}
 #blog-list .blog-card .blog-all-photos,#favorite-list .blog-card .blog-all-photos{display:inline-flex;align-items:center;justify-content:center;align-self:flex-start;margin:3px 0 0;padding:6px 10px;border:1px solid #e60012;border-radius:7px;background:#fff;color:#e60012;font-size:.72rem;font-weight:800;text-decoration:none;cursor:pointer}
@@ -180,7 +181,6 @@
 @media(max-width:520px){
   #blog-list .blog-card,#favorite-list .blog-card{grid-template-columns:112px minmax(0,1fr);gap:10px;padding:9px}
   #blog-list .blog-card .thumb,#favorite-list .blog-card .thumb{width:112px;height:112px}
-  #blog-list .blog-card .favorite-toggle,#favorite-list .blog-card .favorite-toggle{left:90px}
 }
 .blog-filters{display:flex;gap:8px;padding:0 22px 12px;background:#fff}
 .blog-filter{flex:1;padding:10px 12px;border:1px solid #e8d6d2;border-radius:9px;background:#fff;color:#80645e;font:700 .84rem inherit;cursor:pointer}
@@ -313,7 +313,7 @@
   function setFavorites(items){localStorage.setItem(FAVORITES_KEY,JSON.stringify(items));renderFavorites();}
   function isFavorite(url){return getFavorites().some(x=>x.url===url);}
   function toggleFavorite(post){const items=getFavorites();const i=items.findIndex(x=>x.url===post.url);if(i>=0)items.splice(i,1);else items.unshift({url:post.url,title:post.title||"タイトル未設定",published_at:post.published_at||"",image:articleImage(post)});setFavorites(items);}
-  function renderFavorites(){if(!favoriteList)return;const items=getFavorites();favoriteList.innerHTML="";if(!items.length){favoriteList.innerHTML='<div class="saved-empty">お気に入りはまだありません。ブログの♡を押すと保存できます。</div>';return;}items.forEach(p=>{const a=document.createElement("a");a.className="blog-card";a.href=articlePageUrl(safeUrl(p.url),p.title,safeDate(p.published_at).full);a.dataset.blogArticle=safeUrl(p.url);const day=document.createElement("span");day.className="thumb";if(p.image){const img=document.createElement("img");img.src=p.image;img.alt="";img.loading="lazy";day.appendChild(img);}else{const d=safeDate(p.published_at);day.textContent=d.month+" "+d.day;}const copy=document.createElement("span");copy.className="card-copy";const date=document.createElement("span");date.className="card-date";date.textContent=safeDate(p.published_at).full;const title=document.createElement("span");title.className="card-title";title.textContent=p.title;copy.append(date,title);const remove=document.createElement("button");remove.type="button";remove.className="favorite-toggle active";remove.textContent="♥";remove.setAttribute("aria-label","お気に入りから削除");remove.addEventListener("click",ev=>{ev.preventDefault();ev.stopPropagation();setFavorites(getFavorites().filter(x=>x.url!==p.url));});a.append(day,copy,remove);favoriteList.appendChild(a);});}
+  function renderFavorites(){if(!favoriteList)return;const items=getFavorites();favoriteList.innerHTML="";if(!items.length){favoriteList.innerHTML='<div class="saved-empty">お気に入りはまだありません。ブログの♡を押すと保存できます。</div>';return;}items.forEach(p=>{const a=document.createElement("a");a.className="blog-card";a.href=articlePageUrl(safeUrl(p.url),p.title,safeDate(p.published_at).full);a.dataset.blogArticle=safeUrl(p.url);const day=document.createElement("span");day.className="thumb";if(p.image){const img=document.createElement("img");img.src=p.image;img.alt="";img.loading="lazy";day.appendChild(img);}else{const d=safeDate(p.published_at);day.textContent=d.month+" "+d.day;}const copy=document.createElement("span");copy.className="card-copy";const date=document.createElement("span");date.className="card-date";date.textContent=safeDate(p.published_at).full;const title=document.createElement("span");title.className="card-title";title.textContent=p.title;copy.append(date,title);const remove=document.createElement("button");remove.type="button";remove.className="favorite-toggle active";remove.textContent="♥";remove.setAttribute("aria-label","お気に入りから削除");remove.addEventListener("click",ev=>{ev.preventDefault();ev.stopPropagation();setFavorites(getFavorites().filter(x=>x.url!==p.url));});day.appendChild(remove);a.append(day,copy);favoriteList.appendChild(a);});}
   let posts=[];
   const imageCache=new Map();
   const readerCache=new Map();
@@ -453,7 +453,7 @@
       copy.append(title,excerpt,date);
       addAllPhotosButton(copy,p);
       const favorite=document.createElement("button");favorite.type="button";favorite.className="favorite-toggle"+(isFavorite(p.url)?" active":"");favorite.textContent=isFavorite(p.url)?"♥":"♡";favorite.setAttribute("aria-label","お気に入り");favorite.addEventListener("click",ev=>{ev.preventDefault();ev.stopPropagation();toggleFavorite(p);renderList();});
-      a.append(day,copy,favorite);list.appendChild(a);
+      day.appendChild(favorite);a.append(day,copy);list.appendChild(a);
     });
   }
   function setupMonths(){
