@@ -13,14 +13,39 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <style>
-.quiz-hero{margin:24px 0 18px;padding:30px 22px;border-radius:22px;background:linear-gradient(145deg,#a9000d,#e60012 65%,#f05b63);color:#fff;text-align:center;box-shadow:0 10px 28px rgba(120,10,20,.16)}
-.quiz-crown{font-size:2.8rem;line-height:1.2}
-.quiz-hero h1{margin:10px 0 6px;font-size:clamp(1.8rem,7vw,2.5rem);letter-spacing:.04em}
-.quiz-hero p{margin:0;color:rgba(255,255,255,.9);font-size:.88rem}
-.quiz-placeholder{padding:24px 18px;border:1px solid #f2d6d6;border-radius:18px;background:#fff;text-align:center}
-.quiz-placeholder .coming{display:inline-block;padding:6px 12px;border-radius:99px;background:#fff1f1;color:#e60012;font-size:.7rem;font-weight:900;letter-spacing:.12em}
-.quiz-placeholder h2{margin:14px 0 8px;font-size:1.15rem;color:#4a241d}
-.quiz-placeholder p{margin:0;color:#806b65;font-size:.86rem;line-height:1.8}
+.quiz-hero{margin:24px 0 18px;padding:28px 20px;border-radius:20px;background:linear-gradient(145deg,#a9000d,#e60012 65%,#f05b63);color:#fff;text-align:center;box-shadow:0 10px 28px rgba(120,10,20,.14)}
+.quiz-crown{font-size:2.5rem;line-height:1.2}
+.quiz-hero h1{margin:9px 0 5px;font-size:clamp(1.8rem,7vw,2.4rem);letter-spacing:.04em}
+.quiz-hero p{margin:0;color:rgba(255,255,255,.92);font-size:.86rem}
+.quiz-panel{padding:20px 17px;border:1px solid var(--line);border-radius:18px;background:var(--card);box-shadow:0 5px 18px rgba(74,36,29,.045)}
+.quiz-intro{text-align:center;padding:10px 2px 5px}
+.quiz-intro h2{margin:0 0 9px;font-size:1.2rem;color:var(--text)}
+.quiz-intro p{margin:0;color:var(--sub);font-size:.88rem;line-height:1.8}
+.quiz-start,.quiz-next,.quiz-retry{display:block;width:100%;border:0;border-radius:12px;background:var(--accent);color:#fff;font:inherit;font-weight:800;padding:14px 16px;margin-top:18px;cursor:pointer}
+.quiz-start:active,.quiz-next:active,.quiz-retry:active{opacity:.85}
+.quiz-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--sub);font-size:.8rem;font-weight:700;margin-bottom:12px}
+.quiz-progress{height:7px;background:var(--accent2);border-radius:99px;overflow:hidden;margin-bottom:20px}
+.quiz-progress span{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .2s}
+.quiz-question{font-size:1.08rem;line-height:1.65;color:var(--text);font-weight:800;margin:0 0 17px}
+.quiz-options{display:grid;gap:10px}
+.quiz-option{width:100%;display:flex;align-items:flex-start;gap:11px;text-align:left;padding:13px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--text);font:inherit;line-height:1.5;cursor:pointer}
+.quiz-option .quiz-letter{flex:0 0 26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--accent2);color:var(--accent);font-size:.78rem;font-weight:900}
+.quiz-option:disabled{cursor:default;opacity:1}
+.quiz-option.is-correct{border-color:#27945d;background:#f1faf5}
+.quiz-option.is-correct .quiz-letter{background:#27945d;color:#fff}
+.quiz-option.is-wrong{border-color:#d96b6b;background:#fff6f6}
+.quiz-option.is-wrong .quiz-letter{background:#d96b6b;color:#fff}
+.quiz-feedback{display:none;margin-top:15px;padding:14px;border-radius:12px;background:var(--soft);color:var(--text);font-size:.88rem;line-height:1.75}
+.quiz-feedback.show{display:block}
+.quiz-feedback strong{display:block;margin-bottom:5px}
+.quiz-result{text-align:center;padding:12px 2px}
+.quiz-result .result-icon{font-size:3rem}
+.quiz-result h2{font-size:1.45rem;margin:8px 0;color:var(--text)}
+.quiz-score{font-size:2.3rem;font-weight:900;color:var(--accent);margin:8px 0}
+.quiz-result p{color:var(--sub);font-size:.9rem;line-height:1.8}
+.quiz-small{font-size:.75rem;color:var(--sub);text-align:center;margin:13px 0 0;line-height:1.6}
+[hidden]{display:none!important}
+@media(max-width:520px){.quiz-hero{margin-top:18px;padding:25px 16px}.quiz-panel{padding:17px 13px}.quiz-question{font-size:1rem}}
 </style>
 </head>
 <body>
@@ -38,14 +63,105 @@
 <section class="quiz-hero">
 <div class="quiz-crown">👑</div>
 <h1>大野愛実王</h1>
-<p>ブログを読んで、あなたは何問答えられる？</p>
+<p>大野愛実ちゃんクイズに挑戦！</p>
 </section>
-<section class="quiz-placeholder">
-<span class="coming">COMING SOON</span>
-<h2>大野愛実王への挑戦</h2>
-<p>公式ブログの内容から出題される4択クイズに挑戦！<br>全10問正解で「大野愛実王」に認定されます。</p>
+
+<section class="quiz-panel" id="quizIntro">
+<div class="quiz-intro">
+<h2>あなたは何問正解できる？</h2>
+<p>全10問の4択クイズ！<br>10問全問正解で「大野愛実王」に認定！</p>
+</div>
+<button class="quiz-start" id="quizStart">挑戦する！</button>
+<p class="quiz-small">問題は現在登録されている候補から出題されます。</p>
+</section>
+
+<section class="quiz-panel" id="quizGame" hidden>
+<div class="quiz-meta"><span id="quizCount">第1問 / 10問</span><span id="quizScore">正解 0</span></div>
+<div class="quiz-progress"><span id="quizProgress"></span></div>
+<h2 class="quiz-question" id="quizQuestion"></h2>
+<div class="quiz-options" id="quizOptions"></div>
+<div class="quiz-feedback" id="quizFeedback" aria-live="polite"></div>
+<button class="quiz-next" id="quizNext" hidden>次の問題へ</button>
+</section>
+
+<section class="quiz-panel" id="quizResult" hidden>
+<div class="quiz-result">
+<div class="result-icon" id="quizResultIcon">🏁</div>
+<h2 id="quizResultTitle">結果発表！</h2>
+<div class="quiz-score" id="quizFinalScore">0 / 10</div>
+<p id="quizResultMessage"></p>
+<button class="quiz-retry" id="quizRetry">もう一度挑戦する</button>
+</div>
 </section>
 </main>
 </div>
+<script>
+(() => {
+const bank = [
+{q:"大野愛実ちゃんが、九九でいちばん自信があるのは何の段？",a:["2の段","5の段","7の段","9の段"],c:1,e:"2007年5月5日生まれの五期生。「5に恵まれた運命」ということで、九九も5の段がいちばん自信があるそうです。"},
+{q:"大野愛実ちゃんが好きなひらがなは？",a:["あ","の","め","ぬ"],c:1,e:"一画で書けるのにスペックが高く、汎用性も高いところ、そして丸みを帯びたフォームが可愛いところがお気に入りだそうです。"},
+{q:"大野愛実ちゃんがプロフィール動画内で弾き語りしている楽曲は？",a:["キュン","沈黙した恋人よ","青春の馬","君しか勝たん"],c:1,e:"プロフィール動画内で「沈黙した恋人よ」を弾き語りしています。"},
+{q:"大野愛実ちゃんがオーディションの自己PRで用意したものは？",a:["普通のコロッケとからし入りコロッケ","普通の寿司とわさび寿司","普通のずんだ餅とわさびずんだ餅","普通のシュークリームとわさび入りシュークリーム"],c:0,e:"普通のコロッケとからし入りコロッケを作って持参し、どちらかを食べるという自己PRをしたそうです。"},
+{q:"2025年2月のプロフィール動画撮影で訪れた宮崎県の市は？",a:["宮崎市","日南市","串間市","延岡市"],c:2,e:"宮崎県串間市で撮影。素敵な空と海、馬に囲まれて楽しく撮影でき、「また行きたい」と綴っています。"},
+{q:"プロフィール動画の合宿で、大野愛実ちゃんが踊った楽曲は？",a:["キツネ","青春の馬","ドレミソラシド","JOYFUL LOVE"],c:1,e:"合宿では「青春の馬」を練習。ガラス窓の反射を鏡代わりに自主練し、部屋に戻ってからも曲が流れていたそうです。"},
+{q:"大野愛実ちゃんのサイリウムカラーは？",a:["レッド × ホワイト","ピンク × ホワイト","レッド × レッド","パープル × ブルー"],c:2,e:"サイリウムカラーはレッド×レッド。一面真っ赤に染まった会場が好きで、情熱やパッションを感じる色だそうです。"},
+{q:"大野愛実ちゃんが挙げた、夏の嫌いなところ。蚊が多いことと、もうひとつは？",a:["暑さ","水と触れ合わなければいけないこと","日焼け","セミの鳴き声"],c:1,e:"水が怖くて泳ぐのが苦手。小学校6年間の水泳の授業を「けのび」で乗り切ったそうです。"},
+{q:"大野愛実ちゃんが大好きな、星新一さんのSF小説のジャンルは？",a:["長編小説","ショートショート","推理小説","恋愛小説"],c:1,e:"中学1年生の頃、とあるラジオをきっかけに星新一さんに興味を持ち、『ボッコちゃん』を読んだそうです。ショートショートが大好きだと綴っています。"},
+{q:"山口陽世さんが大野愛実ちゃんを「大野ちゃん」と呼ぶ一方、山下葉留花さんは何と呼んでいる？",a:["大野氏","大野先生","大野選手","大野ーやっちまったー"],c:2,e:"山下葉留花さんからの呼び名は「大野選手」です。"},
+{q:"2025年5月4日放送『日向坂で会いましょう』の新メンバーオリエンテーションで、大野愛実ちゃんの左隣に座っていた先輩は？",a:["竹内希来里さん","藤嶌果歩さん","渡辺莉奈さん","誰も座っていない"],c:0,e:"番組内で大野愛実ちゃんの左隣に座っていた先輩は竹内希来里さんです。"}
+];
+const $ = id => document.getElementById(id);
+let questions = [], index = 0, score = 0, locked = false;
+const shuffle = arr => { const a = arr.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+function start(){
+ questions=shuffle(bank).slice(0,10);index=0;score=0;
+ $("quizIntro").hidden=true;$("quizResult").hidden=true;$("quizGame").hidden=false;
+ showQuestion();
+}
+function showQuestion(){
+ locked=false;const item=questions[index];
+ $("quizCount").textContent="第"+(index+1)+"問 / 10問";
+ $("quizScore").textContent="正解 "+score;
+ $("quizProgress").style.width=(index/10*100)+"%";
+ $("quizQuestion").textContent=item.q;
+ $("quizOptions").innerHTML="";
+ $("quizFeedback").className="quiz-feedback";$("quizFeedback").textContent="";
+ $("quizNext").hidden=true;
+ item.a.forEach((label,i)=>{
+  const b=document.createElement("button");b.type="button";b.className="quiz-option";
+  const letter=document.createElement("span");letter.className="quiz-letter";letter.textContent=["A","B","C","D"][i];
+  const text=document.createElement("span");text.textContent=label;
+  b.append(letter,text);b.addEventListener("click",()=>answer(i));$("quizOptions").appendChild(b);
+ });
+}
+function answer(choice){
+ if(locked)return;locked=true;const item=questions[index];const buttons=[...$("quizOptions").querySelectorAll("button")];
+ buttons.forEach((b,i)=>{b.disabled=true;if(i===item.c)b.classList.add("is-correct");else if(i===choice)b.classList.add("is-wrong");});
+ const ok=choice===item.c;if(ok)score++;
+ $("quizScore").textContent="正解 "+score;
+ $("quizFeedback").className="quiz-feedback show";
+ const heading=document.createElement("strong");heading.textContent=ok?"正解！":"残念！正解は「"+item.a[item.c]+"」";
+ const detail=document.createElement("span");detail.textContent=item.e;
+ $("quizFeedback").append(heading,detail);
+ $("quizNext").textContent=index===9?"結果を見る":"次の問題へ";
+ $("quizNext").hidden=false;
+}
+function next(){
+ index++;if(index>=10){finish();return;}showQuestion();
+}
+function finish(){
+ $("quizGame").hidden=true;$("quizResult").hidden=false;
+ $("quizFinalScore").textContent=score+" / 10";
+ const perfect=score===10;
+ $("quizResultIcon").textContent=perfect?"👑":"🌸";
+ $("quizResultTitle").textContent=perfect?"大野愛実王 認定！":"結果発表！";
+ $("quizResultMessage").textContent=perfect?"おめでとう！全10問正解です。あなたは大野愛実王！":"あと少し！もう一度挑戦して、大野愛実王を目指そう。";
+ $("quizProgress").style.width="100%";
+}
+$("quizStart").addEventListener("click",start);
+$("quizNext").addEventListener("click",next);
+$("quizRetry").addEventListener("click",start);
+})();
+</script>
 </body>
 </html>
