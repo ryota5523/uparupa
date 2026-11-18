@@ -31,7 +31,7 @@
 .quiz-intro p{margin:0;color:var(--sub);font-size:.88rem;line-height:1.8}
 .quiz-start,.quiz-next,.quiz-retry{display:block;width:100%;border:0;border-radius:12px;background:var(--accent);color:#fff;font:inherit;font-weight:800;padding:14px 16px;margin-top:18px;cursor:pointer}
 .quiz-start:active,.quiz-next:active,.quiz-retry:active{opacity:.85}
-.quiz-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--sub);font-size:.8rem;font-weight:700;margin-bottom:12px}
+.quiz-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--sub);font-size:.8rem;font-weight:700;margin-bottom:12px}.quiz-score-live{padding:6px 11px;border-radius:99px;background:var(--accent2);color:var(--accent);font-weight:900;font-variant-numeric:tabular-nums}
 .quiz-progress{height:7px;background:var(--accent2);border-radius:99px;overflow:hidden;margin-bottom:20px}
 .quiz-progress span{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .2s}
 .quiz-question{font-size:1.08rem;line-height:1.65;color:var(--text);font-weight:800;margin:0 0 17px}
@@ -86,7 +86,7 @@
 </section>
 
 <section class="quiz-panel" id="quizGame" hidden>
-<div class="quiz-meta"><span id="quizCount">第1問 / 10問</span><span id="quizScore">正解 0</span></div>
+<div class="quiz-meta"><span id="quizCount">第1問 / 10問</span><span class="quiz-score-live" id="quizScore" aria-live="polite">正解数 0 / 10</span></div>
 <div class="quiz-progress"><span id="quizProgress"></span></div>
 <h2 class="quiz-question" id="quizQuestion"></h2>
 <div class="quiz-options" id="quizOptions"></div>
@@ -132,7 +132,7 @@ function start(){
 function showQuestion(){
  locked=false;const item=questions[index];
  $("quizCount").textContent="第"+(index+1)+"問 / 10問";
- $("quizScore").textContent="正解 "+score;
+ $("quizScore").textContent="正解数 "+score+" / 10";
  $("quizProgress").style.width=(index/10*100)+"%";
  $("quizQuestion").textContent=item.q;
  $("quizOptions").innerHTML="";
