@@ -418,3 +418,13 @@ footer{font-size:.76rem;padding-bottom:8px}
   .wrap>section{margin-left:-14px;margin-right:-14px}
   .wrap>header{margin-left:-14px !important;margin-right:-14px !important}
 }
+
+/* Schedule links use the site's text color instead of browser-default blue */
+#home-schedule .home-row a{
+  color:var(--text);
+  text-decoration:none;
+  font-weight:700;
+}
+#home-schedule .home-row a:hover{
+  color:var(--accent);
+}
