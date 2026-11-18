@@ -168,6 +168,15 @@
   .blog-tools,.blog-results,.blog-pagination,.blog-footnote{padding-left:18px;padding-right:18px}
 }
 
+/* Keep the bottom navigation fully above the viewport edge on Blog */
+@media(max-width:780px){
+  body>nav{
+    z-index:1000;
+    background:#fff;
+    padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));
+    box-shadow:0 -3px 12px rgba(74,31,22,.06);
+  }
+}
 </style>
 <link rel="stylesheet" href="style.css?v=shared-20261118"></head>
 <body>
