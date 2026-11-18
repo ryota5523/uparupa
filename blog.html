@@ -185,6 +185,10 @@
   #blog-list .blog-card .thumb,#favorite-list .blog-card .thumb{width:112px;height:112px}
   #blog-list .blog-card .favorite-toggle,#favorite-list .blog-card .favorite-toggle{left:82px}
 }
+.blog-filters{display:flex;gap:8px;padding:0 22px 12px;background:#fff}
+.blog-filter{flex:1;padding:10px 12px;border:1px solid #e8d6d2;border-radius:9px;background:#fff;color:#80645e;font:700 .84rem inherit;cursor:pointer}
+.blog-filter.active{border-color:#e60012;background:#e60012;color:#fff}
+@media(max-width:520px){.blog-filters{padding-left:18px;padding-right:18px}}
 .blog-all-photos{border:0;border-radius:0;background:transparent;color:#e60012;padding:5px 0;text-decoration:underline}
 .blog-pagination{margin:0;padding:12px 22px 18px;background:#fff}
 .blog-page-button{border:1px solid #e60012;border-radius:0;background:#fff;color:#e60012}
@@ -229,9 +233,11 @@
 <div class="blog-section-title"><h2>Latest Letter</h2><span>FEATURED</span></div>
 <div id="featured" class="blog-feature"><div class="blog-loading">最新の記事を探しています…</div></div>
 
-<div class="blog-section-title" id="saved"><h2>Saved Stories</h2><span>FAVORITES</span></div>
-<div id="favorite-list" class="blog-list"><div class="blog-empty">♡を押した記事をここに保存できます。</div></div>
 <div class="blog-section-title"><h2>Blog Archive</h2><span>STORIES</span></div>
+<div class="blog-filters" role="group" aria-label="ブログの表示切り替え">
+<button type="button" class="blog-filter active" data-filter="all" aria-pressed="true">すべて</button>
+<button type="button" class="blog-filter" data-filter="favorites" aria-pressed="false">♡ お気に入り</button>
+</div>
 <div class="blog-tools">
 <input id="blog-search" class="blog-search" type="search" placeholder="記事タイトルで検索…" aria-label="記事タイトルで検索">
 <select id="blog-month" class="blog-select" aria-label="年月で絞り込み"><option value="all">すべての年月</option></select>
@@ -264,7 +270,17 @@
   const pagination=document.getElementById("blog-pagination");
   const PAGE_SIZE=10;
   let currentPage=1;
-  const favoriteList=document.getElementById("favorite-list");
+  const favoriteList=null;
+  let activeFilter="all";
+  document.querySelectorAll(".blog-filter").forEach(button=>{
+    button.addEventListener("click",()=>{
+      activeFilter=button.dataset.filter||"all";
+      document.querySelectorAll(".blog-filter").forEach(item=>{
+        const active=item===button;item.classList.toggle("active",active);item.setAttribute("aria-pressed",String(active));
+      });
+      currentPage=1;renderList();
+    });
+  });
   const FAVORITES_KEY="manami-blog-favorites-v1";
   const photoPanel=document.getElementById("blog-photo-panel");
   const photoGrid=document.getElementById("blog-photo-grid");
@@ -396,14 +412,16 @@
     const selected=month.value;
     const filtered=posts.filter(p=>{
       const d=safeDate(p.published_at);
-      return (!q||String(p.title||"").toLocaleLowerCase().includes(q))&&(selected==="all"||d.key===selected);
+      return (activeFilter!=="favorites"||isFavorite(p.url))
+        &&(!q||String(p.title||"").toLocaleLowerCase().includes(q))
+        &&(selected==="all"||d.key===selected);
     });
     count.innerHTML='<strong>'+filtered.length+'</strong> 件の記事';
     list.innerHTML="";
     pagination.innerHTML="";
     const totalPages=Math.max(1,Math.ceil(filtered.length/PAGE_SIZE));
     currentPage=Math.min(currentPage,totalPages);
-    if(!filtered.length){const empty=document.createElement("div");empty.className="blog-empty";empty.textContent="該当する記事が見つからなかったよ。検索ワードを変えてみてね。";list.appendChild(empty);return;}
+    if(!filtered.length){const empty=document.createElement("div");empty.className="blog-empty";empty.textContent=activeFilter==="favorites"?"お気に入りの記事はまだありません。♡を押すとここに表示されるよ。":"該当する記事が見つからなかったよ。検索ワードを変えてみてね。";list.appendChild(empty);return;}
     const start=(currentPage-1)*PAGE_SIZE;
     const visible=filtered.slice(start,start+PAGE_SIZE);
     const info=document.createElement("span");info.className="blog-page-info";info.textContent=currentPage+" / "+totalPages+" ページ";pagination.appendChild(info);
