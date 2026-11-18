@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#e8384f">
+<meta name="theme-color" content="#e60012">
 <title>MANAMIN REAL AR｜大野愛実ファンサイト</title>
 <link rel="stylesheet" href="style.css">
 <style>
@@ -270,5 +270,7 @@ savePhotoBtn.addEventListener('click',async()=>{
 renderLocalLibrary();
 clearBtn.addEventListener('click',()=>{revokeAssets();image=null;input.value='';preview.innerHTML='<div class="ar-empty"><span class="symbol">✧</span>画像を選ぶとここに表示されるよ</div>';placeBtn.disabled=true;downloadBtn.disabled=true;clearBtn.disabled=true;savePhotoBtn.disabled=true;cutoutBtn.disabled=true;isCutout=false;say('画像をクリアしました。');});
 </script>
-<nav><a href="index.html"><i class="ms">home</i>Home</a><a href="profile.html"><i class="ms">person</i>Profile</a><a href="schedule.html"><i class="ms">calendar_month</i>Schedule</a><a href="news.html"><i class="ms">newspaper</i>News</a><a href="works.html"><i class="ms">movie</i>Works</a><a href="blog.html"><i class="ms">edit_note</i>Blog</a></nav></body>
+<nav><a href="index.html"><i class="ms">home</i>Home</a><a href="profile.html"><i class="ms">person</i>Profile</a><a href="schedule.html"><i class="ms">calendar_month</i>Schedule</a><a href="news.html"><i class="ms">newspaper</i>News</a><a href="works.html"><i class="ms">movie</i>Works</a><a href="blog.html"><i class="ms">edit_note</i>Blog</a></nav><script id="manami-nav-active">
+(()=>{const current=location.pathname.split("/").pop()||"index.html";document.querySelectorAll("nav a[href]").forEach(a=>{const target=new URL(a.getAttribute("href"),location.href).pathname.split("/").pop();if(target===current){a.classList.add("on");a.setAttribute("aria-current","page");}else{a.classList.remove("on");a.removeAttribute("aria-current");}});})();
+</script></body>
 </html>
