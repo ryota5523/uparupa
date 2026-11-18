@@ -6,7 +6,7 @@
 <title>Greeting｜大野愛実 ファンサイト（非公式）</title>
 <link rel="stylesheet" href="style.css">
 <link rel="icon" href="favicon.ico" sizes="any">
-<meta name="theme-color" content="#e8384f">
+<meta name="theme-color" content="#e60012">
 <style>
 .greeting-intro{color:var(--sub);font-size:.92rem;margin:-4px 0 18px}
 .greeting-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px}
@@ -101,5 +101,7 @@
 })();
 </script>
 <script src="egg.js" defer></script>
-</body>
+<script id="manami-nav-active">
+(()=>{const current=location.pathname.split("/").pop()||"index.html";document.querySelectorAll("nav a[href]").forEach(a=>{const target=new URL(a.getAttribute("href"),location.href).pathname.split("/").pop();if(target===current){a.classList.add("on");a.setAttribute("aria-current","page");}else{a.classList.remove("on");a.removeAttribute("aria-current");}});})();
+</script></body>
 </html>
