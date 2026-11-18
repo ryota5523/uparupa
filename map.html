@@ -33,6 +33,15 @@
 <h2>思い出から広がる聖地マップ 📍</h2>
 <p class="map-intro">推し活メモでカテゴリ「聖地巡礼」を選んで保存すると、ここに自動で表示されるよ。住所を登録すると地図上にピンが立つよ。</p>
 <div class="map-toolbar"><span class="map-count" id="map-count">スポットを読み込み中…</span><a class="button" href="memo.html?type=聖地巡礼">＋ 聖地を登録する</a></div>
+<form id="spot-form" class="map-place" style="display:grid;gap:10px;margin:14px 0">
+<h3>聖地を登録する</h3>
+<label>スポット名<input id="spot-name" required maxlength="160" placeholder="例：MVに登場したカフェ"></label>
+<label>住所・場所<input id="spot-address" required maxlength="240" placeholder="住所や施設名を入力"></label>
+<label>訪問日<input id="spot-date" type="date"></label>
+<label>写真<input id="spot-photo" type="file" accept="image/*"></label>
+<label>メモ・感想<textarea id="spot-note" maxlength="3000" rows="3" placeholder="どの作品の聖地？思い出など"></textarea></label>
+<button type="submit" style="padding:11px;border:0;border-radius:10px;background:#c91532;color:#fff;font-weight:700">聖地を保存する ♡</button>
+</form>
 <div id="pilgrimage-map"></div>
 <p id="map-status" class="map-status" aria-live="polite"></p>
 <div id="map-list" class="map-list"><div class="map-empty">聖地巡礼メモを読み込み中…</div></div>
@@ -72,7 +81,7 @@ function renderList(items){
  if(!items.length){el.innerHTML='<div class="map-empty">まだ聖地が登録されていないよ。推し活メモから最初のスポットを追加してね ♡</div>';return;}
  items.forEach(item=>{
   const card=document.createElement("article");card.className="map-place";
-  const title=document.createElement("h3");title.textContent=item.place||item.title||"聖地";
+  if(item.photo){const img=document.createElement("img");img.src=URL.createObjectURL(item.photo);img.alt="聖地の写真";img.style.cssText="width:100%;max-height:220px;object-fit:cover;border-radius:10px;margin-bottom:8px";card.append(img);}const title=document.createElement("h3");title.textContent=item.place||item.title||"聖地";
   const date=document.createElement("p");date.textContent=item.date||"";
   const address=document.createElement("p");address.textContent=item.address||"住所未登録";
   card.append(title,date,address);
@@ -85,6 +94,17 @@ function renderList(items){
   el.append(card);
  });
 }
+$("spot-date").value=new Date().toLocaleDateString("sv-SE");
+$("spot-form").addEventListener("submit",async e=>{
+ e.preventDefault();
+ try{
+  const db=await openDB();
+  const item={id:"spot-"+Date.now()+"-"+Math.random().toString(36).slice(2),date:$("spot-date").value||new Date().toLocaleDateString("sv-SE"),type:"聖地巡礼",title:$("spot-name").value.trim(),place:$("spot-name").value.trim(),address:$("spot-address").value.trim(),text:$("spot-note").value.trim(),photo:$("spot-photo").files[0]||null,created:Date.now()};
+  await saveEntry(db,item);
+  $("spot-form").reset();$("spot-date").value=new Date().toLocaleDateString("sv-SE");
+  markers.clearLayers();$("map-status").textContent="聖地を保存したよ ♡";await init();
+ }catch(error){$("map-status").textContent="保存できなかったよ。もう一度試してね。";}
+});
 async function init(){
  try{
   const db=await openDB();
