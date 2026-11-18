@@ -32,7 +32,7 @@
 </style>
 </head>
 <body>
-<div class="appbar"><a href="index.html"><span style="font-size:1.5rem;color:var(--accent)">♡</span><span><b>MANAMI</b><small>大野愛実 ファンサイト（非公式）</small></span></a></div>
+<div class="appbar"><a href="index.html"><img src="logo.png" alt="" class="logo"><span><b>MANAMI</b><small>大野愛実 ファンサイト（非公式）</small></span></a></div>
 <main class="ar-wrap">
 <a class="ar-back" href="index.html">← HOMEに戻る</a>
 <header class="ar-head"><div class="ar-kicker">AUGMENTED REALITY EXPERIENCE</div><h1>MANAMIN <span style="color:var(--ar-pink)">AR</span></h1><p>写真からアクスタを作って、いつもの部屋に。<br>人物を切り抜いて、現実の空間に飾ろう。</p></header>
@@ -270,5 +270,5 @@ savePhotoBtn.addEventListener('click',async()=>{
 renderLocalLibrary();
 clearBtn.addEventListener('click',()=>{revokeAssets();image=null;input.value='';preview.innerHTML='<div class="ar-empty"><span class="symbol">✧</span>画像を選ぶとここに表示されるよ</div>';placeBtn.disabled=true;downloadBtn.disabled=true;clearBtn.disabled=true;savePhotoBtn.disabled=true;cutoutBtn.disabled=true;isCutout=false;say('画像をクリアしました。');});
 </script>
-</body>
+<nav><a href="index.html"><i class="ms">home</i>Home</a><a href="profile.html"><i class="ms">person</i>Profile</a><a href="schedule.html"><i class="ms">calendar_month</i>Schedule</a><a href="news.html"><i class="ms">newspaper</i>News</a><a href="works.html"><i class="ms">movie</i>Works</a><a href="blog.html"><i class="ms">edit_note</i>Blog</a></nav></body>
 </html>
