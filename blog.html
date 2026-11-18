@@ -183,13 +183,13 @@
 </nav>
 
 <main id="blog-main">
-<div class="blog-page-head"><span class="blog-page-en">MANAMI OHNO / OFFICIAL BLOG ARCHIVE</span><h1>Blog</h1><p>大野愛実ちゃんのブログを、ここに。</p></div>
+<div class="blog-page-head"><span class="blog-page-en">MANAMI OHNO / OFFICIAL BLOG ARCHIVE</span><h1>Blog</h1><p>大野愛実さんのブログをまとめています。</p></div>
 
 <div class="blog-section-title"><h2>Latest Letter</h2><span>FEATURED</span></div>
 <div id="featured" class="blog-feature"><div class="blog-loading">最新の記事を探しています…</div></div>
 
 <div class="blog-section-title" id="saved"><h2>Saved Stories</h2><span>FAVORITES</span></div>
-<div id="favorite-list" class="blog-list"><div class="blog-empty">♡を押した記事がここに保存されます。</div></div>
+<div id="favorite-list" class="blog-list"><div class="blog-empty">♡を押した記事をここに保存できます。</div></div>
 <div class="blog-section-title"><h2>Blog Archive</h2><span>STORIES</span></div>
 <div class="blog-tools">
 <input id="blog-search" class="blog-search" type="search" placeholder="記事タイトルで検索…" aria-label="記事タイトルで検索">
@@ -201,7 +201,7 @@
 <p class="blog-footnote">記事をタップすると、サイト内の専用ページで本文と写真を読めます。</p>
 </main>
 
-<div id="blog-photo-panel" class="blog-photo-panel" aria-hidden="true"><div class="blog-photo-panel-inner"><div class="blog-photo-panel-head"><div id="blog-photo-panel-title" class="blog-photo-panel-title">記事の写真</div><button id="blog-photo-panel-close" class="blog-photo-panel-close" type="button">閉じる ✕</button></div><p class="blog-photo-help">写真をタップして開き、画像を長押しするとiPhoneの写真アプリに保存できるよ。</p><div id="blog-photo-grid" class="blog-photo-grid"></div></div></div>
+<div id="blog-photo-panel" class="blog-photo-panel" aria-hidden="true"><div class="blog-photo-panel-inner"><div class="blog-photo-panel-head"><div id="blog-photo-panel-title" class="blog-photo-panel-title">記事の写真</div><button id="blog-photo-panel-close" class="blog-photo-panel-close" type="button">閉じる ✕</button></div><p class="blog-photo-help">写真をタップすると拡大できます。画像を長押しすると、写真アプリに保存できます。</p><div id="blog-photo-grid" class="blog-photo-grid"></div></div></div>
 
 <footer><p>このサイトは有志による非公式ファンサイトです。日向坂46・運営・所属事務所とは一切関係ありません。<br>掲載内容は報道・公式発表をもとにまとめたものです。正確な情報は公式サイトをご確認ください。</p></footer>
 </div>
@@ -259,7 +259,7 @@
   function setFavorites(items){localStorage.setItem(FAVORITES_KEY,JSON.stringify(items));renderFavorites();}
   function isFavorite(url){return getFavorites().some(x=>x.url===url);}
   function toggleFavorite(post){const items=getFavorites();const i=items.findIndex(x=>x.url===post.url);if(i>=0)items.splice(i,1);else items.unshift({url:post.url,title:post.title||"タイトル未設定",published_at:post.published_at||"",image:articleImage(post)});setFavorites(items);}
-  function renderFavorites(){if(!favoriteList)return;const items=getFavorites();favoriteList.innerHTML="";if(!items.length){favoriteList.innerHTML='<div class="saved-empty">まだお気に入りはありません。ブログの♡を押して保存してね。</div>';return;}items.forEach(p=>{const a=document.createElement("a");a.className="blog-card";a.href=articlePageUrl(safeUrl(p.url),p.title,safeDate(p.published_at).full);a.dataset.blogArticle=safeUrl(p.url);const day=document.createElement("span");day.className="thumb";if(p.image){const img=document.createElement("img");img.src=p.image;img.alt="";img.loading="lazy";day.appendChild(img);}else{const d=safeDate(p.published_at);day.textContent=d.month+" "+d.day;}const copy=document.createElement("span");copy.className="card-copy";const date=document.createElement("span");date.className="card-date";date.textContent=safeDate(p.published_at).full;const title=document.createElement("span");title.className="card-title";title.textContent=p.title;copy.append(date,title);const remove=document.createElement("button");remove.type="button";remove.className="favorite-toggle active";remove.textContent="♥";remove.setAttribute("aria-label","お気に入りから削除");remove.addEventListener("click",ev=>{ev.preventDefault();ev.stopPropagation();setFavorites(getFavorites().filter(x=>x.url!==p.url));});a.append(day,copy,remove);favoriteList.appendChild(a);});}
+  function renderFavorites(){if(!favoriteList)return;const items=getFavorites();favoriteList.innerHTML="";if(!items.length){favoriteList.innerHTML='<div class="saved-empty">お気に入りはまだありません。ブログの♡を押すと保存できます。</div>';return;}items.forEach(p=>{const a=document.createElement("a");a.className="blog-card";a.href=articlePageUrl(safeUrl(p.url),p.title,safeDate(p.published_at).full);a.dataset.blogArticle=safeUrl(p.url);const day=document.createElement("span");day.className="thumb";if(p.image){const img=document.createElement("img");img.src=p.image;img.alt="";img.loading="lazy";day.appendChild(img);}else{const d=safeDate(p.published_at);day.textContent=d.month+" "+d.day;}const copy=document.createElement("span");copy.className="card-copy";const date=document.createElement("span");date.className="card-date";date.textContent=safeDate(p.published_at).full;const title=document.createElement("span");title.className="card-title";title.textContent=p.title;copy.append(date,title);const remove=document.createElement("button");remove.type="button";remove.className="favorite-toggle active";remove.textContent="♥";remove.setAttribute("aria-label","お気に入りから削除");remove.addEventListener("click",ev=>{ev.preventDefault();ev.stopPropagation();setFavorites(getFavorites().filter(x=>x.url!==p.url));});a.append(day,copy,remove);favoriteList.appendChild(a);});}
   let posts=[];
   const imageCache=new Map();
   const readerCache=new Map();
@@ -336,7 +336,7 @@
     container.appendChild(button);
   }
   function renderFeatured(){
-    if(!posts.length){featured.innerHTML='<div class="blog-empty">記事はまだ見つかりませんでした。公式ブログ一覧からチェックしてね。</div>';return;}
+    if(!posts.length){featured.innerHTML='<div class="blog-empty">記事はまだ見つかりませんでした。公式ブログ一覧をご確認ください。</div>';return;}
     const p=posts[0],d=safeDate(p.published_at);
     featured.innerHTML="";
     const src=articleImage(p);
