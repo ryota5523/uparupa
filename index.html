@@ -442,4 +442,6 @@
   });
 })();
 </script>
-</body></html>
+<script id="manami-nav-active">
+(()=>{const current=location.pathname.split("/").pop()||"index.html";document.querySelectorAll("nav a[href]").forEach(a=>{const target=new URL(a.getAttribute("href"),location.href).pathname.split("/").pop();if(target===current){a.classList.add("on");a.setAttribute("aria-current","page");}else{a.classList.remove("on");a.removeAttribute("aria-current");}});})();
+</script></body></html>
