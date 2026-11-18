@@ -448,3 +448,17 @@ nav a.on i,nav a[aria-current="page"] i{
 @media(prefers-reduced-motion:reduce){
   nav a{transition:none}
 }
+
+
+/* Strong active-tab contrast: red background with white icon and label */
+nav a.on,nav a[aria-current="page"]{
+  color:#fff;
+  background:var(--accent);
+  border-top-color:transparent;
+  box-shadow:0 3px 10px rgba(230,0,18,.18);
+  transform:translateY(-2px);
+}
+nav a.on i,nav a[aria-current="page"] i{
+  color:#fff;
+  font-variation-settings:"FILL" 1;
+}
