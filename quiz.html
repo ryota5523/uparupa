@@ -122,20 +122,33 @@ const bank = [
 {q:"2025年4月30日放送、MRT宮崎放送「わけもん！！」で、大野愛実ちゃんが冒頭の自己紹介で言っていた好きなおにぎりの具は？",a:["チーズ明太","明太チーズ","チーズおかか","おかかチーズ"],c:2,e:"好きなおにぎりの具は「チーズおかか」です。"}
 ];
 const $ = id => document.getElementById(id);
-let questions = [], index = 0, score = 0, locked = false, mode = "standard", endlessDeck = [];\nconst ENDLESS_KEY = "manami-quiz-endless-best-v1";\nconst BEST_KEY = "manami-quiz-best-v1";\nfunction getBest(){try{return Number(localStorage.getItem(BEST_KEY))||0;}catch(e){return 0;}}\nfunction getEndlessBest(){try{return Number(localStorage.getItem(ENDLESS_KEY))||0;}catch(e){return 0;}}\nfunction renderBest(){const best=getBest(), endless=getEndlessBest();$("quizBestIntro").textContent=best+" / 10";$("quizScore").textContent=mode==="endless"?"連続正解 "+score+"問":"最高記録 "+best+" / 10";$("quizBestResult").textContent=best+" / 10";$("quizEndlessBestIntro").textContent=endless+"問連続";$("quizEndlessBestResult").textContent=endless+"問連続";}
-const shuffle = arr => { const a = arr.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
-function start(){
- questions=shuffle(bank).slice(0,10);index=0;score=0;
+let questions=[],index=0,score=0,locked=false,mode="standard",endlessDeck=[];
+const BEST_KEY="manami-quiz-best-v1",ENDLESS_KEY="manami-quiz-endless-best-v1";
+function readBest(key){try{return Number(localStorage.getItem(key))||0;}catch(e){return 0;}}
+function writeBest(key,value){try{localStorage.setItem(key,String(value));}catch(e){}}
+function shuffle(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function renderBest(){
+ const best=readBest(BEST_KEY),endless=readBest(ENDLESS_KEY);
+ $("quizBestIntro").textContent=best+" / 10";
+ $("quizEndlessBestIntro").textContent=endless+"問連続";
+ $("quizBestResult").textContent=best+" / 10";
+ $("quizEndlessBestResult").textContent=endless+"問連続";
+ $("quizScore").textContent=mode==="endless"?"連続正解 "+score+"問":"最高記録 "+best+" / 10";
+}
+function start(selectedMode){
+ mode=selectedMode;index=0;score=0;locked=false;
+ questions=mode==="standard"?shuffle(bank).slice(0,10):shuffle(bank);
+ endlessDeck=shuffle(bank);
  $("quizIntro").hidden=true;$("quizResult").hidden=true;$("quizGame").hidden=false;
- showQuestion();
+ $("quizProgress").parentElement.hidden=mode==="endless";
+ renderBest();showQuestion();
 }
 function showQuestion(){
  locked=false;const item=questions[index];
- $("quizCount").textContent="第"+(index+1)+"問 / 10問";
+ $("quizCount").textContent=mode==="endless"?"連続正解 第"+(index+1)+"問":"第"+(index+1)+"問 / 10問";
  renderBest();
- $("quizProgress").parentElement.hidden=mode==="endless";\n $("quizCount").textContent=mode==="endless"?"連続正解 第"+(index+1)+"問":"第"+(index+1)+"問 / 10問";\n $("quizProgress").style.width=(index/10*100)+"%";
- $("quizQuestion").textContent=item.q;
- $("quizOptions").innerHTML="";
+ $("quizProgress").style.width=(mode==="endless"?0:index/10*100)+"%";
+ $("quizQuestion").textContent=item.q;$("quizOptions").innerHTML="";
  $("quizFeedback").className="quiz-feedback";$("quizFeedback").textContent="";
  $("quizNext").hidden=true;
  item.a.forEach((label,i)=>{
@@ -146,7 +159,8 @@ function showQuestion(){
  });
 }
 function answer(choice){
- if(locked)return;locked=true;const item=questions[index];const buttons=[...$("quizOptions").querySelectorAll("button")];
+ if(locked)return;locked=true;const item=questions[index];
+ const buttons=[...$("quizOptions").querySelectorAll("button")];
  buttons.forEach((b,i)=>{b.disabled=true;if(i===item.c)b.classList.add("is-correct");else if(i===choice)b.classList.add("is-wrong");});
  const ok=choice===item.c;if(ok)score++;
  renderBest();
@@ -154,25 +168,35 @@ function answer(choice){
  const heading=document.createElement("strong");heading.textContent=ok?"正解！":"残念！正解は「"+item.a[item.c]+"」";
  const detail=document.createElement("span");detail.textContent=item.e;
  $("quizFeedback").append(heading,detail);
- $("quizNext").textContent=(mode==="endless"&&!ok)|| (mode==="standard"&&index===9)?"結果を見る":"次の問題へ";
+ const ended=mode==="endless"&&!ok;
+ $("quizNext").textContent=ended|| (mode==="standard"&&index===9)?"結果を見る":"次の問題へ";
  $("quizNext").hidden=false;
 }
 function next(){
- index++;if(index>=10){finish();return;}showQuestion();
+ if(mode==="endless"&&!questions[index])return;
+ if(mode==="endless"&&locked&&score===index){finish();return;}
+ if(mode==="standard"&&index===9){finish();return;}
+ index++;
+ if(mode==="endless"&&index>=questions.length){questions=questions.concat(endlessDeck);endlessDeck=shuffle(bank);}
+ showQuestion();
 }
 function finish(){
- $("quizGame").hidden=true;$("quizResult").hidden=false;
- $("quizFinalScore").textContent=score+" / 10";
- const perfect=score===10;
- $("quizResultIcon").textContent=perfect?"👑":"🌸";
- $("quizResultTitle").textContent=perfect?"大野愛実王 認定！":"結果発表！";
- $("quizResultMessage").textContent=perfect?"おめでとう！全10問正解です。あなたは大野愛実王！":"あと少し！もう一度挑戦して、大野愛実王を目指そう。";
+ if(mode==="endless")writeBest(ENDLESS_KEY,Math.max(readBest(ENDLESS_KEY),score));
+ else writeBest(BEST_KEY,Math.max(readBest(BEST_KEY),score));
+ renderBest();$("quizGame").hidden=true;$("quizResult").hidden=false;
+ const perfect=mode==="standard"&&score===10;
+ $("quizFinalScore").textContent=mode==="endless"?score+"問連続正解":score+" / 10";
+ $("quizResultIcon").textContent=perfect?"👑":mode==="endless"?"🔥":"🌸";
+ $("quizResultTitle").textContent=perfect?"大野愛実王 認定！":mode==="endless"?"エンドレス終了！":"結果発表！";
+ $("quizResultMessage").textContent=mode==="endless"?"不正解になるまで "+score+" 問連続正解！":perfect?"おめでとう！全10問正解です。あなたは大野愛実王！":"あと少し！もう一度挑戦して、大野愛実王を目指そう。";
  $("quizProgress").style.width="100%";
 }
-$("quizStart").addEventListener("click",()=>start("standard"));\n$("quizEndless").addEventListener("click",()=>start("endless"));
+$("quizStart").addEventListener("click",()=>start("standard"));
+$("quizEndless").addEventListener("click",()=>start("endless"));
 $("quizNext").addEventListener("click",next);
-$("quizRetry").addEventListener("click",start);
-})();
+$("quizRetry").addEventListener("click",()=>start(mode));
+renderBest();
+;
 </script>
 </body>
 </html>
