@@ -60,24 +60,29 @@
 (()=>{
 const canvas=document.getElementById("towerCanvas"),ctx=canvas.getContext("2d"),$=id=>document.getElementById(id);
 const BEST_KEY="manami-tower-best-v1";
-let photos=[],photosReady=false,bodies=[],active=null,score=0,best=0,playing=false,spawnIndex=0,raf=0,stageW=0,stageH=0,last=0,settleFrames=0;
+let photos=[],photosReady=false,bodies=[],active=null,score=0,best=0,playing=false,spawnIndex=0,raf=0,stageW=0,stageH=0,last=0,settleFrames=0,cameraY=0;
 const G=0.48,ITER=7;
 function resize(){const r=canvas.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);stageW=r.width;stageH=r.height;canvas.width=stageW*d;canvas.height=stageH*d;ctx.setTransform(d,0,0,d,0,0)}
 function loadBest(){try{best=Number(localStorage.getItem(BEST_KEY))||0}catch(e){}$("towerBest").textContent=best}
 
-function drawPiece(p,ghost=false){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.a||0);ctx.globalAlpha=ghost?.92:1;const img=p.img;if(img&&img.complete&&img.naturalWidth){ctx.drawImage(img,-p.w/2,-p.h/2,p.w,p.h)}else{ctx.fillStyle="#fff1f1";ctx.beginPath();ctx.ellipse(0,0,p.w*.34,p.h*.48,0,0,Math.PI*2);ctx.fill()}ctx.restore()}
+function drawPiece(p,ghost=false){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.a||0);ctx.globalAlpha=ghost?.96:1;ctx.shadowColor=ghost?"rgba(230,0,18,.24)":"rgba(65,35,30,.22)";ctx.shadowBlur=ghost?12:7;ctx.shadowOffsetY=ghost?4:5;const img=p.img;if(img&&img.complete&&img.naturalWidth){ctx.drawImage(img,-p.w/2,-p.h/2,p.w,p.h)}else{ctx.fillStyle="#fff1f1";ctx.beginPath();ctx.ellipse(0,0,p.w*.34,p.h*.48,0,0,Math.PI*2);ctx.fill()}ctx.restore()}
 function draw(){
  ctx.clearRect(0,0,stageW,stageH);
- const g=ctx.createLinearGradient(0,0,0,stageH);g.addColorStop(0,"#fff8f8");g.addColorStop(1,"#fff");ctx.fillStyle=g;ctx.fillRect(0,0,stageW,stageH);
- // ステージの輪郭と薄い目盛りで、積む場所をひと目で分かるように
- const left=10,right=stageW-10,floor=stageH-18;
- ctx.fillStyle="rgba(230,0,18,.035)";ctx.fillRect(left,0,right-left,floor);
+ const bg=ctx.createLinearGradient(0,0,0,stageH);bg.addColorStop(0,"#fff8f8");bg.addColorStop(1,"#fff");ctx.fillStyle=bg;ctx.fillRect(0,0,stageW,stageH);
+ const left=10,right=stageW-10;
+ ctx.fillStyle="rgba(230,0,18,.035)";ctx.fillRect(left,0,right-left,stageH);
  ctx.strokeStyle="rgba(230,0,18,.12)";ctx.lineWidth=1;ctx.setLineDash([3,7]);
- for(let y=50;y<floor;y+=50){ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(right,y);ctx.stroke()}
+ for(let y=50;y<stageH;y+=50){ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(right,y);ctx.stroke()}
  ctx.setLineDash([]);
- ctx.strokeStyle="rgba(230,0,18,.28)";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(left,12);ctx.lineTo(left,floor);ctx.moveTo(right,12);ctx.lineTo(right,floor);ctx.stroke();
+ ctx.strokeStyle="rgba(230,0,18,.28)";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(left,12);ctx.lineTo(left,stageH-4);ctx.moveTo(right,12);ctx.lineTo(right,stageH-4);ctx.stroke();
  ctx.fillStyle="#e60012";ctx.font="700 10px sans-serif";ctx.textAlign="left";ctx.fillText("PLAY AREA",left+7,20);
- // 床面
+ // タワーが高くなるほど視点を上へ送り、積み上がった姿を画面内に保つ
+ let highest=stageH-18;
+ for(const p of bodies){for(const v of vertices(p))highest=Math.min(highest,v.y)}
+ const target=Math.max(0,stageH*.38-highest);
+ cameraY+=(target-cameraY)*.13;
+ ctx.save();ctx.translate(0,-cameraY);
+ const floor=stageH-18;
  ctx.fillStyle="#f6dada";ctx.fillRect(0,floor,stageW,18);ctx.fillStyle="#e60012";ctx.fillRect(0,floor,stageW,3);
  ctx.fillStyle="#b98f89";ctx.font="700 10px sans-serif";ctx.textAlign="center";ctx.fillText("ここに積み上げよう！",stageW/2,floor+14);
  bodies.forEach(p=>drawPiece(p));
@@ -86,11 +91,12 @@ function draw(){
    ctx.strokeStyle="rgba(230,0,18,.75)";ctx.lineWidth=1.5;ctx.setLineDash([5,5]);ctx.beginPath();ctx.moveTo(active.x,active.y+active.h/2);ctx.lineTo(active.x,floor);ctx.stroke();ctx.setLineDash([]);
    ctx.fillStyle="#e60012";ctx.beginPath();ctx.moveTo(active.x,floor-2);ctx.lineTo(active.x-5,floor-10);ctx.lineTo(active.x+5,floor-10);ctx.closePath();ctx.fill();
  }
+ ctx.restore();
 }
 function hud(){$("towerScore").textContent=score;$("towerBest").textContent=best;$("towerNext").textContent=(spawnIndex%4+1)+" / 4"}
-function makePiece(){const kind=Math.floor(Math.random()*4),img=photos[kind],h=Math.min(112,stageH*.19),ratio=img.naturalWidth/img.naturalHeight,w=h*ratio;return{x:stageW/2,y:Math.max(65,Math.min(112,stageH*.16)),vx:0,vy:0,a:(Math.random()-.5)*.12,wa:0,w,h,kind,img,inWorld:false,quiet:0}}
+function makePiece(){const kind=Math.floor(Math.random()*4),img=photos[kind],h=Math.min(112,stageH*.19),ratio=img.naturalWidth/img.naturalHeight,w=h*ratio;return{x:stageW/2,y:cameraY+Math.max(65,Math.min(112,stageH*.16)),vx:0,vy:0,a:(Math.random()-.5)*.12,wa:0,w,h,kind,img,inWorld:false,quiet:0}}
 function spawn(){if(!playing)return;active=makePiece();spawnIndex++;hud()}
-function start(){if(!photosReady)return;cancelAnimationFrame(raf);bodies=[];active=null;score=0;spawnIndex=0;playing=true;settleFrames=0;$("overlayTitle").textContent="まなみんタワーバトル（仮）";$("overlayText").innerHTML="全身まなみんのピースをスワイプで動かして、落として積もう！<br>タワーが崩れたらゲームオーバー。";$("towerOverlay").hidden=true;$("towerStart").textContent="もう一度挑戦";hud();spawn();last=0;loop()}
+function start(){if(!photosReady)return;cancelAnimationFrame(raf);bodies=[];active=null;score=0;spawnIndex=0;playing=true;settleFrames=0;cameraY=0;$("overlayTitle").textContent="まなみんタワーバトル（仮）";$("overlayText").innerHTML="全身まなみんのピースをスワイプで動かして、落として積もう！<br>タワーが崩れたらゲームオーバー。";$("towerOverlay").hidden=true;$("towerStart").textContent="もう一度挑戦";hud();spawn();last=0;loop()}
 function move(dx){if(!playing||!active||active.inWorld)return;active.x=Math.max(0,Math.min(stageW,active.x+dx))}
 function rotate(){if(playing&&active&&!active.inWorld)active.a+=Math.PI/12}
 function drop(){if(!playing||!active||active.inWorld)return;active.inWorld=true;active.vy=1.2;bodies.push(active);active=null;settleFrames=0}
