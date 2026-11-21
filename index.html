@@ -413,7 +413,19 @@
     return r.json();
   }).then(data=>{
     const items=normalizeItems(data).filter(x=>x&&/^\d{4}-\d{2}-\d{2}$/.test(String(x.event_date||"")));
-    const thisWeek=items.filter(x=>x.event_date>=start&&x.event_date<=end && !/ミーグリ|ミート＆グリート/.test(String(x.category||"")+" "+String(x.title||""))).sort((a,b)=>a.event_date.localeCompare(b.event_date));
+    // 公式発表の「ひなくり2026」公演日程。API未登録でもHOMEに表示する
+    const officialLiveEvents=[
+      "2026-11-21","2026-11-22","2026-11-23",
+      "2026-12-09","2026-12-10","2026-12-11",
+      "2026-12-22","2026-12-23","2026-12-24"
+    ].map(date=>({event_date:date,title:"ひなくり2026",category:"ライブ",url:"https://www.hinatazaka46.com/s/official/media/detail/12342?ima=0000"}));
+    const weeklyEvents=[
+      ...items.filter(x=>x.event_date>=start&&x.event_date<=end && !/ミーグリ|ミート＆グリート/.test(String(x.category||"")+" "+String(x.title||""))),
+      ...officialLiveEvents.filter(x=>x.event_date>=start&&x.event_date<=end)
+    ];
+    const uniqueWeekly=new Map();
+    weeklyEvents.forEach(x=>uniqueWeekly.set(x.event_date+"|"+x.title,x));
+    const thisWeek=[...uniqueWeekly.values()].sort((a,b)=>a.event_date.localeCompare(b.event_date));
     weekly.innerHTML="";
     if(thisWeek.length)thisWeek.forEach(x=>row(weekly,x.event_date,x.title,x.url));
     else empty(weekly,"今週の出演予定はありません。");
