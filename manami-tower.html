@@ -60,17 +60,17 @@
 (()=>{
 const canvas=document.getElementById("towerCanvas"),ctx=canvas.getContext("2d"),$=id=>document.getElementById(id);
 const BEST_KEY="manami-tower-best-v1";
-let atlas=null,bodies=[],active=null,score=0,best=0,playing=false,spawnIndex=0,raf=0,stageW=0,stageH=0,last=0,settleFrames=0;
+let photos=[],photosReady=false,bodies=[],active=null,score=0,best=0,playing=false,spawnIndex=0,raf=0,stageW=0,stageH=0,last=0,settleFrames=0;
 const G=0.48,ITER=7;
 function resize(){const r=canvas.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);stageW=r.width;stageH=r.height;canvas.width=stageW*d;canvas.height=stageH*d;ctx.setTransform(d,0,0,d,0,0)}
 function loadBest(){try{best=Number(localStorage.getItem(BEST_KEY))||0}catch(e){}$("towerBest").textContent=best}
 
-function drawPiece(p,ghost=false){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.a||0);ctx.globalAlpha=ghost?.92:1;if(atlas&&atlas.complete&&atlas.naturalWidth){ctx.drawImage(atlas,0,0,atlas.naturalWidth,atlas.naturalHeight,-p.w/2,-p.h/2,p.w,p.h)}else{ctx.fillStyle="#fff1f1";ctx.beginPath();ctx.ellipse(0,0,p.w*.34,p.h*.48,0,0,Math.PI*2);ctx.fill()}ctx.restore()}
+function drawPiece(p,ghost=false){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.a||0);ctx.globalAlpha=ghost?.92:1;const img=p.img;if(img&&img.complete&&img.naturalWidth){ctx.drawImage(img,-p.w/2,-p.h/2,p.w,p.h)}else{ctx.fillStyle="#fff1f1";ctx.beginPath();ctx.ellipse(0,0,p.w*.34,p.h*.48,0,0,Math.PI*2);ctx.fill()}ctx.restore()}
 function draw(){ctx.clearRect(0,0,stageW,stageH);const g=ctx.createLinearGradient(0,0,0,stageH);g.addColorStop(0,"#fffafa");g.addColorStop(1,"#fff");ctx.fillStyle=g;ctx.fillRect(0,0,stageW,stageH);ctx.fillStyle="#f2d6d6";ctx.fillRect(0,stageH-8,stageW,8);bodies.forEach(p=>drawPiece(p));if(active&&!active.inWorld){drawPiece(active,true);ctx.strokeStyle="#e60012";ctx.setLineDash([5,5]);ctx.beginPath();ctx.moveTo(active.x,active.y+active.h/2);ctx.lineTo(active.x,stageH-8);ctx.stroke();ctx.setLineDash([])}}
 function hud(){$("towerScore").textContent=score;$("towerBest").textContent=best;$("towerNext").textContent=(spawnIndex%4+1)+" / 4"}
-function makePiece(){const kind=Math.floor(Math.random()*4),widths=[64,44,65,69];return{x:stageW/2,y:Math.max(55,Math.min(105,stageH*.16)),vx:0,vy:0,a:(Math.random()-.5)*.12,wa:0,w:widths[kind],h:100,kind,inWorld:false,quiet:0}}
+function makePiece(){const kind=Math.floor(Math.random()*4),img=photos[kind],h=Math.min(112,stageH*.19),ratio=img.naturalWidth/img.naturalHeight,w=h*ratio;return{x:stageW/2,y:Math.max(65,Math.min(112,stageH*.16)),vx:0,vy:0,a:(Math.random()-.5)*.12,wa:0,w,h,kind,img,inWorld:false,quiet:0}}
 function spawn(){if(!playing)return;active=makePiece();spawnIndex++;hud()}
-function start(){cancelAnimationFrame(raf);bodies=[];active=null;score=0;spawnIndex=0;playing=true;settleFrames=0;$("overlayTitle").textContent="まなみんタワーバトル（仮）";$("overlayText").innerHTML="全身まなみんのピースをスワイプで動かして、落として積もう！<br>タワーが崩れたらゲームオーバー。";$("towerOverlay").hidden=true;$("towerStart").textContent="もう一度挑戦";hud();spawn();last=0;loop()}
+function start(){if(!photosReady)return;cancelAnimationFrame(raf);bodies=[];active=null;score=0;spawnIndex=0;playing=true;settleFrames=0;$("overlayTitle").textContent="まなみんタワーバトル（仮）";$("overlayText").innerHTML="全身まなみんのピースをスワイプで動かして、落として積もう！<br>タワーが崩れたらゲームオーバー。";$("towerOverlay").hidden=true;$("towerStart").textContent="もう一度挑戦";hud();spawn();last=0;loop()}
 function move(dx){if(!playing||!active||active.inWorld)return;active.x=Math.max(0,Math.min(stageW,active.x+dx))}
 function rotate(){if(playing&&active&&!active.inWorld)active.a+=Math.PI/12}
 function drop(){if(!playing||!active||active.inWorld)return;active.inWorld=true;active.vy=1.2;bodies.push(active);active=null;settleFrames=0}
@@ -100,10 +100,10 @@ function loop(t){if(!playing)return;const dt=Math.min((t-last||16.67)/16.67,1.5)
 if(bodies.some(p=>p.y>stageH+p.h*1.2||p.x< -p.w*1.5||p.x>stageW+p.w*1.5)){endGame();draw();return}
 if(bodies.length){const newest=bodies[bodies.length-1],quiet=Math.abs(newest.vx)+Math.abs(newest.vy)+Math.abs(newest.wa)*35<.65;if(quiet)newest.quiet=(newest.quiet||0)+1;else newest.quiet=0;if(newest.quiet>28&&!active){newest.quiet=-1000;score=bodies.length;if(score>best){best=score;try{localStorage.setItem(BEST_KEY,String(best))}catch(e){}}hud();spawn()}}
 draw();raf=requestAnimationFrame(loop)}
-function loadPhotos(){atlas=new Image();atlas.src="assets/manami-pieces.webp";atlas.onerror=()=>{atlas=null};}
+function loadPhotos(){const files=["assets/manami-piece-1.webp","assets/manami-piece-2.webp","assets/manami-piece-3.webp","assets/manami-piece-4.webp"];photos=files.map(src=>{const img=new Image();img.src=src;return img});Promise.all(photos.map(img=>new Promise(resolve=>{if(img.complete&&img.naturalWidth)return resolve();img.onload=resolve;img.onerror=resolve}))).then(()=>{photosReady=photos.every(img=>img.naturalWidth>0);$("towerStart").disabled=!photosReady;$("towerStart").textContent=photosReady?"ゲームスタート":"画像を読み込み中…";if(!photosReady){$("overlayText").textContent="まなみん画像を読み込めませんでした。ページを再読み込みしてね。"}})}
 $("towerStart").addEventListener("click",start);$("towerDrop").addEventListener("click",drop);$("towerRotate").addEventListener("click",rotate);$("towerReset").addEventListener("click",start);
 let pointer=null;canvas.addEventListener("pointerdown",e=>{pointer=e.clientX;canvas.setPointerCapture(e.pointerId)});canvas.addEventListener("pointermove",e=>{if(pointer===null)return;const dx=e.clientX-pointer;pointer=e.clientX;move(dx)});canvas.addEventListener("pointerup",()=>pointer=null);canvas.addEventListener("pointercancel",()=>pointer=null);
-window.addEventListener("resize",resize);loadBest();resize();loadPhotos();draw();
+window.addEventListener("resize",resize);loadBest();resize();$("towerStart").disabled=true;$("towerStart").textContent="画像を読み込み中…";loadPhotos();draw();
 })();
 </script>
 </body></html>
