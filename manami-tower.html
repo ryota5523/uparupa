@@ -100,7 +100,7 @@ function start(){if(!photosReady)return;cancelAnimationFrame(raf);bodies=[];acti
 function move(dx){if(!playing||!active||active.inWorld)return;active.x=Math.max(0,Math.min(stageW,active.x+dx))}
 function rotate(){if(playing&&active&&!active.inWorld)active.a+=Math.PI/12}
 function drop(){if(!playing||!active||active.inWorld)return;active.inWorld=true;active.vy=1.2;bodies.push(active);active=null;settleFrames=0}
-function vertices(p){const c=Math.cos(p.a),s=Math.sin(p.a),hw=p.w/2,hh=p.h/2;return[[-hw,-hh],[hw,-hh],[hw,hh],[-hw,hh]].map(([x,y])=>({x:p.x+x*c-y*s,y:p.y+x*s+y*c}))}
+function vertices(p){const c=Math.cos(p.a),s=Math.sin(p.a),hw=p.w*.36,hh=p.h*.46;return[[-hw,-hh],[hw,-hh],[hw,hh],[-hw,hh]].map(([x,y])=>({x:p.x+x*c-y*s,y:p.y+x*s+y*c}))}
 function project(poly,axis){let lo=Infinity,hi=-Infinity;for(const v of poly){const d=v.x*axis.x+v.y*axis.y;lo=Math.min(lo,d);hi=Math.max(hi,d)}return{lo,hi}}
 function support(poly,axis,max){let best=poly[0],val=best.x*axis.x+best.y*axis.y;for(const v of poly){const d=v.x*axis.x+v.y*axis.y;if(max?d>val:d<val){best=v;val=d}}return best}
 function collide(a,b){const pa=vertices(a),pb=vertices(b);let min=Infinity,n=null;for(const poly of [pa,pb])for(let i=0;i<2;i++){const p=poly[i],q=poly[i+1],dx=q.x-p.x,dy=q.y-p.y,len=Math.hypot(dx,dy),axis={x:-dy/len,y:dx/len},A=project(pa,axis),B=project(pb,axis),over=Math.min(A.hi,B.hi)-Math.max(A.lo,B.lo);if(over<=0)return null;if(over<min){min=over;n=axis}}
