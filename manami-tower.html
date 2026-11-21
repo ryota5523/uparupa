@@ -81,19 +81,19 @@ function support(poly,axis,max){let best=poly[0],val=best.x*axis.x+best.y*axis.y
 function collide(a,b){const pa=vertices(a),pb=vertices(b);let min=Infinity,n=null;for(const poly of [pa,pb])for(let i=0;i<2;i++){const p=poly[i],q=poly[i+1],dx=q.x-p.x,dy=q.y-p.y,len=Math.hypot(dx,dy),axis={x:-dy/len,y:dx/len},A=project(pa,axis),B=project(pb,axis),over=Math.min(A.hi,B.hi)-Math.max(A.lo,B.lo);if(over<=0)return null;if(over<min){min=over;n=axis}}
 const d={x:b.x-a.x,y:b.y-a.y};if(d.x*n.x+d.y*n.y<0){n.x=-n.x;n.y=-n.y}
 const sa=support(pa,n,true),sb=support(pb,n,false),pt={x:(sa.x+sb.x)/2,y:(sa.y+sb.y)/2};return{n,depth:min,pt}}
-function impulse(a,b,n,pt,depth){const ia=a?1:0,ib=b?1:0;if(!ia&&!ib)return;const correction=Math.max(depth-.25,0)*.72/(ia+ib);if(a){a.x-=n.x*correction*ia;a.y-=n.y*correction*ia}if(b){b.x+=n.x*correction*ib;b.y+=n.y*correction*ib}
+function impulse(a,b,n,pt,depth){const ia=a?1:0,ib=b?1:0;if(!ia&&!ib)return;const correction=Math.max(depth-.35,0)*.22/(ia+ib);if(a){a.x-=n.x*correction*ia;a.y-=n.y*correction*ia}if(b){b.x+=n.x*correction*ib;b.y+=n.y*correction*ib}
 const ra=a?{x:pt.x-a.x,y:pt.y-a.y}:{x:0,y:0},rb=b?{x:pt.x-b.x,y:pt.y-b.y}:{x:0,y:0};
 const va=a?{x:a.vx-a.wa*ra.y,y:a.vy+a.wa*ra.x}:{x:0,y:0},vb=b?{x:b.vx-b.wa*rb.y,y:b.vy+b.wa*rb.x}:{x:0,y:0};
 const rv={x:vb.x-va.x,y:vb.y-va.y},vn=rv.x*n.x+rv.y*n.y;if(vn>0)return;
 const cross=(r,v)=>r.x*v.y-r.y*v.x,invI=1/(W*W+H*H)*12;
-const denom=ia+ib+(a?cross(ra,n)**2*invI:0)+(b?cross(rb,n)**2*invI:0);const j=-(1.12)*vn/denom,ix=j*n.x,iy=j*n.y;
+const denom=ia+ib+(a?cross(ra,n)**2*invI:0)+(b?cross(rb,n)**2*invI:0);const restitution=vn< -1.5?.08:0;const j=-(1+restitution)*vn/denom,ix=j*n.x,iy=j*n.y;
 if(a){a.vx-=ix;a.vy-=iy;a.wa-=cross(ra,{x:ix,y:iy})*invI}
 if(b){b.vx+=ix;b.vy+=iy;b.wa+=cross(rb,{x:ix,y:iy})*invI}
-const tx=-n.y,ty=n.x,vt=rv.x*tx+rv.y*ty,fr=Math.max(-j*.34,Math.min(j*.34,-vt/denom)),fx=fr*tx,fy=fr*ty;
+const tx=-n.y,ty=n.x,vt=rv.x*tx+rv.y*ty,fr=Math.max(-j*.18,Math.min(j*.18,-vt/denom)),fx=fr*tx,fy=fr*ty;
 if(a){a.vx-=fx;a.vy-=fy;a.wa-=cross(ra,{x:fx,y:fy})*invI}
 if(b){b.vx+=fx;b.vy+=fy;b.wa+=cross(rb,{x:fx,y:fy})*invI}}
-function floorSolve(p){const poly=vertices(p),bottom=stageH-8;for(const v of poly){if(v.y>bottom){const depth=v.y-bottom;p.y-=depth*.82;p.vy=Math.min(0,p.vy+depth*.08);const armX=v.x-p.x,velX=p.vx-p.wa*(v.y-p.y);p.vx*=.985;p.wa+=(-velX*.0009*armX);if(Math.abs(p.vy)<.9)p.vy=0;if(Math.abs(p.wa)<.008)p.wa=0}}}
-function physics(dt){for(const p of bodies){p.vy+=G*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.a+=p.wa*dt;p.vx*=.999;p.vy*=.999;p.wa*=.997}
+function floorSolve(p){const poly=vertices(p),bottom=stageH-8;let maxY=-Infinity;for(const v of poly)maxY=Math.max(maxY,v.y);if(maxY>bottom){p.y-=maxY-bottom;p.vy=p.vy>1.2?-p.vy*.04:0;p.vx*=.94;p.wa*=.72;if(Math.abs(p.vy)<.35)p.vy=0;if(Math.abs(p.wa)<.012)p.wa=0}}
+function physics(dt){for(const p of bodies){p.vy+=G*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.a+=p.wa*dt;p.vx*=.992;p.vy*=.992;p.wa*=.975}
 for(let k=0;k<ITER;k++){for(const p of bodies)floorSolve(p);for(let i=0;i<bodies.length;i++)for(let j=i+1;j<bodies.length;j++){const hit=collide(bodies[i],bodies[j]);if(hit)impulse(bodies[i],bodies[j],hit.n,hit.pt,hit.depth)}}
 }
 function endGame(){playing=false;active=null;$("overlayTitle").textContent="タワー崩壊…！";$("overlayText").textContent="今回の記録は "+score+" ピース！もう一回チャレンジしてみよう。";$("towerOverlay").hidden=false}
