@@ -32,6 +32,14 @@
 .memory-actions .primary{background:#e60012;color:#fff;border-color:#e60012}
 .memory-message{min-height:2em;text-align:center;color:var(--accent);font-size:.9rem;font-weight:800;margin:12px 0 0}
 .memory-note{text-align:center;color:var(--sub);font-size:.75rem;margin:10px 0}
+.memory-mode,.memory-level{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:12px 0}
+.memory-mode button,.memory-level button{border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--text);padding:9px 15px;font:inherit;font-size:.82rem;font-weight:700}
+.memory-mode button.active,.memory-level button.active{background:#e60012;color:#fff;border-color:#e60012}
+.memory-score{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.memory-score>div{border:1px solid var(--line);border-radius:12px;padding:9px;text-align:center;background:#fff}
+.memory-score small{display:block;color:var(--sub);font-size:.72rem}
+.memory-score strong{color:var(--accent);font-size:1.1rem}
+.memory-turn{text-align:center;font-weight:800;color:var(--accent);min-height:1.5em;margin:8px 0}
 .memory-loading{text-align:center;padding:34px 12px;color:var(--sub);background:#fff7f7;border-radius:16px}
 @media(min-width:560px){.memory-board{gap:13px;max-width:560px;margin:0 auto}.memory-card{aspect-ratio:3/4}.memory-face{border-radius:16px}.memory-front{padding:6px}}
 @media(max-width:360px){.memory-board{gap:6px}.memory-face{border-radius:9px}}
@@ -52,7 +60,7 @@
 </nav>
 <main class="memory-wrap">
 <div class="memory-intro"><h2>16枚のカードから、8ペアを見つけよう！</h2><p>Cloudflareに保存してある縦長写真を使っているよ。<br>同じ写真を2枚めくるとペア成立 💗</p></div>
-<div class="memory-hud">
+<div class="memory-mode" aria-label="ゲームモード"><button type="button" class="active" data-mode="solo">ひとりで遊ぶ</button><button type="button" data-mode="cpu">CPUと対戦</button></div><div class="memory-level" id="memoryLevel" hidden><button type="button" class="active" data-level="easy">初級</button><button type="button" data-level="normal">中級</button><button type="button" data-level="hard">上級</button></div><div class="memory-score" id="memoryScore" hidden><div><small>あなた</small><strong id="playerScore">0</strong></div><div><small>CPU</small><strong id="cpuScore">0</strong></div></div><p class="memory-turn" id="turnLabel" hidden>あなたの番です</p><div class="memory-hud">
 <div class="memory-stat"><small>手数</small><strong id="moves">0</strong></div>
 <div class="memory-stat"><small>そろえたペア</small><strong id="pairs">0 / 8</strong></div>
 <div class="memory-stat"><small>タイム</small><strong id="timer">00:00</strong></div>
@@ -68,63 +76,89 @@
 const API="https://manami-site-worker.yellowworker.workers.dev/api/menu-photos";
 const board=document.getElementById("memoryBoard"),movesEl=document.getElementById("moves"),pairsEl=document.getElementById("pairs"),timerEl=document.getElementById("timer"),messageEl=document.getElementById("message");
 const BEST_KEY="manami-memory-best-v1";
+const modeButtons=[...document.querySelectorAll("[data-mode]")],levelButtons=[...document.querySelectorAll("[data-level]")];
+const levelBox=document.getElementById("memoryLevel"),scoreBox=document.getElementById("memoryScore"),turnLabel=document.getElementById("turnLabel");
 let photos=[],cards=[],opened=[],moves=0,pairs=0,seconds=0,clock=null,locked=false,started=false,finished=false;
+let mode="solo",level="easy",turn="player",playerPairs=0,cpuPairs=0,cpuMemory=new Map(),cpuTimer=null;
 const shuffle=array=>{const a=[...array];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 function formatTime(n){return String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0")}
-function updateHud(){movesEl.textContent=moves;pairsEl.textContent=pairs+" / 8";timerEl.textContent=formatTime(seconds)}
+function updateHud(){movesEl.textContent=moves;pairsEl.textContent=pairs+" / 8";timerEl.textContent=formatTime(seconds);document.getElementById("playerScore").textContent=playerPairs;document.getElementById("cpuScore").textContent=cpuPairs;turnLabel.textContent=turn==="player"?"あなたの番です":"CPUが考え中…"}
 function stopClock(){if(clock){clearInterval(clock);clock=null}}
 function startClock(){if(clock||started)return;started=true;clock=setInterval(()=>{seconds++;timerEl.textContent=formatTime(seconds)},1000)}
 function makeCard(photo,index){
- const button=document.createElement("button");button.type="button";button.className="memory-card";button.setAttribute("aria-label","カード "+(index+1));button.dataset.pair=photo.pairId;
+ const button=document.createElement("button");button.type="button";button.className="memory-card";button.setAttribute("aria-label","カード "+(index+1));button.dataset.pair=photo.pairId;button.dataset.index=index;
  const inner=document.createElement("span");inner.className="memory-card-inner";
  const back=document.createElement("span");back.className="memory-face memory-back";back.innerHTML="<span>♡</span>";
  const front=document.createElement("span");front.className="memory-face memory-front";
  const img=document.createElement("img");img.src=photo.url;img.alt="大野愛実の写真";img.loading="eager";img.decoding="async";front.appendChild(img);
- inner.append(back,front);button.appendChild(inner);button.addEventListener("click",()=>flip(button));return button;
+ inner.append(back,front);button.appendChild(inner);button.addEventListener("click",()=>{if(mode==="cpu"&&turn!=="player")return;flip(button,"player")});return button;
 }
-function flip(button){
+function reveal(button,who){button.classList.add("flipped");if(who==="player"&&mode==="cpu")cpuMemory.set(Number(button.dataset.index),button.dataset.pair)}
+function flip(button,who){
  if(locked||finished||button.classList.contains("flipped")||button.classList.contains("matched"))return;
- startClock();button.classList.add("flipped");opened.push(button);
+ startClock();reveal(button,who);opened.push(button);
  if(opened.length===2){
   moves++;updateHud();const [a,b]=opened;
   if(a.dataset.pair===b.dataset.pair){
-   a.classList.add("matched");b.classList.add("matched");a.disabled=true;b.disabled=true;opened=[];pairs++;updateHud();
-   if(pairs===8){finished=true;stopClock();const best=Number(localStorage.getItem(BEST_KEY))||0;let note="全ペア発見！おめでとう！！";if(!best||seconds<best){try{localStorage.setItem(BEST_KEY,String(seconds))}catch(e){}note+=" 新記録！";}messageEl.textContent=note+" "+formatTime(seconds)+" / "+moves+"手";}
-   else messageEl.textContent="ペア成立！その調子 💗";
+   a.classList.add("matched");b.classList.add("matched");a.disabled=true;b.disabled=true;opened=[];pairs++;
+   if(mode==="cpu"){if(who==="cpu")cpuPairs++;else playerPairs++;}
+   updateHud();
+   if(pairs===8){finishGame();return}
+   messageEl.textContent="ペア成立！"+(mode==="cpu"?(who==="cpu"?"CPUがそろえた！":"あなたの得点！"):"その調子 💗");
+   if(mode==="cpu"&&who==="cpu"){scheduleCpu(650)}else if(mode==="cpu"){turn="player";updateHud()}
   }else{
-   locked=true;messageEl.textContent="おしい！もう一度チャレンジ";
-   setTimeout(()=>{a.classList.remove("flipped");b.classList.remove("flipped");opened=[];locked=false;},850);
+   locked=true;messageEl.textContent=who==="cpu"?"CPUもおしい！":"おしい！もう一度チャレンジ";
+   setTimeout(()=>{a.classList.remove("flipped");b.classList.remove("flipped");opened=[];locked=false;if(mode==="cpu"){turn=who==="cpu"?"player":"cpu";updateHud();if(turn==="cpu")scheduleCpu(650)}},850);
   }
  }
 }
+function finishGame(){
+ finished=true;stopClock();if(cpuTimer)clearTimeout(cpuTimer);
+ if(mode==="cpu"){const result=playerPairs>cpuPairs?"あなたの勝ち！":playerPairs<cpuPairs?"CPUの勝ち！":"引き分け！";messageEl.textContent=result+" "+playerPairs+" 対 "+cpuPairs+" 💗"}
+ else{const best=Number(localStorage.getItem(BEST_KEY))||0;let note="全ペア発見！おめでとう！！";if(!best||seconds<best){try{localStorage.setItem(BEST_KEY,String(seconds))}catch(e){}note+=" 新記録！";}messageEl.textContent=note+" "+formatTime(seconds)+" / "+moves+"手";}
+ turnLabel.textContent="ゲーム終了！";
+}
+function available(){return [...board.querySelectorAll(".memory-card:not(.matched)")]}
+function cpuPick(exclude=[]){
+ const remaining=available().filter(b=>!exclude.includes(b));
+ const known=new Map();
+ for(const b of remaining){const i=Number(b.dataset.index),pair=b.dataset.pair;if(cpuMemory.has(i)){if(!known.has(pair))known.set(pair,[]);known.get(pair).push(b)}}
+ for(const list of known.values())if(list.length>=2)return list.slice(0,2);
+ let first=null,second=null;
+ for(const list of known.values())if(list.length===1){first=list[0];break}
+ if(!first)first=remaining[Math.floor(Math.random()*remaining.length)];
+ const secondCandidates=remaining.filter(b=>b!==first&&b.dataset.pair===first.dataset.pair);
+ if(secondCandidates.length)second=secondCandidates[0];
+ else{
+  const pool=remaining.filter(b=>b!==first);
+  second=pool[Math.floor(Math.random()*pool.length)];
+ }
+ return [first,second];
+}
+function scheduleCpu(delay=700){if(finished||mode!=="cpu")return;turn="cpu";locked=true;updateHud();cpuTimer=setTimeout(()=>{locked=false;const picks=cpuPick();if(!picks||picks.length<2)return;flip(picks[0],"cpu");setTimeout(()=>{if(!finished)flip(picks[1],"cpu")},650)},delay)}
 function newGame(){
- stopClock();moves=0;pairs=0;seconds=0;opened=[];locked=false;started=false;finished=false;messageEl.textContent="";updateHud();
+ stopClock();if(cpuTimer)clearTimeout(cpuTimer);moves=0;pairs=0;seconds=0;opened=[];locked=false;started=false;finished=false;turn="player";playerPairs=0;cpuPairs=0;cpuMemory=new Map();messageEl.textContent="";updateHud();
  const chosen=shuffle(photos).slice(0,8).map((photo,i)=>({...photo,pairId:String(i)}));
  cards=shuffle(chosen.flatMap(photo=>[{...photo},{...photo}]));
  board.innerHTML="";cards.forEach((photo,i)=>board.appendChild(makeCard(photo,i)));
 }
+function setMode(next){mode=next;modeButtons.forEach(b=>b.classList.toggle("active",b.dataset.mode===mode));levelBox.hidden=mode!=="cpu";scoreBox.hidden=mode!=="cpu";turnLabel.hidden=mode!=="cpu";document.querySelector(".memory-hud .memory-stat:nth-child(1) small").textContent=mode==="cpu"?"合計ターン":"手数";newGame()}
+modeButtons.forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
+levelButtons.forEach(b=>b.addEventListener("click",()=>{level=b.dataset.level;levelButtons.forEach(x=>x.classList.toggle("active",x===b));newGame()}));
 async function loadPhotos(){
  try{
   const response=await fetch(API+"?t="+Date.now(),{cache:"no-store"});if(!response.ok)throw new Error("画像一覧を取得できません");
   const data=await response.json();const items=Array.isArray(data.items)?data.items:[];
   const unique=[...new Map(items.filter(p=>p&&typeof p.url==="string"&&p.url.startsWith("https://")).map(p=>[p.url,p])).values()];
-  const loaded=await Promise.all(unique.map(photo=>new Promise(resolve=>{
-   const img=new Image();img.onload=()=>resolve(img.naturalHeight>img.naturalWidth?{...photo,width:img.naturalWidth,height:img.naturalHeight}:null);img.onerror=()=>resolve(null);img.src=photo.url;
-  })));
-  photos=loaded.filter(Boolean);
-  if(photos.length<8)throw new Error("縦長写真が8種類見つかりませんでした（現在 "+photos.length+" 種類）");
+  const loaded=await Promise.all(unique.map(photo=>new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img.naturalHeight>img.naturalWidth?{...photo,width:img.naturalWidth,height:img.naturalHeight}:null);img.onerror=()=>resolve(null);img.src=photo.url;})));
+  photos=loaded.filter(Boolean);if(photos.length<8)throw new Error("縦長写真が8種類見つかりませんでした（現在 "+photos.length+" 種類）");
   newGame();
- }catch(error){
-  console.error("Memory game photo load failed:",error);
-  board.innerHTML='<div class="memory-loading" style="grid-column:1/-1">写真を読み込めなかったみたい…<br>'+String(error.message||"時間をおいて再読み込みしてね")+'</div>';
-  messageEl.textContent="ページを再読み込みしてね。";
-  document.getElementById("restart").disabled=true;
- }
+ }catch(error){console.error("Memory game photo load failed:",error);board.innerHTML='<div class="memory-loading" style="grid-column:1/-1">写真を読み込めなかったみたい…<br>'+String(error.message||"時間をおいて再読み込みしてね")+'</div>';messageEl.textContent="ページを再読み込みしてね。";document.getElementById("restart").disabled=true;}
 }
 document.getElementById("restart").addEventListener("click",()=>{if(photos.length>=8)newGame()});
 loadPhotos();
 })();
-</script>
+</script>>
 <script id="manami-nav-active">
 (()=>{const current=location.pathname.split("/").pop()||"index.html";document.querySelectorAll("nav a[href]").forEach(a=>{const target=new URL(a.getAttribute("href"),location.href).pathname.split("/").pop();if(target===current){a.classList.add("on");a.setAttribute("aria-current","page");}else{a.classList.remove("on");a.removeAttribute("aria-current");}});})();
 </script>
