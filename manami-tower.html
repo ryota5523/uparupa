@@ -72,7 +72,7 @@ function resize(){
  stageW=rect.width;stageH=rect.height;scale=dpr;
  canvas.width=Math.round(stageW*dpr);canvas.height=Math.round(stageH*dpr);
  ctx.setTransform(dpr,0,0,dpr,0,0);
- if(engine){Matter.Body.setPosition(ground,{x:stageW/2,y:stageH+25});Matter.Body.setPosition(leftWall,{x:-18,y:stageH/2});Matter.Body.setPosition(rightWall,{x:stageW+18,y:stageH/2});}
+ if(engine){Matter.Body.setPosition(ground,{x:stageW/2,y:stageH+25});}
 }
 function setup(){
  engine=Matter.Engine.create({gravity:{x:0,y:1.12,scale:.001},enableSleeping:true});
@@ -80,7 +80,7 @@ function setup(){
  ground=Matter.Bodies.rectangle(stageW/2,stageH+25,stageW+100,50,{isStatic:true,friction:.9});
  leftWall=Matter.Bodies.rectangle(-18,stageH/2,36,stageH*3,{isStatic:true});
  rightWall=Matter.Bodies.rectangle(stageW+18,stageH/2,36,stageH*3,{isStatic:true});
- Matter.Composite.add(world,[ground,leftWall,rightWall]);
+ Matter.Composite.add(world,[ground]);
 }
 function roundedImage(image,x,y,w,h,angle,alpha=1){
  ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.globalAlpha=alpha;
@@ -118,7 +118,7 @@ function loop(){
  Matter.Engine.update(engine,1000/60);
  if(active&&active.isStatic){const x=Math.max(pieceW/2+4,Math.min(stageW-pieceW/2-4,moveX));Matter.Body.setPosition(active,{x,y:72});}
  const bodies=Matter.Composite.allBodies(world).filter(b=>!b.isStatic);
- for(const b of bodies){if(b.position.y>stageH+pieceH||b.position.x< -pieceW||b.position.x>stageW+pieceW){endGame();break}}
+ for(const b of bodies){if(b.position.y>stageH+pieceH||b.position.x< -pieceW||b.position.x>stageW+pieceW||b.position.y< -pieceH*1.5){endGame();break}}
  if(!active&&bodies.length){const settled=bodies.every(b=>b.speed<.25);if(settled){score=bodies.length;if(score>best){best=score;try{localStorage.setItem(BEST_KEY,String(best))}catch(e){}}updateHud();spawn()}}
  draw();raf=requestAnimationFrame(loop);
 }
