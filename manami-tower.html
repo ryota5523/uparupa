@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>まなみんタワーバトル（仮）｜大野愛実 ファンサイト</title>
+<link rel="stylesheet" href="style.css?v=shared-20261118">
+<meta name="theme-color" content="#e60012">
+<style>
+.tower-wrap{padding:18px 0 28px}
+.tower-intro{text-align:center;margin:0 0 16px}
+.tower-intro h2{font-size:1.2rem;margin:0 0 5px;color:var(--text)}
+.tower-intro p{font-size:.85rem;color:var(--sub);margin:0;line-height:1.7}
+.tower-hud{display:flex;justify-content:space-between;gap:10px;margin:14px 0}
+.tower-stat{flex:1;text-align:center;padding:10px;border:1px solid var(--line);border-radius:13px;background:#fff}
+.tower-stat small{display:block;color:var(--sub);font-size:.72rem}.tower-stat strong{font-size:1.25rem;color:var(--accent);font-variant-numeric:tabular-nums}
+#towerCanvas{display:block;width:100%;height:min(62vh,570px);min-height:390px;background:linear-gradient(#fffafa,#fff);border:1px solid var(--line);border-radius:18px;touch-action:pan-y}
+.tower-controls{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:9px;margin-top:12px}
+.tower-controls button,.tower-start{border:0;border-radius:12px;padding:13px 8px;font:inherit;font-weight:800;cursor:pointer;background:#fff1f1;color:#e60012}
+.tower-controls .drop{background:#e60012;color:#fff}
+.tower-controls button:active,.tower-start:active{transform:scale(.98)}
+.tower-hint{text-align:center;color:var(--sub);font-size:.78rem;line-height:1.7;margin:11px 0}
+.tower-bottom{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.tower-bottom button{border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--text);padding:9px 17px;font:inherit;font-size:.82rem;font-weight:700}
+.tower-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;background:#fff9;border-radius:18px;text-align:center}
+.tower-stage{position:relative}
+.tower-overlay[hidden]{display:none}
+.tower-overlay-card{max-width:290px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 8px 30px #4a241d18}
+.tower-overlay-card h3{margin:0 0 7px;color:var(--accent)}
+.tower-overlay-card p{margin:0;color:var(--sub);font-size:.86rem;line-height:1.7}
+.tower-start{width:100%;margin-top:15px;background:#e60012;color:#fff}
+@media(max-width:520px){#towerCanvas{height:58vh;min-height:360px}.tower-controls button{font-size:.88rem}}
+</style>
+</head>
+<body>
+<div class="appbar"><a href="index.html"><img src="logo.png" alt="" class="logo"><span><b>MANAMI</b><small>大野愛実 ファンサイト（非公式）</small></span></a></div>
+<div class="wrap">
+<header><span class="badge">MINI GAME</span><h1>まなみんタワーバトル<span>（仮）</span></h1><p class="kana">まなみんを積み上げて、どこまで高くできる？</p></header>
+<nav>
+<a href="index.html"><i class="ms">home</i>Home</a>
+<a href="profile.html"><i class="ms">person</i>Profile</a>
+<a href="schedule.html"><i class="ms">calendar_month</i>Schedule</a>
+<a href="news.html"><i class="ms">newspaper</i>News</a>
+<a href="works.html"><i class="ms">movie</i>Works</a>
+<a href="blog.html"><i class="ms">edit_note</i>Blog</a>
+</nav>
+<main class="tower-wrap">
+<div class="tower-intro"><h2>落とす位置を見きわめて…！</h2><p>画面を左右に動かして位置を決めたら、落とすボタン！<br>まなみんタワーを崩さず高く積み上げよう。</p></div>
+<div class="tower-hud"><div class="tower-stat"><small>今回の記録</small><strong id="towerScore">0</strong></div><div class="tower-stat"><small>ベスト記録</small><strong id="towerBest">0</strong></div><div class="tower-stat"><small>次のピース</small><strong id="towerNext">1 / 4</strong></div></div>
+<div class="tower-stage">
+<canvas id="towerCanvas" aria-label="まなみんを積み上げるゲーム画面"></canvas>
+<div class="tower-overlay" id="towerOverlay"><div class="tower-overlay-card"><h3 id="overlayTitle">まなみんタワーバトル（仮）</h3><p id="overlayText">ピースを左右に動かして、タップで落とそう！<br>バランスを崩して落下したらゲームオーバー。</p><button class="tower-start" id="towerStart">ゲームスタート！</button></div></div>
+</div>
+<div class="tower-controls"><button id="towerLeft" aria-label="左に移動">◀ 左へ</button><button id="towerRotate">↻ 回転</button><button class="drop" id="towerDrop">落とす！</button></div>
+<p class="tower-hint">キャンバスを左右にスワイプしても移動できるよ。回転はボタン、落下は「落とす！」をタップ。</p>
+<div class="tower-bottom"><button id="towerReset">最初からやり直す</button><button id="towerRight">右へ ▶</button></div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js"></script>
+<script>
+(()=>{
+const canvas=document.getElementById("towerCanvas"),ctx=canvas.getContext("2d");
+const $=id=>document.getElementById(id);
+const BEST_KEY="manami-tower-best-v1";
+const API="https://manami-site-worker.yellowworker.workers.dev";
+const fallback=["https://manami-site-worker.yellowworker.workers.dev/api/menu-photo?key=photos%2F0079.webp"];
+let photos=[],images=[],engine,world,ground,leftWall,rightWall,active=null,score=0,best=0,playing=false,spawnIndex=0,raf=0,stageW=0,stageH=0,scale=1,moveX=0,gameOver=false;
+const pieceW=76,pieceH=116;
+function loadBest(){try{best=Number(localStorage.getItem(BEST_KEY))||0}catch(e){best=0}$("towerBest").textContent=best}
+function resize(){
+ const rect=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
+ stageW=rect.width;stageH=rect.height;scale=dpr;
+ canvas.width=Math.round(stageW*dpr);canvas.height=Math.round(stageH*dpr);
+ ctx.setTransform(dpr,0,0,dpr,0,0);
+ if(engine){Matter.Body.setPosition(ground,{x:stageW/2,y:stageH+25});Matter.Body.setPosition(leftWall,{x:-18,y:stageH/2});Matter.Body.setPosition(rightWall,{x:stageW+18,y:stageH/2});}
+}
+function setup(){
+ engine=Matter.Engine.create({gravity:{x:0,y:1.12,scale:.001},enableSleeping:true});
+ world=engine.world;
+ ground=Matter.Bodies.rectangle(stageW/2,stageH+25,stageW+100,50,{isStatic:true,friction:.9});
+ leftWall=Matter.Bodies.rectangle(-18,stageH/2,36,stageH*3,{isStatic:true});
+ rightWall=Matter.Bodies.rectangle(stageW+18,stageH/2,36,stageH*3,{isStatic:true});
+ Matter.Composite.add(world,[ground,leftWall,rightWall]);
+}
+function roundedImage(image,x,y,w,h,angle,alpha=1){
+ ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.globalAlpha=alpha;
+ const r=10;ctx.beginPath();ctx.roundRect(-w/2,-h/2,w,h,r);ctx.clip();
+ if(image&&image.complete&&image.naturalWidth){const ratio=Math.max(w/image.width,h/image.height),iw=image.width*ratio,ih=image.height*ratio;ctx.drawImage(image,-iw/2,-ih/2,iw,ih)}
+ else{ctx.fillStyle="#fff1f1";ctx.fillRect(-w/2,-h/2,w,h);ctx.fillStyle="#e60012";ctx.font="bold 13px sans-serif";ctx.textAlign="center";ctx.fillText("MANAMI",0,4)}
+ ctx.restore();
+}
+function draw(){
+ if(!engine)return;
+ ctx.clearRect(0,0,stageW,stageH);
+ const grad=ctx.createLinearGradient(0,0,0,stageH);grad.addColorStop(0,"#fffafa");grad.addColorStop(1,"#fff");ctx.fillStyle=grad;ctx.fillRect(0,0,stageW,stageH);
+ ctx.fillStyle="#f2d6d6";ctx.fillRect(0,stageH-8,stageW,8);
+ const bodies=Matter.Composite.allBodies(world).filter(b=>!b.isStatic);
+ bodies.forEach((b,i)=>{const im=b.plugin.photo||images[i%Math.max(images.length,1)];roundedImage(im,b.position.x,b.position.y,pieceW,pieceH,b.angle)});
+ if(active&&playing){roundedImage(active.plugin.photo,active.position.x,active.position.y,pieceW,pieceH,active.angle,.92);ctx.strokeStyle="#e60012";ctx.setLineDash([5,5]);ctx.beginPath();ctx.moveTo(active.position.x,active.position.y+pieceH/2);ctx.lineTo(active.position.x,stageH-8);ctx.stroke();ctx.setLineDash([])}
+}
+function updateHud(){$("towerScore").textContent=score;$("towerBest").textContent=best;$("towerNext").textContent=(spawnIndex%4+1)+" / 4"}
+function chooseImage(){return images.length?images[Math.floor(Math.random()*images.length)]:null}
+function spawn(){
+ if(!playing)return;
+ const x=Math.max(pieceW/2+4,Math.min(stageW-pieceW/2-4,stageW/2));
+ active=Matter.Bodies.rectangle(x,72,pieceW,pieceH,{isStatic:true,friction:.82,restitution:.03,density:.002});
+ active.plugin.photo=chooseImage();
+ Matter.Composite.add(world,active);moveX=x;spawnIndex++;updateHud();
+}
+function start(){
+ if(raf)cancelAnimationFrame(raf);
+ if(engine)Matter.Engine.clear(engine);
+ score=0;spawnIndex=0;playing=true;gameOver=false;active=null;
+ setup();resize();$("towerOverlay").hidden=true;updateHud();spawn();loop();
+}
+function loop(){
+ if(!playing)return;
+ Matter.Engine.update(engine,1000/60);
+ if(active&&active.isStatic){const x=Math.max(pieceW/2+4,Math.min(stageW-pieceW/2-4,moveX));Matter.Body.setPosition(active,{x,y:72});}
+ const bodies=Matter.Composite.allBodies(world).filter(b=>!b.isStatic);
+ for(const b of bodies){if(b.position.y>stageH+pieceH||b.position.x< -pieceW||b.position.x>stageW+pieceW){endGame();break}}
+ if(!active&&bodies.length){const settled=bodies.every(b=>b.speed<.25);if(settled){score=bodies.length;if(score>best){best=score;try{localStorage.setItem(BEST_KEY,String(best))}catch(e){}}updateHud();spawn()}}
+ draw();raf=requestAnimationFrame(loop);
+}
+function drop(){
+ if(!playing||!active||!active.isStatic)return;
+ Matter.Body.setStatic(active,false);Matter.Body.setVelocity(active,{x:0,y:1});active=null;
+}
+function move(dx){if(!playing||!active||!active.isStatic)return;moveX=Math.max(pieceW/2+4,Math.min(stageW-pieceW/2-4,moveX+dx))}
+function rotate(){if(!playing||!active||!active.isStatic)return;Matter.Body.setAngle(active,active.angle+Math.PI/12)}
+function endGame(){
+ if(gameOver)return;gameOver=true;playing=false;active=null;
+ const count=Matter.Composite.allBodies(world).filter(b=>!b.isStatic).length;
+ score=Math.max(score,count-1);if(score>best){best=score;try{localStorage.setItem(BEST_KEY,String(best))}catch(e){}}
+ updateHud();$("overlayTitle").textContent="タワー崩壊…！";$("overlayText").textContent="今回の記録は "+score+" ピース！\nもう一回チャレンジしてみよう。";$("towerStart").textContent="もう一度挑戦";$("towerOverlay").hidden=false;
+}
+function loadPhotos(){
+ fetch(API+"/api/menu-photos").then(r=>r.ok?r.json():Promise.reject()).then(data=>{
+  const urls=(Array.isArray(data.items)?data.items:[]).map(x=>x&&x.url).filter(x=>typeof x==="string"&&x.startsWith("https://"));
+  photos=urls.length?urls:fallback;
+  images=photos.slice(0,40).map(url=>{const im=new Image();im.crossOrigin="anonymous";im.src=url;return im});
+ }).catch(()=>{images=fallback.map(url=>{const im=new Image();im.src=url;return im})});
+}
+$("towerStart").addEventListener("click",start);$("towerDrop").addEventListener("click",drop);$("towerRotate").addEventListener("click",rotate);
+$("towerLeft").addEventListener("click",()=>move(-28));$("towerRight").addEventListener("click",()=>move(28));$("towerReset").addEventListener("click",start);
+let pointer=null;
+canvas.addEventListener("pointerdown",e=>{pointer=e.clientX;canvas.setPointerCapture(e.pointerId)});
+canvas.addEventListener("pointermove",e=>{if(pointer===null)return;const dx=e.clientX-pointer;pointer=e.clientX;move(dx)});
+canvas.addEventListener("pointerup",()=>pointer=null);canvas.addEventListener("pointercancel",()=>pointer=null);
+window.addEventListener("resize",resize);
+loadBest();resize();setup();loadPhotos();draw();
+})();
+</script>
+</body></html>
