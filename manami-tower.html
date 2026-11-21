@@ -15,7 +15,7 @@
 .tower-stat{flex:1;text-align:center;padding:10px;border:1px solid var(--line);border-radius:13px;background:#fff}
 .tower-stat small{display:block;color:var(--sub);font-size:.72rem}.tower-stat strong{font-size:1.25rem;color:var(--accent);font-variant-numeric:tabular-nums}
 #towerCanvas{display:block;width:100%;height:min(62vh,570px);min-height:390px;background:linear-gradient(#fffafa,#fff);border:1px solid var(--line);border-radius:18px;touch-action:pan-y}
-.tower-controls{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:9px;margin-top:12px}
+.tower-controls{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
 .tower-controls button,.tower-start{border:0;border-radius:12px;padding:13px 8px;font:inherit;font-weight:800;cursor:pointer;background:#fff1f1;color:#e60012}
 .tower-controls .drop{background:#e60012;color:#fff}
 .tower-controls button:active,.tower-start:active{transform:scale(.98)}
@@ -45,15 +45,15 @@
 <a href="blog.html"><i class="ms">edit_note</i>Blog</a>
 </nav>
 <main class="tower-wrap">
-<div class="tower-intro"><h2>落とす位置を見きわめて…！</h2><p>画面を左右に動かして位置を決めたら、落とすボタン！<br>まなみんタワーを崩さず高く積み上げよう。</p></div>
+<div class="tower-intro"><h2>落とす位置を見きわめて…！</h2><p>ピースをスワイプで左右に動かして、回転と落下を操作！<br>まなみんタワーを崩さず高く積み上げよう。</p></div>
 <div class="tower-hud"><div class="tower-stat"><small>今回の記録</small><strong id="towerScore">0</strong></div><div class="tower-stat"><small>ベスト記録</small><strong id="towerBest">0</strong></div><div class="tower-stat"><small>次のピース</small><strong id="towerNext">1 / 4</strong></div></div>
 <div class="tower-stage">
 <canvas id="towerCanvas" aria-label="まなみんを積み上げるゲーム画面"></canvas>
 <div class="tower-overlay" id="towerOverlay"><div class="tower-overlay-card"><h3 id="overlayTitle">まなみんタワーバトル（仮）</h3><p id="overlayText">ピースを左右に動かして、タップで落とそう！<br>バランスを崩して落下したらゲームオーバー。</p><button class="tower-start" id="towerStart">ゲームスタート！</button></div></div>
 </div>
-<div class="tower-controls"><button id="towerLeft" aria-label="左に移動">◀ 左へ</button><button id="towerRotate">↻ 回転</button><button class="drop" id="towerDrop">落とす！</button></div>
-<p class="tower-hint">キャンバスを左右にスワイプしても移動できるよ。回転はボタン、落下は「落とす！」をタップ。</p>
-<div class="tower-bottom"><button id="towerReset">最初からやり直す</button><button id="towerRight">右へ ▶</button></div>
+<div class="tower-controls"><button id="towerRotate">↻ 回転</button><button class="drop" id="towerDrop">落とす！</button></div>
+<p class="tower-hint">ピースを左右にスワイプして位置を調整。回転と落下はボタンで操作できるよ。</p>
+<div class="tower-bottom"><button id="towerReset">最初からやり直す</button></div>
 </main>
 </div>
 <script>
@@ -102,7 +102,7 @@ if(bodies.some(p=>p.y>stageH+H*1.2||p.x< -W*1.5||p.x>stageW+W*1.5)){endGame();dr
 if(bodies.length){const newest=bodies[bodies.length-1],quiet=Math.abs(newest.vx)+Math.abs(newest.vy)+Math.abs(newest.wa)*35<.65;if(quiet)newest.quiet=(newest.quiet||0)+1;else newest.quiet=0;if(newest.quiet>28&&!active){newest.quiet=-1000;score=bodies.length;if(score>best){best=score;try{localStorage.setItem(BEST_KEY,String(best))}catch(e){}}hud();spawn()}}
 draw();raf=requestAnimationFrame(loop)}
 function loadPhotos(){fetch(API+"/api/menu-photos").then(r=>r.ok?r.json():Promise.reject()).then(d=>{const urls=(Array.isArray(d.items)?d.items:[]).map(x=>x&&x.url).filter(x=>typeof x==="string"&&x.startsWith("https://"));images=(urls.length?urls:fallback).slice(0,40).map(u=>{const i=new Image();i.src=u;return i})}).catch(()=>{images=fallback.map(u=>{const i=new Image();i.src=u;return i})})}
-$("towerStart").addEventListener("click",start);$("towerDrop").addEventListener("click",drop);$("towerRotate").addEventListener("click",rotate);$("towerLeft").addEventListener("click",()=>move(-28));$("towerRight").addEventListener("click",()=>move(28));$("towerReset").addEventListener("click",start);
+$("towerStart").addEventListener("click",start);$("towerDrop").addEventListener("click",drop);$("towerRotate").addEventListener("click",rotate);$("towerReset").addEventListener("click",start);
 let pointer=null;canvas.addEventListener("pointerdown",e=>{pointer=e.clientX;canvas.setPointerCapture(e.pointerId)});canvas.addEventListener("pointermove",e=>{if(pointer===null)return;const dx=e.clientX-pointer;pointer=e.clientX;move(dx)});canvas.addEventListener("pointerup",()=>pointer=null);canvas.addEventListener("pointercancel",()=>pointer=null);
 window.addEventListener("resize",resize);loadBest();resize();loadPhotos();draw();
 })();
