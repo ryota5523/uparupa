@@ -121,19 +121,25 @@ function finishGame(){
 function available(){return [...board.querySelectorAll(".memory-card:not(.matched)")]}
 function cpuPick(exclude=[]){
  const remaining=available().filter(b=>!exclude.includes(b));
- const known=new Map();
- for(const b of remaining){const i=Number(b.dataset.index),pair=b.dataset.pair;const remembers=cpuMemory.has(i)&&(level==="hard"||(level==="normal"&&Math.random()>.22)||(level==="easy"&&Math.random()>.62));if(remembers){if(!known.has(pair))known.set(pair,[]);known.get(pair).push(b)}}
- for(const list of known.values())if(list.length>=2)return list.slice(0,2);
- let first=null,second=null;
- for(const list of known.values())if(list.length===1){first=list[0];break}
- if(!first)first=remaining[Math.floor(Math.random()*remaining.length)];
- const secondCandidates=remaining.filter(b=>b!==first&&b.dataset.pair===first.dataset.pair);
- if(secondCandidates.length)second=secondCandidates[0];
- else{
-  const pool=remaining.filter(b=>b!==first);
-  second=pool[Math.floor(Math.random()*pool.length)];
+ if(remaining.length<2)return [];
+ // CPUが覚えているカードだけを手がかりにする。裏向きカードのpairIdは見ない！
+ const recallRate=level==="easy"?.05:level==="normal"?.30:.70;
+ const remembered=remaining.filter(b=>cpuMemory.has(Number(b.dataset.index))&&Math.random()<recallRate);
+ const knownPairs=new Map();
+ for(const b of remembered){
+  const pair=b.dataset.pair;
+  if(!knownPairs.has(pair))knownPairs.set(pair,[]);
+  knownPairs.get(pair).push(b);
  }
- return [first,second];
+ // 2枚とも覚えているペアがあれば、それを優先する
+ for(const list of knownPairs.values())if(list.length>=2)return shuffle(list).slice(0,2);
+ // 1枚だけ覚えている場合、相方も覚えているときだけ狙う
+ let first=remembered[0]||remaining[Math.floor(Math.random()*remaining.length)];
+ const rememberedMate=remembered.find(b=>b!==first&&b.dataset.pair===first.dataset.pair);
+ if(rememberedMate)return [first,rememberedMate];
+ // 相方を覚えていなければ完全にランダム。隠れた正解情報は使わない
+ const pool=remaining.filter(b=>b!==first);
+ return [first,pool[Math.floor(Math.random()*pool.length)]];
 }
 function scheduleCpu(delay=700){if(finished||mode!=="cpu")return;turn="cpu";locked=true;updateHud();cpuTimer=setTimeout(()=>{locked=false;const picks=cpuPick();if(!picks||picks.length<2)return;flip(picks[0],"cpu");setTimeout(()=>{if(!finished)flip(picks[1],"cpu")},650)},delay)}
 function newGame(){
