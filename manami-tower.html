@@ -66,7 +66,27 @@ function resize(){const r=canvas.getBoundingClientRect(),d=Math.min(devicePixelR
 function loadBest(){try{best=Number(localStorage.getItem(BEST_KEY))||0}catch(e){}$("towerBest").textContent=best}
 
 function drawPiece(p,ghost=false){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.a||0);ctx.globalAlpha=ghost?.92:1;const img=p.img;if(img&&img.complete&&img.naturalWidth){ctx.drawImage(img,-p.w/2,-p.h/2,p.w,p.h)}else{ctx.fillStyle="#fff1f1";ctx.beginPath();ctx.ellipse(0,0,p.w*.34,p.h*.48,0,0,Math.PI*2);ctx.fill()}ctx.restore()}
-function draw(){ctx.clearRect(0,0,stageW,stageH);const g=ctx.createLinearGradient(0,0,0,stageH);g.addColorStop(0,"#fffafa");g.addColorStop(1,"#fff");ctx.fillStyle=g;ctx.fillRect(0,0,stageW,stageH);ctx.fillStyle="#f2d6d6";ctx.fillRect(0,stageH-8,stageW,8);bodies.forEach(p=>drawPiece(p));if(active&&!active.inWorld){drawPiece(active,true);ctx.strokeStyle="#e60012";ctx.setLineDash([5,5]);ctx.beginPath();ctx.moveTo(active.x,active.y+active.h/2);ctx.lineTo(active.x,stageH-8);ctx.stroke();ctx.setLineDash([])}}
+function draw(){
+ ctx.clearRect(0,0,stageW,stageH);
+ const g=ctx.createLinearGradient(0,0,0,stageH);g.addColorStop(0,"#fff8f8");g.addColorStop(1,"#fff");ctx.fillStyle=g;ctx.fillRect(0,0,stageW,stageH);
+ // ステージの輪郭と薄い目盛りで、積む場所をひと目で分かるように
+ const left=10,right=stageW-10,floor=stageH-18;
+ ctx.fillStyle="rgba(230,0,18,.035)";ctx.fillRect(left,0,right-left,floor);
+ ctx.strokeStyle="rgba(230,0,18,.12)";ctx.lineWidth=1;ctx.setLineDash([3,7]);
+ for(let y=50;y<floor;y+=50){ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(right,y);ctx.stroke()}
+ ctx.setLineDash([]);
+ ctx.strokeStyle="rgba(230,0,18,.28)";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(left,12);ctx.lineTo(left,floor);ctx.moveTo(right,12);ctx.lineTo(right,floor);ctx.stroke();
+ ctx.fillStyle="#e60012";ctx.font="700 10px sans-serif";ctx.textAlign="left";ctx.fillText("PLAY AREA",left+7,20);
+ // 床面
+ ctx.fillStyle="#f6dada";ctx.fillRect(0,floor,stageW,18);ctx.fillStyle="#e60012";ctx.fillRect(0,floor,stageW,3);
+ ctx.fillStyle="#b98f89";ctx.font="700 10px sans-serif";ctx.textAlign="center";ctx.fillText("ここに積み上げよう！",stageW/2,floor+14);
+ bodies.forEach(p=>drawPiece(p));
+ if(active&&!active.inWorld){
+   drawPiece(active,true);
+   ctx.strokeStyle="rgba(230,0,18,.75)";ctx.lineWidth=1.5;ctx.setLineDash([5,5]);ctx.beginPath();ctx.moveTo(active.x,active.y+active.h/2);ctx.lineTo(active.x,floor);ctx.stroke();ctx.setLineDash([]);
+   ctx.fillStyle="#e60012";ctx.beginPath();ctx.moveTo(active.x,floor-2);ctx.lineTo(active.x-5,floor-10);ctx.lineTo(active.x+5,floor-10);ctx.closePath();ctx.fill();
+ }
+}
 function hud(){$("towerScore").textContent=score;$("towerBest").textContent=best;$("towerNext").textContent=(spawnIndex%4+1)+" / 4"}
 function makePiece(){const kind=Math.floor(Math.random()*4),img=photos[kind],h=Math.min(112,stageH*.19),ratio=img.naturalWidth/img.naturalHeight,w=h*ratio;return{x:stageW/2,y:Math.max(65,Math.min(112,stageH*.16)),vx:0,vy:0,a:(Math.random()-.5)*.12,wa:0,w,h,kind,img,inWorld:false,quiet:0}}
 function spawn(){if(!playing)return;active=makePiece();spawnIndex++;hud()}
