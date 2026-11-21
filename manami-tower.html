@@ -88,11 +88,11 @@ const cross=(r,v)=>r.x*v.y-r.y*v.x,invIa=a?12/(a.w*a.w+a.h*a.h):0,invIb=b?12/(b.
 const denom=ia+ib+(a?cross(ra,n)**2*invIa:0)+(b?cross(rb,n)**2*invIb:0);const restitution=vn< -1.5?.08:0;const j=-(1+restitution)*vn/denom,ix=j*n.x,iy=j*n.y;
 if(a){a.vx-=ix;a.vy-=iy;a.wa-=cross(ra,{x:ix,y:iy})*invIa}
 if(b){b.vx+=ix;b.vy+=iy;b.wa+=cross(rb,{x:ix,y:iy})*invIb}
-const tx=-n.y,ty=n.x,vt=rv.x*tx+rv.y*ty,fr=Math.max(-j*.18,Math.min(j*.18,-vt/denom)),fx=fr*tx,fy=fr*ty;
+const tx=-n.y,ty=n.x,vt=rv.x*tx+rv.y*ty,fr=Math.max(-j*.68,Math.min(j*.68,-vt/denom)),fx=fr*tx,fy=fr*ty;
 if(a){a.vx-=fx;a.vy-=fy;a.wa-=cross(ra,{x:fx,y:fy})*invIa}
 if(b){b.vx+=fx;b.vy+=fy;b.wa+=cross(rb,{x:fx,y:fy})*invIb}}
-function floorSolve(p){const poly=vertices(p),bottom=stageH-8;let maxY=-Infinity;for(const v of poly)maxY=Math.max(maxY,v.y);if(maxY>bottom){p.y-=maxY-bottom;p.vy=p.vy>1.2?-p.vy*.04:0;p.vx*=.94;p.wa*=.72;if(Math.abs(p.vy)<.35)p.vy=0;if(Math.abs(p.wa)<.012)p.wa=0}}
-function physics(dt){for(const p of bodies){p.vy+=G*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.a+=p.wa*dt;p.vx*=.992;p.vy*=.992;p.wa*=.975}
+function floorSolve(p){const poly=vertices(p),bottom=stageH-8;let maxY=-Infinity;for(const v of poly)maxY=Math.max(maxY,v.y);if(maxY>bottom){p.y-=maxY-bottom;p.vy=p.vy>1.2?-p.vy*.04:0;p.vx*=.72;p.wa*=.48;if(Math.abs(p.vy)<.35)p.vy=0;if(Math.abs(p.wa)<.012)p.wa=0}}
+function physics(dt){for(const p of bodies){p.vy+=G*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.a+=p.wa*dt;p.vx*=.955;p.vy*=.992;p.wa*=.91}
 for(let k=0;k<ITER;k++){for(const p of bodies)floorSolve(p);for(let i=0;i<bodies.length;i++)for(let j=i+1;j<bodies.length;j++){const hit=collide(bodies[i],bodies[j]);if(hit)impulse(bodies[i],bodies[j],hit.n,hit.pt,hit.depth)}}
 }
 function endGame(){playing=false;active=null;$("overlayTitle").textContent="タワー崩壊…！";$("overlayText").textContent="今回の記録は "+score+" ピース！もう一回チャレンジしてみよう。";$("towerOverlay").hidden=false}
