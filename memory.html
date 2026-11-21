@@ -122,7 +122,7 @@ function available(){return [...board.querySelectorAll(".memory-card:not(.matche
 function cpuPick(exclude=[]){
  const remaining=available().filter(b=>!exclude.includes(b));
  const known=new Map();
- for(const b of remaining){const i=Number(b.dataset.index),pair=b.dataset.pair;if(cpuMemory.has(i)){if(!known.has(pair))known.set(pair,[]);known.get(pair).push(b)}}
+ for(const b of remaining){const i=Number(b.dataset.index),pair=b.dataset.pair;const remembers=cpuMemory.has(i)&&(level==="hard"||(level==="normal"&&Math.random()>.22)||(level==="easy"&&Math.random()>.62));if(remembers){if(!known.has(pair))known.set(pair,[]);known.get(pair).push(b)}}
  for(const list of known.values())if(list.length>=2)return list.slice(0,2);
  let first=null,second=null;
  for(const list of known.values())if(list.length===1){first=list[0];break}
