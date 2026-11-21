@@ -65,7 +65,7 @@
 </div>
 <script>
 (()=>{
-const API="https://manami-site-worker.yellowworker.dev/api/menu-photos";
+const API="https://manami-site-worker.yellowworker.workers.dev/api/menu-photos";
 const board=document.getElementById("memoryBoard"),movesEl=document.getElementById("moves"),pairsEl=document.getElementById("pairs"),timerEl=document.getElementById("timer"),messageEl=document.getElementById("message");
 const BEST_KEY="manami-memory-best-v1";
 let photos=[],cards=[],opened=[],moves=0,pairs=0,seconds=0,clock=null,locked=false,started=false,finished=false;
