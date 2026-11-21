@@ -61,28 +61,46 @@
 const canvas=document.getElementById("towerCanvas"),ctx=canvas.getContext("2d"),$=id=>document.getElementById(id);
 const BEST_KEY="manami-tower-best-v1",API="https://manami-site-worker.yellowworker.dev";
 const fallback=["https://manami-site-worker.yellowworker.dev/api/menu-photo?key=photos%2F0079.webp"];
-let images=[],pieces=[],active=null,score=0,best=0,playing=false,spawnIndex=0,raf=0,stageW=0,stageH=0,moveX=0,last=0;
-const W=76,H=116;
+let images=[],bodies=[],active=null,score=0,best=0,playing=false,spawnIndex=0,raf=0,stageW=0,stageH=0,last=0,settleFrames=0;
+const W=76,H=116,G=0.48,ITER=7;
 function resize(){const r=canvas.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);stageW=r.width;stageH=r.height;canvas.width=stageW*d;canvas.height=stageH*d;ctx.setTransform(d,0,0,d,0,0)}
 function loadBest(){try{best=Number(localStorage.getItem(BEST_KEY))||0}catch(e){}$("towerBest").textContent=best}
 function imageFor(p){return p.photo&&p.photo.complete&&p.photo.naturalWidth?p.photo:null}
 function drawPiece(p,ghost=false){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.a||0);ctx.globalAlpha=ghost?.9:1;ctx.beginPath();ctx.roundRect(-W/2,-H/2,W,H,10);ctx.clip();const im=imageFor(p);if(im){const z=Math.max(W/im.width,H/im.height);ctx.drawImage(im,-im.width*z/2,-im.height*z/2,im.width*z,im.height*z)}else{ctx.fillStyle="#fff1f1";ctx.fillRect(-W/2,-H/2,W,H);ctx.fillStyle="#e60012";ctx.font="bold 13px sans-serif";ctx.textAlign="center";ctx.fillText("MANAMI",0,4)}ctx.restore()}
-function draw(){ctx.clearRect(0,0,stageW,stageH);const g=ctx.createLinearGradient(0,0,0,stageH);g.addColorStop(0,"#fffafa");g.addColorStop(1,"#fff");ctx.fillStyle=g;ctx.fillRect(0,0,stageW,stageH);ctx.fillStyle="#f2d6d6";ctx.fillRect(0,stageH-8,stageW,8);pieces.forEach(drawPiece);if(active){drawPiece(active,true);ctx.strokeStyle="#e60012";ctx.setLineDash([5,5]);ctx.beginPath();ctx.moveTo(active.x,active.y+H/2);ctx.lineTo(active.x,stageH-8);ctx.stroke();ctx.setLineDash([])}}
+function draw(){ctx.clearRect(0,0,stageW,stageH);const g=ctx.createLinearGradient(0,0,0,stageH);g.addColorStop(0,"#fffafa");g.addColorStop(1,"#fff");ctx.fillStyle=g;ctx.fillRect(0,0,stageW,stageH);ctx.fillStyle="#f2d6d6";ctx.fillRect(0,stageH-8,stageW,8);bodies.forEach(p=>drawPiece(p));if(active&&!active.inWorld){drawPiece(active,true);ctx.strokeStyle="#e60012";ctx.setLineDash([5,5]);ctx.beginPath();ctx.moveTo(active.x,active.y+H/2);ctx.lineTo(active.x,stageH-8);ctx.stroke();ctx.setLineDash([])}}
 function hud(){$("towerScore").textContent=score;$("towerBest").textContent=best;$("towerNext").textContent=(spawnIndex%4+1)+" / 4"}
-function spawn(){if(!playing)return;active={x:Math.max(W/2,Math.min(stageW-W/2,stageW/2)),y:70,vx:0,vy:0,a:0,falling:false,photo:images.length?images[Math.floor(Math.random()*images.length)]:null};moveX=active.x;spawnIndex++;hud()}
-function start(){cancelAnimationFrame(raf);pieces=[];active=null;score=0;spawnIndex=0;playing=true;$("towerOverlay").hidden=true;$("towerStart").textContent="もう一度挑戦";hud();spawn();last=0;loop()}
-function move(dx){if(!playing||!active||active.falling)return;moveX=Math.max(W/2,Math.min(stageW-W/2,moveX+dx));active.x=moveX}
-function rotate(){if(playing&&active&&!active.falling)active.a=(active.a||0)+Math.PI/12}
-function drop(){if(!playing||!active||active.falling)return;active.falling=true;active.vy=2.5}
-function loop(t){if(!playing)return;const dt=Math.min((t-last||16.67)/16.67,2);last=t;
- if(active&&active.falling){active.vy+=.72*dt;active.y+=active.vy*dt;active.x+=active.vx*dt;
-  let floor=stageH-H/2-8;
-  for(const p of pieces){const overlap=Math.abs(active.x-p.x)<W*.82;if(overlap&&active.y+H/2>=p.y-H/2&&active.y<p.y){floor=Math.min(floor,p.y-H)}}
-  if(active.y>=floor){active.y=floor;active.vy=0;active.falling=false;pieces.push(active);active=null;score=pieces.length;if(score>best){best=score;try{localStorage.setItem(BEST_KEY,String(best))}catch(e){}}hud();spawn()}
-  if(active&&(active.y>stageH+H||active.x< -W||active.x>stageW+W)){endGame()}
- }
- draw();raf=requestAnimationFrame(loop)}
+function makePiece(){return{x:stageW/2,y:Math.max(55,Math.min(105,stageH*.16)),vx:0,vy:0,a:(Math.random()-.5)*.12,wa:0,photo:images.length?images[Math.floor(Math.random()*images.length)]:null,inWorld:false,quiet:0}}
+function spawn(){if(!playing)return;active=makePiece();spawnIndex++;hud()}
+function start(){cancelAnimationFrame(raf);bodies=[];active=null;score=0;spawnIndex=0;playing=true;settleFrames=0;$("overlayTitle").textContent="まなみんタワーバトル（仮）";$("overlayText").innerHTML="ピースを左右に動かして、タップで落とそう！<br>バランスを崩して落下したらゲームオーバー。";$("towerOverlay").hidden=true;$("towerStart").textContent="もう一度挑戦";hud();spawn();last=0;loop()}
+function move(dx){if(!playing||!active||active.inWorld)return;active.x=Math.max(0,Math.min(stageW,active.x+dx))}
+function rotate(){if(playing&&active&&!active.inWorld)active.a+=Math.PI/12}
+function drop(){if(!playing||!active||active.inWorld)return;active.inWorld=true;active.vy=1.2;bodies.push(active);active=null;settleFrames=0}
+function vertices(p){const c=Math.cos(p.a),s=Math.sin(p.a),hw=W/2,hh=H/2;return[[-hw,-hh],[hw,-hh],[hw,hh],[-hw,hh]].map(([x,y])=>({x:p.x+x*c-y*s,y:p.y+x*s+y*c}))}
+function project(poly,axis){let lo=Infinity,hi=-Infinity;for(const v of poly){const d=v.x*axis.x+v.y*axis.y;lo=Math.min(lo,d);hi=Math.max(hi,d)}return{lo,hi}}
+function support(poly,axis,max){let best=poly[0],val=best.x*axis.x+best.y*axis.y;for(const v of poly){const d=v.x*axis.x+v.y*axis.y;if(max?d>val:d<val){best=v;val=d}}return best}
+function collide(a,b){const pa=vertices(a),pb=vertices(b);let min=Infinity,n=null;for(const poly of [pa,pb])for(let i=0;i<2;i++){const p=poly[i],q=poly[i+1],dx=q.x-p.x,dy=q.y-p.y,len=Math.hypot(dx,dy),axis={x:-dy/len,y:dx/len},A=project(pa,axis),B=project(pb,axis),over=Math.min(A.hi,B.hi)-Math.max(A.lo,B.lo);if(over<=0)return null;if(over<min){min=over;n=axis}}
+const d={x:b.x-a.x,y:b.y-a.y};if(d.x*n.x+d.y*n.y<0){n.x=-n.x;n.y=-n.y}
+const sa=support(pa,n,true),sb=support(pb,n,false),pt={x:(sa.x+sb.x)/2,y:(sa.y+sb.y)/2};return{n,depth:min,pt}}
+function impulse(a,b,n,pt,depth){const ia=a?1:0,ib=b?1:0;if(!ia&&!ib)return;const correction=Math.max(depth-.25,0)*.72/(ia+ib);if(a){a.x-=n.x*correction*ia;a.y-=n.y*correction*ia}if(b){b.x+=n.x*correction*ib;b.y+=n.y*correction*ib}
+const ra=a?{x:pt.x-a.x,y:pt.y-a.y}:{x:0,y:0},rb=b?{x:pt.x-b.x,y:pt.y-b.y}:{x:0,y:0};
+const va=a?{x:a.vx-a.wa*ra.y,y:a.vy+a.wa*ra.x}:{x:0,y:0},vb=b?{x:b.vx-b.wa*rb.y,y:b.vy+b.wa*rb.x}:{x:0,y:0};
+const rv={x:vb.x-va.x,y:vb.y-va.y},vn=rv.x*n.x+rv.y*n.y;if(vn>0)return;
+const cross=(r,v)=>r.x*v.y-r.y*v.x,invI=1/(W*W+H*H)*12;
+const denom=ia+ib+(a?cross(ra,n)**2*invI:0)+(b?cross(rb,n)**2*invI:0);const j=-(1.12)*vn/denom,ix=j*n.x,iy=j*n.y;
+if(a){a.vx-=ix;a.vy-=iy;a.wa-=cross(ra,{x:ix,y:iy})*invI}
+if(b){b.vx+=ix;b.vy+=iy;b.wa+=cross(rb,{x:ix,y:iy})*invI}
+const tx=-n.y,ty=n.x,vt=rv.x*tx+rv.y*ty,fr=Math.max(-j*.34,Math.min(j*.34,-vt/denom)),fx=fr*tx,fy=fr*ty;
+if(a){a.vx-=fx;a.vy-=fy;a.wa-=cross(ra,{x:fx,y:fy})*invI}
+if(b){b.vx+=fx;b.vy+=fy;b.wa+=cross(rb,{x:fx,y:fy})*invI}}
+function floorSolve(p){const poly=vertices(p),bottom=stageH-8;for(const v of poly){if(v.y>bottom){const depth=v.y-bottom;p.y-=depth*.82;p.vy=Math.min(0,p.vy+depth*.08);const armX=v.x-p.x,velX=p.vx-p.wa*(v.y-p.y);p.vx*=.985;p.wa+=(-velX*.0009*armX);if(Math.abs(p.vy)<.9)p.vy=0;if(Math.abs(p.wa)<.008)p.wa=0}}}
+function physics(dt){for(const p of bodies){p.vy+=G*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.a+=p.wa*dt;p.vx*=.999;p.vy*=.999;p.wa*=.997}
+for(let k=0;k<ITER;k++){for(const p of bodies)floorSolve(p);for(let i=0;i<bodies.length;i++)for(let j=i+1;j<bodies.length;j++){const hit=collide(bodies[i],bodies[j]);if(hit)impulse(bodies[i],bodies[j],hit.n,hit.pt,hit.depth)}}
+}
 function endGame(){playing=false;active=null;$("overlayTitle").textContent="タワー崩壊…！";$("overlayText").textContent="今回の記録は "+score+" ピース！もう一回チャレンジしてみよう。";$("towerOverlay").hidden=false}
+function loop(t){if(!playing)return;const dt=Math.min((t-last||16.67)/16.67,1.5);last=t;physics(dt);
+if(bodies.some(p=>p.y>stageH+H*1.2||p.x< -W*1.5||p.x>stageW+W*1.5)){endGame();draw();return}
+if(bodies.length){const newest=bodies[bodies.length-1],quiet=Math.abs(newest.vx)+Math.abs(newest.vy)+Math.abs(newest.wa)*35<.65;if(quiet)newest.quiet=(newest.quiet||0)+1;else newest.quiet=0;if(newest.quiet>28){score=bodies.length;if(score>best){best=score;try{localStorage.setItem(BEST_KEY,String(best))}catch(e){}}hud();spawn()}}
+draw();raf=requestAnimationFrame(loop)}
 function loadPhotos(){fetch(API+"/api/menu-photos").then(r=>r.ok?r.json():Promise.reject()).then(d=>{const urls=(Array.isArray(d.items)?d.items:[]).map(x=>x&&x.url).filter(x=>typeof x==="string"&&x.startsWith("https://"));images=(urls.length?urls:fallback).slice(0,40).map(u=>{const i=new Image();i.src=u;return i})}).catch(()=>{images=fallback.map(u=>{const i=new Image();i.src=u;return i})})}
 $("towerStart").addEventListener("click",start);$("towerDrop").addEventListener("click",drop);$("towerRotate").addEventListener("click",rotate);$("towerLeft").addEventListener("click",()=>move(-28));$("towerRight").addEventListener("click",()=>move(28));$("towerReset").addEventListener("click",start);
 let pointer=null;canvas.addEventListener("pointerdown",e=>{pointer=e.clientX;canvas.setPointerCapture(e.pointerId)});canvas.addEventListener("pointermove",e=>{if(pointer===null)return;const dx=e.clientX-pointer;pointer=e.clientX;move(dx)});canvas.addEventListener("pointerup",()=>pointer=null);canvas.addEventListener("pointercancel",()=>pointer=null);
