@@ -11,7 +11,7 @@
 .swim-hud{display:flex;justify-content:space-between;gap:8px;margin:0 0 9px}
 .swim-stat{flex:1;text-align:center;padding:7px;border:1px solid var(--line);border-radius:12px;background:#fff}
 .swim-stat small{display:block;color:var(--sub);font-size:.68rem}.swim-stat strong{font-size:1.2rem;color:var(--accent);font-variant-numeric:tabular-nums}
-#swimCanvas{display:block;width:100%;height:auto;aspect-ratio:360/560;border:2px solid #f2d6d6;border-radius:20px;background:#bcefff;touch-action:none;overscroll-behavior:contain;box-shadow:0 7px 20px rgba(74,31,22,.08);-webkit-tap-highlight-color:transparent}
+#swimCanvas{display:block;width:100%;height:auto;aspect-ratio:360/560;border:2px solid #f2d6d6;border-radius:20px;background:#bcefff;touch-action:none;overscroll-behavior:none;overscroll-behavior-y:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;box-shadow:0 7px 20px rgba(74,31,22,.08);-webkit-tap-highlight-color:transparent}
 .swim-controls{display:flex;justify-content:center;gap:9px;margin:13px 0 4px}
 .swim-controls button{border:0;border-radius:999px;background:var(--accent);color:#fff;padding:11px 24px;font:inherit;font-weight:800;box-shadow:0 4px 0 #b90012}
 .swim-controls button:active{transform:translateY(2px);box-shadow:0 2px 0 #b90012}
@@ -77,7 +77,7 @@ if(frames%7<dt)trailBubbles.push({x:player.x-24,y:player.y+(Math.random()-.5)*13
 let hit=player.y<8||player.y>H-8;
 if(invincible<=0){for(const o of obstacles){if(player.x+player.r>o.x-3&&player.x-player.r<o.x+51&&(player.y-player.r<o.top||player.y+player.r>o.top+o.gap))hit=true}}
 if(hit){end();render();return}render();raf=requestAnimationFrame(loop)}
-canvas.addEventListener('pointerdown',beginDrag);canvas.addEventListener('pointermove',moveDrag);canvas.addEventListener('pointerup',endDrag);canvas.addEventListener('pointercancel',endDrag);canvas.addEventListener('lostpointercapture',endDrag);canvas.addEventListener('contextmenu',e=>e.preventDefault());canvas.addEventListener('gesturestart',e=>e.preventDefault());canvas.addEventListener('gesturechange',e=>e.preventDefault());canvas.addEventListener('gestureend',e=>e.preventDefault());startBtn.addEventListener('click',start);reset();render();
+canvas.addEventListener('pointerdown',beginDrag);canvas.addEventListener('pointermove',moveDrag);canvas.addEventListener('pointerup',endDrag);canvas.addEventListener('pointercancel',endDrag);canvas.addEventListener('lostpointercapture',endDrag);canvas.addEventListener('contextmenu',e=>e.preventDefault());document.addEventListener('touchmove',e=>{if(dragging)e.preventDefault()},{passive:false});canvas.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});canvas.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});canvas.addEventListener('gesturestart',e=>e.preventDefault());canvas.addEventListener('gesturechange',e=>e.preventDefault());canvas.addEventListener('gestureend',e=>e.preventDefault());startBtn.addEventListener('click',start);reset();render();
 })();
 </script>
 <script id="manami-nav-active">(()=>{const current=location.pathname.split("/").pop()||"index.html";document.querySelectorAll("nav a[href]").forEach(a=>{const target=new URL(a.getAttribute("href"),location.href).pathname.split("/").pop();if(target===current){a.classList.add("on");a.setAttribute("aria-current","page");}else{a.classList.remove("on");a.removeAttribute("aria-current");}});})();</script>
