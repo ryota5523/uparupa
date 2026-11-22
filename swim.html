@@ -37,9 +37,9 @@
 (()=> {
 const canvas=document.getElementById('swimCanvas'),ctx=canvas.getContext('2d'),scoreEl=document.getElementById('score'),bestEl=document.getElementById('best'),startBtn=document.getElementById('startBtn');
 const W=360,H=560,player={x:88,y:275,vy:0,r:19},img=new Image();img.src='axolotl.png';
-let state='ready',score=0,best=Number(localStorage.getItem('upaSwimBest')||0),frames=0,speed=2.25,obstacles=[],bubbles=[],last=0,raf=0;
+let state='ready',score=0,best=Number(localStorage.getItem('upaSwimBest')||0),frames=0,speed=2.25,obstacles=[],bubbles=[],trailBubbles=[],last=0,raf=0;
 bestEl.textContent=best;
-function reset(){score=0;frames=0;speed=2.25;player.y=275;player.vy=0;obstacles=[];bubbles=[];for(let i=0;i<9;i++)bubbles.push({x:Math.random()*W,y:Math.random()*H,r:2+Math.random()*4,s:.4+Math.random()*1.1});scoreEl.textContent='0'}
+function reset(){score=0;frames=0;speed=2.25;player.y=275;player.vy=0;obstacles=[];bubbles=[];trailBubbles=[];for(let i=0;i<9;i++)bubbles.push({x:Math.random()*W,y:Math.random()*H,r:2+Math.random()*4,s:.4+Math.random()*1.1});scoreEl.textContent='0'}
 function spawn(){const gap=Math.max(142,188-frames*.012),top=75+Math.random()*(H-gap-150);obstacles.push({x:W+20,top,gap,passed:false,seed:Math.random()*10})}
 function start(){cancelAnimationFrame(raf);reset();state='play';startBtn.textContent='もう一度泳ぐ';player.vy=-4.6;last=0;raf=requestAnimationFrame(loop)}
 function flap(){if(state==='ready'||state==='over'){start();return}if(state==='play')player.vy=-4.8}
@@ -53,15 +53,19 @@ rounded(o.x,0,48,o.top-22,12);ctx.strokeRect(o.x+1,0,46,o.top-23);
 rounded(o.x,bottom+22,48,H-bottom-22,12);ctx.strokeRect(o.x+1,bottom+23,46,H-bottom-24);
 ctx.fillStyle='#f8bd8e';rounded(o.x-5,o.top-31,58,18,8);rounded(o.x-5,bottom+13,58,18,8);
 ctx.fillStyle='#73c98a';for(let k=0;k<3;k++){let xx=o.x+8+k*15;ctx.beginPath();ctx.ellipse(xx,o.top-36-Math.sin(frames*.04+k)*5,5,14,.3,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(xx,bottom+39+Math.sin(frames*.04+k)*5,5,14,-.3,0,Math.PI*2);ctx.fill()}}
-function drawPlayer(){ctx.save();ctx.translate(player.x,player.y);ctx.rotate(Math.max(-.32,Math.min(.45,player.vy*.055)));
-if(img.complete&&img.naturalWidth){let ratio=img.naturalWidth/img.naturalHeight;let w=60,h=w/ratio;ctx.drawImage(img,-w/2,-h/2,w,h)}else{ctx.fillStyle='#f3a4bd';ctx.beginPath();ctx.ellipse(0,0,25,17,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ef8cab';for(let i=-1;i<=1;i++){ctx.beginPath();ctx.ellipse(-15,i*8,5,4,0,0,Math.PI*2);ctx.fill()}ctx.fillStyle='#633';ctx.beginPath();ctx.arc(9,-4,2,0,Math.PI*2);ctx.fill()}ctx.restore()}
+function drawPlayer(){const swim=Math.sin(frames*.22),kick=Math.sin(frames*.34);ctx.save();ctx.translate(player.x,player.y+swim*3.5);ctx.rotate(Math.max(-.24,Math.min(.3,player.vy*.035))+Math.sin(frames*.18)*.055);const sx=1+Math.sin(frames*.34)*.045,sy=1-Math.sin(frames*.34)*.045;ctx.scale(sx,sy);
+if(img.complete&&img.naturalWidth){let ratio=img.naturalWidth/img.naturalHeight;let w=64,h=w/ratio;ctx.drawImage(img,-w/2,-h/2,w,h)}else{ctx.fillStyle='#f3a4bd';ctx.beginPath();ctx.ellipse(0,0,25,17,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ef8cab';for(let i=-1;i<=1;i++){ctx.beginPath();ctx.ellipse(-15,i*8,5,4,0,0,Math.PI*2);ctx.fill()}ctx.fillStyle='#633';ctx.beginPath();ctx.arc(9,-4,2,0,Math.PI*2);ctx.fill()}
+// えらと小さなヒレにリズムをつけて、水をかいている動きを演出
+ctx.strokeStyle='rgba(239,133,174,.78)';ctx.lineWidth=2.2;ctx.lineCap='round';for(let i=0;i<3;i++){const yy=-8+i*7,wiggle=Math.sin(frames*.34+i*.8)*3;ctx.beginPath();ctx.moveTo(-19,yy);ctx.quadraticCurveTo(-27-wiggle,yy-5,-30-wiggle,yy-10);ctx.stroke()}
+ctx.restore()}
 function drawOverlay(title,sub){ctx.fillStyle='rgba(255,255,255,.78)';rounded(27,205,306,128,20);ctx.textAlign='center';ctx.fillStyle='#b90012';ctx.font='900 25px sans-serif';ctx.fillText(title,180,250);ctx.fillStyle='#674b48';ctx.font='bold 14px sans-serif';ctx.fillText(sub,180,281);ctx.font='12px sans-serif';ctx.fillText('下のボタンからスタート！',180,307)}
-function render(){drawBackground();obstacles.forEach(drawObstacle);bubbles.forEach(b=>{ctx.fillStyle='rgba(255,255,255,.7)';ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(74,174,207,.35)';ctx.stroke()});drawPlayer();if(state==='ready')drawOverlay('準備はいい？','タップで上に泳ぐよ！');if(state==='over')drawOverlay('ゲームオーバー！','今回のスコア：'+score+' 点')}
+function render(){drawBackground();obstacles.forEach(drawObstacle);trailBubbles.forEach(b=>{ctx.fillStyle='rgba(255,255,255,.82)';ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(89,190,218,.45)';ctx.stroke()});bubbles.forEach(b=>{ctx.fillStyle='rgba(255,255,255,.7)';ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(74,174,207,.35)';ctx.stroke()});drawPlayer();if(state==='ready')drawOverlay('準備はいい？','タップで上に泳ぐよ！');if(state==='over')drawOverlay('ゲームオーバー！','今回のスコア：'+score+' 点')}
 function loop(t){if(state!=='play')return;const dt=last?Math.min(2,(t-last)/16.67):1;last=t;frames+=dt;speed=Math.min(4.8,2.25+frames*.00065);player.vy=Math.min(5.8,player.vy+.23*dt);player.y+=player.vy*dt;
 if(frames%Math.max(64,Math.floor(105-frames*.018))<dt)spawn();
 obstacles.forEach(o=>{o.x-=speed*dt;if(!o.passed&&o.x+48<player.x){o.passed=true;score++;scoreEl.textContent=score}});
 obstacles=obstacles.filter(o=>o.x>-65);
 bubbles.forEach(b=>{b.x-=speed*.25*dt;b.y-=b.s*dt;if(b.y< -8){b.y=H+8;b.x=Math.random()*W}if(b.x< -8)b.x=W+8});
+if(frames%7<dt)trailBubbles.push({x:player.x-24,y:player.y+(Math.random()-.5)*13,r:1.8+Math.random()*2.2,life:0});trailBubbles.forEach(b=>{b.x-=1.15*dt;b.y-=.35*dt;b.life+=dt;b.r*=.997});trailBubbles=trailBubbles.filter(b=>b.life<42);
 let hit=player.y<8||player.y>H-8;
 for(const o of obstacles){if(player.x+player.r>o.x-3&&player.x-player.r<o.x+51&&(player.y-player.r<o.top||player.y+player.r>o.top+o.gap))hit=true}
 if(hit){end();render();return}render();raf=requestAnimationFrame(loop)}
