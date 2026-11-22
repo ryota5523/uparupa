@@ -40,7 +40,7 @@ const W=360,H=560,player={x:88,y:275,vy:0,r:19},img=new Image();img.src='axolotl
 let state='ready',score=0,best=Number(localStorage.getItem('upaSwimBest')||0),frames=0,speed=2.25,obstacles=[],bubbles=[],trailBubbles=[],powerups=[],scoreTexts=[],invincible=0,last=0,raf=0;
 bestEl.textContent=best;
 function reset(){score=0;frames=0;speed=2.25;player.y=275;player.vy=0;obstacles=[];bubbles=[];trailBubbles=[];powerups=[];scoreTexts=[];invincible=0;for(let i=0;i<9;i++)bubbles.push({x:Math.random()*W,y:Math.random()*H,r:2+Math.random()*4,s:.4+Math.random()*1.1});scoreEl.textContent='0'}
-function spawn(){const gap=Math.max(142,188-frames*.012),top=75+Math.random()*(H-gap-150);obstacles.push({x:W+20,top,baseTop:top,gap,passed:false,seed:Math.random()*Math.PI*2,amplitude:18+Math.random()*18,frequency:.018+Math.random()*.014})}
+function spawn(){const level=Math.min(1,frames/2400),gap=188-level*70,top=65+Math.random()*(H-gap-130);obstacles.push({x:W+20,top,baseTop:top,gap,passed:false,seed:Math.random()*Math.PI*2,amplitude:18+level*25+Math.random()*12,frequency:.018+level*.018+Math.random()*.012})}
 function start(){cancelAnimationFrame(raf);reset();state='play';startBtn.textContent='もう一度泳ぐ';player.vy=-4.6;last=0;raf=requestAnimationFrame(loop)}
 function flap(){if(state==='ready'||state==='over'){start();return}if(state==='play')player.vy=-4.8}
 function end(){state='over';if(score>best){best=score;localStorage.setItem('upaSwimBest',best);bestEl.textContent=best}startBtn.textContent='もう一度泳ぐ'}
@@ -62,8 +62,8 @@ ctx.strokeStyle='rgba(239,133,174,.78)';ctx.lineWidth=2.2;ctx.lineCap='round';fo
 ctx.restore();if(invincible>0){ctx.save();ctx.translate(player.x,player.y);const pulse=1+Math.sin(frames*.25)*.06;ctx.scale(pulse,pulse);ctx.strokeStyle='rgba(255,225,92,.95)';ctx.lineWidth=4;ctx.shadowColor='#fff18a';ctx.shadowBlur=17;ctx.beginPath();ctx.arc(0,0,39+Math.sin(frames*.2)*2,0,Math.PI*2);ctx.stroke();ctx.shadowBlur=0;ctx.fillStyle='rgba(255,255,255,.9)';ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillText('むてき！',0,-48);ctx.restore()}}
 function drawOverlay(title,sub){ctx.fillStyle='rgba(255,255,255,.78)';rounded(27,205,306,128,20);ctx.textAlign='center';ctx.fillStyle='#b90012';ctx.font='900 25px sans-serif';ctx.fillText(title,180,250);ctx.fillStyle='#674b48';ctx.font='bold 14px sans-serif';ctx.fillText(sub,180,281);ctx.font='12px sans-serif';ctx.fillText('下のボタンからスタート！',180,307)}
 function render(){drawBackground();obstacles.forEach(drawObstacle);powerups.forEach(drawPowerup);drawScoreTexts();trailBubbles.forEach(b=>{ctx.fillStyle='rgba(255,255,255,.82)';ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(89,190,218,.45)';ctx.stroke()});bubbles.forEach(b=>{ctx.fillStyle='rgba(255,255,255,.7)';ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(74,174,207,.35)';ctx.stroke()});drawPlayer();if(state==='ready')drawOverlay('準備はいい？','タップで上に泳ぐよ！');if(state==='over')drawOverlay('ゲームオーバー！','今回のスコア：'+score+' 点')}
-function loop(t){if(state!=='play')return;const dt=last?Math.min(2,(t-last)/16.67):1;last=t;frames+=dt;if(invincible>0)invincible=Math.max(0,invincible-dt);speed=Math.min(4.8,2.25+frames*.00065);player.vy=Math.min(5.8,player.vy+.23*dt);player.y+=player.vy*dt;
-if(frames%Math.max(64,Math.floor(105-frames*.018))<dt)spawn();
+function loop(t){if(state!=='play')return;const dt=last?Math.min(2,(t-last)/16.67):1;last=t;frames+=dt;if(invincible>0)invincible=Math.max(0,invincible-dt);speed=Math.min(5.4,2.25+frames*.00105);player.vy=Math.min(5.8,player.vy+.23*dt);player.y+=player.vy*dt;
+if(frames%Math.max(68,Math.floor(112-frames*.018))<dt)spawn();
 if(frames%420<dt)powerups.push({x:W+18,y:105+Math.random()*350});
 obstacles.forEach(o=>{o.x-=speed*dt;o.top=o.baseTop+Math.sin(frames*o.frequency+o.seed)*o.amplitude;if(!o.passed&&o.x+48<player.x){o.passed=true;score++;scoreEl.textContent=score}});
 obstacles=obstacles.filter(o=>o.x>-65);
