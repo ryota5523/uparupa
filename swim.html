@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#e60012">
 <style>
 .swim-intro{text-align:center;margin:4px 0 14px;color:var(--sub);font-size:.84rem}
-.swim-hud{display:flex;justify-content:space-between;gap:10px;margin:0 0 9px}
+.swim-hud{display:flex;justify-content:space-between;gap:8px;margin:0 0 9px}
 .swim-stat{flex:1;text-align:center;padding:7px;border:1px solid var(--line);border-radius:12px;background:#fff}
 .swim-stat small{display:block;color:var(--sub);font-size:.68rem}.swim-stat strong{font-size:1.2rem;color:var(--accent);font-variant-numeric:tabular-nums}
 #swimCanvas{display:block;width:100%;height:auto;aspect-ratio:360/560;border:2px solid #f2d6d6;border-radius:20px;background:#bcefff;touch-action:none;overscroll-behavior:contain;box-shadow:0 7px 20px rgba(74,31,22,.08);-webkit-tap-highlight-color:transparent}
@@ -26,23 +26,26 @@
 <a href="index.html"><i class="ms">home</i>Home</a><a href="profile.html"><i class="ms">person</i>Profile</a><a href="schedule.html"><i class="ms">calendar_month</i>Schedule</a><a href="news.html"><i class="ms">newspaper</i>News</a><a href="works.html"><i class="ms">movie</i>Works</a><a href="blog.html"><i class="ms">edit_note</i>Blog</a>
 </nav>
 <main class="memory-wrap">
-<p class="swim-intro">タップで上昇！障害物をよけて、どこまで泳げるかな？</p>
-<div class="swim-hud"><div class="swim-stat"><small>SCORE</small><strong id="score">0</strong></div><div class="swim-stat"><small>BEST</small><strong id="best">0</strong></div></div>
+<p class="swim-intro">指を上下にスライド！ウーパールーパーを動かして障害物をよけよう</p>
+<div class="swim-hud"><div class="swim-stat"><small>SCORE</small><strong id="score">0</strong></div><div class="swim-stat"><small>BEST</small><strong id="best">0</strong></div><div class="swim-stat"><small>LEVEL</small><strong id="level">1</strong></div></div>
 <canvas id="swimCanvas" width="360" height="560" aria-label="ウーパールーパーの水中アクションゲーム"></canvas>
 <div class="swim-controls"><button id="startBtn">泳ぎはじめる！</button></div>
-<p class="swim-note">画面をタップすると上に泳ぐよ。岩やサンゴにぶつからないでね 🫧</p>
+<p class="swim-note">画面を押したまま上下にスライドして操作！進むほどスピードUP＆すき間が狭くなるよ 🫧</p>
 </main>
 </div>
 <script>
 (()=> {
-const canvas=document.getElementById('swimCanvas'),ctx=canvas.getContext('2d'),scoreEl=document.getElementById('score'),bestEl=document.getElementById('best'),startBtn=document.getElementById('startBtn');
+const canvas=document.getElementById('swimCanvas'),ctx=canvas.getContext('2d'),scoreEl=document.getElementById('score'),bestEl=document.getElementById('best'),levelEl=document.getElementById('level'),startBtn=document.getElementById('startBtn');
 const W=360,H=560,player={x:88,y:275,vy:0,r:19},img=new Image();img.src='axolotl.png';
-let state='ready',score=0,best=Number(localStorage.getItem('upaSwimBest')||0),frames=0,speed=2.25,obstacles=[],bubbles=[],trailBubbles=[],powerups=[],scoreTexts=[],invincible=0,last=0,raf=0;
+let state='ready',score=0,best=Number(localStorage.getItem('upaSwimBest')||0),frames=0,speed=2.25,obstacles=[],bubbles=[],trailBubbles=[],powerups=[],scoreTexts=[],invincible=0,last=0,raf=0,dragging=false,targetY=275,pointerId=null;
 bestEl.textContent=best;
-function reset(){score=0;frames=0;speed=2.25;player.y=275;player.vy=0;obstacles=[];bubbles=[];trailBubbles=[];powerups=[];scoreTexts=[];invincible=0;for(let i=0;i<9;i++)bubbles.push({x:Math.random()*W,y:Math.random()*H,r:2+Math.random()*4,s:.4+Math.random()*1.1});scoreEl.textContent='0'}
+function reset(){score=0;frames=0;speed=2.25;player.y=275;player.vy=0;targetY=275;dragging=false;obstacles=[];bubbles=[];trailBubbles=[];powerups=[];scoreTexts=[];invincible=0;for(let i=0;i<9;i++)bubbles.push({x:Math.random()*W,y:Math.random()*H,r:2+Math.random()*4,s:.4+Math.random()*1.1});scoreEl.textContent='0'}
 function spawn(){const level=Math.min(1,frames/2400),gap=188-level*70,top=65+Math.random()*(H-gap-130);obstacles.push({x:W+20,top,baseTop:top,gap,passed:false,seed:Math.random()*Math.PI*2,amplitude:18+level*25+Math.random()*12,frequency:.018+level*.018+Math.random()*.012})}
 function start(){cancelAnimationFrame(raf);reset();state='play';startBtn.textContent='もう一度泳ぐ';player.vy=-4.6;last=0;raf=requestAnimationFrame(loop)}
-function flap(){if(state==='ready'||state==='over'){start();return}if(state==='play')player.vy=-4.8}
+function pointerY(e){const r=canvas.getBoundingClientRect();return Math.max(34,Math.min(H-34,(e.clientY-r.top)*H/r.height))}
+function beginDrag(e){e.preventDefault();if(state==='ready'||state==='over')start();if(state!=='play')return;dragging=true;pointerId=e.pointerId;targetY=pointerY(e);try{canvas.setPointerCapture(pointerId)}catch(_){} }
+function moveDrag(e){if(!dragging||e.pointerId!==pointerId)return;e.preventDefault();targetY=pointerY(e)}
+function endDrag(e){if(pointerId!==null&&e.pointerId!==pointerId)return;dragging=false;pointerId=null;}
 function end(){state='over';if(score>best){best=score;localStorage.setItem('upaSwimBest',best);bestEl.textContent=best}startBtn.textContent='もう一度泳ぐ'}
 function rounded(x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill()}
 function drawBackground(){let g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#9ce8ff');g.addColorStop(1,'#e2fbff');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
@@ -61,8 +64,8 @@ if(img.complete&&img.naturalWidth){let ratio=img.naturalWidth/img.naturalHeight;
 ctx.strokeStyle='rgba(239,133,174,.78)';ctx.lineWidth=2.2;ctx.lineCap='round';for(let i=0;i<3;i++){const yy=-8+i*7,wiggle=Math.sin(frames*.34+i*.8)*3;ctx.beginPath();ctx.moveTo(-19,yy);ctx.quadraticCurveTo(-27-wiggle,yy-5,-30-wiggle,yy-10);ctx.stroke()}
 ctx.restore();if(invincible>0){ctx.save();ctx.translate(player.x,player.y);const pulse=1+Math.sin(frames*.25)*.06;ctx.scale(pulse,pulse);ctx.strokeStyle='rgba(255,225,92,.95)';ctx.lineWidth=4;ctx.shadowColor='#fff18a';ctx.shadowBlur=17;ctx.beginPath();ctx.arc(0,0,39+Math.sin(frames*.2)*2,0,Math.PI*2);ctx.stroke();ctx.shadowBlur=0;ctx.fillStyle='rgba(255,255,255,.9)';ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillText('むてき！',0,-48);ctx.restore()}}
 function drawOverlay(title,sub){ctx.fillStyle='rgba(255,255,255,.78)';rounded(27,205,306,128,20);ctx.textAlign='center';ctx.fillStyle='#b90012';ctx.font='900 25px sans-serif';ctx.fillText(title,180,250);ctx.fillStyle='#674b48';ctx.font='bold 14px sans-serif';ctx.fillText(sub,180,281);ctx.font='12px sans-serif';ctx.fillText('下のボタンからスタート！',180,307)}
-function render(){drawBackground();obstacles.forEach(drawObstacle);powerups.forEach(drawPowerup);drawScoreTexts();trailBubbles.forEach(b=>{ctx.fillStyle='rgba(255,255,255,.82)';ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(89,190,218,.45)';ctx.stroke()});bubbles.forEach(b=>{ctx.fillStyle='rgba(255,255,255,.7)';ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(74,174,207,.35)';ctx.stroke()});drawPlayer();if(state==='ready')drawOverlay('準備はいい？','タップで上に泳ぐよ！');if(state==='over')drawOverlay('ゲームオーバー！','今回のスコア：'+score+' 点')}
-function loop(t){if(state!=='play')return;const dt=last?Math.min(2,(t-last)/16.67):1;last=t;frames+=dt;if(invincible>0)invincible=Math.max(0,invincible-dt);speed=Math.min(5.4,2.25+frames*.00105);player.vy=Math.min(5.8,player.vy+.23*dt);player.y+=player.vy*dt;
+function render(){drawBackground();obstacles.forEach(drawObstacle);powerups.forEach(drawPowerup);drawScoreTexts();trailBubbles.forEach(b=>{ctx.fillStyle='rgba(255,255,255,.82)';ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(89,190,218,.45)';ctx.stroke()});bubbles.forEach(b=>{ctx.fillStyle='rgba(255,255,255,.7)';ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(74,174,207,.35)';ctx.stroke()});drawPlayer();if(state==='ready')drawOverlay('準備はいい？','画面を上下にスライド！');if(state==='over')drawOverlay('ゲームオーバー！','今回のスコア：'+score+' 点')}
+function loop(t){if(state!=='play')return;const dt=last?Math.min(2,(t-last)/16.67):1;last=t;frames+=dt;if(invincible>0)invincible=Math.max(0,invincible-dt);speed=Math.min(5.8,2.25+frames*.00125);const level=Math.min(10,1+Math.floor(frames/360));levelEl.textContent=level;if(dragging){player.y+=(targetY-player.y)*Math.min(1,.24*dt);player.vy=(targetY-player.y)*.12}else{player.vy=Math.min(5.8,player.vy+.23*dt);player.y+=player.vy*dt}
 if(frames%Math.max(68,Math.floor(112-frames*.018))<dt)spawn();
 if(frames%420<dt)powerups.push({x:W+18,y:105+Math.random()*350});
 obstacles.forEach(o=>{o.x-=speed*dt;o.top=o.baseTop+Math.sin(frames*o.frequency+o.seed)*o.amplitude;if(!o.passed&&o.x+48<player.x){o.passed=true;score++;scoreEl.textContent=score}});
@@ -74,7 +77,7 @@ if(frames%7<dt)trailBubbles.push({x:player.x-24,y:player.y+(Math.random()-.5)*13
 let hit=player.y<8||player.y>H-8;
 if(invincible<=0){for(const o of obstacles){if(player.x+player.r>o.x-3&&player.x-player.r<o.x+51&&(player.y-player.r<o.top||player.y+player.r>o.top+o.gap))hit=true}}
 if(hit){end();render();return}render();raf=requestAnimationFrame(loop)}
-canvas.addEventListener('pointerdown',e=>{e.preventDefault();flap()});canvas.addEventListener('touchstart',e=>{e.preventDefault();},{passive:false});canvas.addEventListener('gesturestart',e=>e.preventDefault());canvas.addEventListener('gesturechange',e=>e.preventDefault());canvas.addEventListener('gestureend',e=>e.preventDefault());startBtn.addEventListener('click',start);reset();render();
+canvas.addEventListener('pointerdown',beginDrag);canvas.addEventListener('pointermove',moveDrag);canvas.addEventListener('pointerup',endDrag);canvas.addEventListener('pointercancel',endDrag);canvas.addEventListener('lostpointercapture',endDrag);canvas.addEventListener('contextmenu',e=>e.preventDefault());canvas.addEventListener('gesturestart',e=>e.preventDefault());canvas.addEventListener('gesturechange',e=>e.preventDefault());canvas.addEventListener('gestureend',e=>e.preventDefault());startBtn.addEventListener('click',start);reset();render();
 })();
 </script>
 <script id="manami-nav-active">(()=>{const current=location.pathname.split("/").pop()||"index.html";document.querySelectorAll("nav a[href]").forEach(a=>{const target=new URL(a.getAttribute("href"),location.href).pathname.split("/").pop();if(target===current){a.classList.add("on");a.setAttribute("aria-current","page");}else{a.classList.remove("on");a.removeAttribute("aria-current");}});})();</script>
