@@ -165,7 +165,7 @@
 <a class="app-icon app-camera" href="ar-camera.html"><span class="app-glyph"><span class="app-fallback">photo_camera</span><img class="app-photo" alt="大野愛実" loading="lazy" src="https://cdn.hinatazaka46.com/images/14/8eb/85abcd0eaa666db804113528d8a00-01.jpg"></span><b>AR Camera</b></a>
 <a class="app-icon app-memo" href="memo.html"><span class="app-glyph"><span class="app-fallback">auto_stories</span><img class="app-photo" alt="大野愛実" loading="lazy" src="https://cdn.hinatazaka46.com/files/14/diary/official/member/moblog/202602/mobxBRQ0V.jpg"></span><b>推し活メモ</b></a>
 <a class="app-icon app-goods" href="https://store.plusmember.jp/hinatazaka46/products/list.php?name=%E5%A4%A7%E9%87%8E%E3%80%80%E6%84%9B%E5%AE%9F" id="open-goods" target="_blank" rel="noopener"><span class="app-glyph"><span class="app-fallback">shopping_bag</span><img class="app-photo" alt="大野愛実" loading="lazy" src="/assets/goods-menu.webp"></span><b>公式グッズ</b></a>
-<a class="app-icon app-games" href="games.html"><span class="app-glyph"><span class="app-fallback">sports_esports</span><img class="app-photo" alt="大野愛実" loading="lazy" src="https://cdn.hinatazaka46.com/files/14/diary/official/member/moblog/202602/mobxBRQ0V.jpg"></span><b>ゲーム</b></a>
+<a class="app-icon app-games" href="games.html"><span class="app-glyph"><span class="app-fallback">sports_esports</span><img class="app-photo" id="gamesMenuPhoto" alt="大野愛実" loading="lazy"></span><b>ゲーム</b></a>
 </div></section>
 <section id="app"><h2>Install</h2>
 <p>ホーム画面に追加すると、アイコンから全画面で開けます。公式サイトへのリンクは、アプリ内のブラウザで開きます。</p>
@@ -494,4 +494,4 @@
   });
 })();
 </script>
-</body></html>
+<script id="games-menu-blog-photo">(()=>{const img=document.getElementById("gamesMenuPhoto");if(!img)return;const used=new Set([...document.querySelectorAll(".app-icon:not(.app-games) .app-photo")].map(x=>x.currentSrc||x.src));fetch("https://manami-site-worker.yellowworker.workers.dev/api/blogs?t="+Date.now(),{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("blog API unavailable");return r.json()}).then(data=>{const posts=Array.isArray(data.items)?data.items.slice().sort((a,b)=>String(b.published_at||"").localeCompare(String(a.published_at||""))):[];for(const post of posts){const candidates=[post.image_url,post.thumbnail_url,post.thumbnail,post.image,post.img,post.og_image,post.ogImage];const src=candidates.find(v=>typeof v==="string"&&/^https:\/\//i.test(v)&&!used.has(v));if(src){img.src=src;return;}}}).catch(e=>console.warn("Blog game menu photo:",e));})();</script></body></html>
