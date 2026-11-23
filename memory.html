@@ -111,7 +111,7 @@ function flip(button,who){
    updateHud();
    if(pairs===8){finishGame();return}
    messageEl.textContent="ペア成立！"+(mode==="cpu"?(who==="cpu"?"CPUがそろえた！":"あなたの得点！"):"その調子 💗");
-   if(mode==="cpu"){turn=who==="cpu"?"player":"cpu";updateHud();if(turn==="cpu")scheduleCpu(650)}
+   if(mode==="cpu"){turn=pairs>=6?who:(who==="cpu"?"player":"cpu");updateHud();if(turn==="cpu")scheduleCpu(650)}
   }else{
    locked=true;if(mode==="cpu"&&level==="hard"){if(who==="cpu")cpuMisses++;else playerMisses++;updateHud();messageEl.textContent=(who==="cpu"?"CPU":"あなた")+"のミス！";}else{messageEl.textContent=who==="cpu"?"CPUもおしい！":"おしい！もう一度チャレンジ";}
    setTimeout(()=>{a.classList.remove("flipped");b.classList.remove("flipped");opened=[];locked=false;if(mode==="cpu"&&level==="hard"&&(playerMisses>=5||cpuMisses>=5)){finished=true;stopClock();if(cpuTimer)clearTimeout(cpuTimer);messageEl.textContent=playerMisses>=5?"あなたは5回ミス！CPUの勝ち…":"CPUが5回ミス！あなたの勝ち！！";turnLabel.textContent="ゲーム終了！";return;}if(mode==="cpu"){turn=who==="cpu"?"player":"cpu";updateHud();if(turn==="cpu")scheduleCpu(650)}},850);
