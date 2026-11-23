@@ -61,7 +61,7 @@
 </nav>
 <main class="memory-wrap">
 <div class="memory-intro"><h2>16枚のカードから、8ペアを見つけよう！</h2><p>Cloudflareに保存してある縦長写真を使っているよ。<br>同じ写真を2枚めくるとペア成立 💗</p></div>
-<div class="memory-mode" aria-label="ゲームモード"><button type="button" class="active" data-mode="solo">ひとりで遊ぶ</button><button type="button" data-mode="cpu">CPUと対戦</button></div><div class="memory-level" id="memoryLevel" hidden><button type="button" class="active" data-level="easy">初級</button><button type="button" data-level="normal">中級</button><button type="button" data-level="hard">ハード</button></div><div class="memory-order" id="memoryOrder" hidden><span>順番</span><button type="button" class="active" data-order="player">先攻</button><button type="button" data-order="cpu">後攻</button></div><p class="memory-misses" id="memoryMisses" hidden>ミス残り：あなた <strong id="playerMisses">3</strong> 回 ／ CPU <strong id="cpuMisses">3</strong> 回</p><div class="memory-score" id="memoryScore" hidden><div><small>あなた</small><strong id="playerScore">0</strong></div><div><small>CPU</small><strong id="cpuScore">0</strong></div></div><p class="memory-turn" id="turnLabel" hidden>あなたの番です</p><div class="memory-hud">
+<div class="memory-mode" aria-label="ゲームモード"><button type="button" class="active" data-mode="solo">ひとりで遊ぶ</button><button type="button" data-mode="cpu">CPUと対戦</button></div><div class="memory-level" id="memoryLevel" hidden><button type="button" class="active" data-level="easy">初級</button><button type="button" data-level="normal">中級</button><button type="button" data-level="hard">ハード</button></div><div class="memory-order" id="memoryOrder" hidden><span>順番</span><button type="button" class="active" data-order="player">先攻</button><button type="button" data-order="cpu">後攻</button></div><p class="memory-misses" id="memoryMisses" hidden>ミス残り：あなた <strong id="playerMisses">5</strong> 回 ／ CPU <strong id="cpuMisses">5</strong> 回</p><div class="memory-score" id="memoryScore" hidden><div><small>あなた</small><strong id="playerScore">0</strong></div><div><small>CPU</small><strong id="cpuScore">0</strong></div></div><p class="memory-turn" id="turnLabel" hidden>あなたの番です</p><div class="memory-hud">
 <div class="memory-stat"><small>手数</small><strong id="moves">0</strong></div>
 <div class="memory-stat"><small>そろえたペア</small><strong id="pairs">0 / 8</strong></div>
 <div class="memory-stat"><small>タイム</small><strong id="timer">00:00</strong></div>
@@ -86,7 +86,7 @@ function freshImageUrl(url){return url+(url.includes("?")?"&":"?")+"v="+imageVer
 let mode="solo",level="easy",turn="player",firstTurn="player",playerPairs=0,cpuPairs=0,playerMisses=0,cpuMisses=0,cpuMemory=new Map(),cpuTimer=null;
 const shuffle=array=>{const a=[...array];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 function formatTime(n){return String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0")}
-function updateHud(){movesEl.textContent=moves;pairsEl.textContent=pairs+" / 8";timerEl.textContent=formatTime(seconds);document.getElementById("playerScore").textContent=playerPairs;document.getElementById("cpuScore").textContent=cpuPairs;document.getElementById("playerMisses").textContent=Math.max(0,3-playerMisses);document.getElementById("cpuMisses").textContent=Math.max(0,3-cpuMisses);turnLabel.textContent=turn==="player"?"あなたの番です":"CPUが考え中…"}
+function updateHud(){movesEl.textContent=moves;pairsEl.textContent=pairs+" / 8";timerEl.textContent=formatTime(seconds);document.getElementById("playerScore").textContent=playerPairs;document.getElementById("cpuScore").textContent=cpuPairs;document.getElementById("playerMisses").textContent=Math.max(0,5-playerMisses);document.getElementById("cpuMisses").textContent=Math.max(0,5-cpuMisses);turnLabel.textContent=turn==="player"?"あなたの番です":"CPUが考え中…"}
 function stopClock(){if(clock){clearInterval(clock);clock=null}}
 function startClock(){if(clock||started)return;started=true;clock=setInterval(()=>{seconds++;timerEl.textContent=formatTime(seconds)},1000)}
 function makeCard(photo,index){
@@ -112,7 +112,7 @@ function flip(button,who){
    if(mode==="cpu"){turn=who==="cpu"?"player":"cpu";updateHud();if(turn==="cpu")scheduleCpu(650)}
   }else{
    locked=true;if(mode==="cpu"&&level==="hard"){if(who==="cpu")cpuMisses++;else playerMisses++;updateHud();messageEl.textContent=(who==="cpu"?"CPU":"あなた")+"のミス！";}else{messageEl.textContent=who==="cpu"?"CPUもおしい！":"おしい！もう一度チャレンジ";}
-   setTimeout(()=>{a.classList.remove("flipped");b.classList.remove("flipped");opened=[];locked=false;if(mode==="cpu"&&level==="hard"&&(playerMisses>=3||cpuMisses>=3)){finished=true;stopClock();if(cpuTimer)clearTimeout(cpuTimer);messageEl.textContent=playerMisses>=3?"あなたは3回ミス！CPUの勝ち…":"CPUが3回ミス！あなたの勝ち！！";turnLabel.textContent="ゲーム終了！";return;}if(mode==="cpu"){turn=who==="cpu"?"player":"cpu";updateHud();if(turn==="cpu")scheduleCpu(650)}},850);
+   setTimeout(()=>{a.classList.remove("flipped");b.classList.remove("flipped");opened=[];locked=false;if(mode==="cpu"&&level==="hard"&&(playerMisses>=5||cpuMisses>=5)){finished=true;stopClock();if(cpuTimer)clearTimeout(cpuTimer);messageEl.textContent=playerMisses>=5?"あなたは5回ミス！CPUの勝ち…":"CPUが5回ミス！あなたの勝ち！！";turnLabel.textContent="ゲーム終了！";return;}if(mode==="cpu"){turn=who==="cpu"?"player":"cpu";updateHud();if(turn==="cpu")scheduleCpu(650)}},850);
   }
  }
 }
