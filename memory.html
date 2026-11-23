@@ -182,7 +182,7 @@ function newGame(){
 function setMode(next){mode=next;modeButtons.forEach(b=>b.classList.toggle("active",b.dataset.mode===mode));levelBox.hidden=mode!=="cpu";scoreBox.hidden=mode!=="cpu";turnLabel.hidden=mode!=="cpu";orderBox.hidden=mode!=="cpu";missBox.hidden=mode!=="cpu"||level!=="hard";healthBox.hidden=mode!=="cpu"||level!=="hard";document.querySelector(".memory-hud .memory-stat:nth-child(1) small").textContent=mode==="cpu"?"合計ターン":"手数";newGame()}
 modeButtons.forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
 orderButtons.forEach(b=>b.addEventListener("click",()=>{firstTurn=b.dataset.order;orderButtons.forEach(x=>x.classList.toggle("active",x===b));if(mode==="cpu")newGame()}));
-levelButtons.forEach(b=>b.addEventListener("click",()=>{level=b.dataset.level;levelButtons.forEach(x=>x.classList.toggle("active",x===b));newGame()}));
+levelButtons.forEach(b=>b.addEventListener("click",()=>{level=b.dataset.level;levelButtons.forEach(x=>x.classList.toggle("active",x===b));missBox.hidden=mode!=="cpu"||level!=="hard";healthBox.hidden=mode!=="cpu"||level!=="hard";newGame()}));
 async function loadPhotos(){
  try{
   const response=await fetch(API+"?t="+Date.now(),{cache:"no-store"});if(!response.ok)throw new Error("画像一覧を取得できません");
