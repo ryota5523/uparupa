@@ -17,16 +17,16 @@
 <body>
 <div class="appbar"><a href="index.html"><img src="logo.png" alt="" class="logo"><span><b>MANAMI</b><small>大野愛実 ファンサイト（非公式）</small></span></a></div>
 <div class="wrap">
-<header><span class="badge">UNDERWATER GAME</span><h1>うぱうぱスイム</h1><p class="kana">海の中を、ひたすら泳ごう。</p></header>
+<header><span class="badge">UNDERWATER GAME</span><h1>うぱうぱスイム</h1><p class="kana">メキシコの湖を、ひたすら泳ごう。</p></header>
 <nav>
 <a href="index.html"><i class="ms">home</i>Home</a><a href="profile.html"><i class="ms">person</i>Profile</a><a href="schedule.html"><i class="ms">calendar_month</i>Schedule</a><a href="news.html"><i class="ms">newspaper</i>News</a><a href="works.html"><i class="ms">movie</i>Works</a><a href="blog.html"><i class="ms">edit_note</i>Blog</a>
 </nav>
 <main class="memory-wrap">
-<p class="swim-intro">指を上下に動かして泳ごう。長く泳ぐほど海がハードになるよ！</p>
+<p class="swim-intro">指を上下に動かして泳ごう。湖の障害物をよけて、長く生きのびよう！</p>
 <div class="swim-hud"><div class="swim-stat"><small>TIME</small><strong id="time">0.0s</strong></div><div class="swim-stat"><small>BEST</small><strong id="best">0.0s</strong></div><div class="swim-stat"><small>LEVEL</small><strong id="level">1</strong></div></div>
 <canvas id="swimCanvas" width="360" height="560" aria-label="上下に操作して障害物を避ける横スクロールゲーム"></canvas>
 <div class="swim-controls"><button id="startBtn">泳ぎはじめる！</button></div>
-<p class="swim-note">画面を押したまま上下にスライド。横から来るサンゴをよけてね 🫧</p>
+<p class="swim-note">画面を押したまま上下にスライド。横から来る障害物をよけてね 🫧</p>
 </main>
 </div>
 <script>
@@ -38,7 +38,7 @@ let state='ready',elapsed=0,best=Number(localStorage.getItem('upaSwimBestTime')|
 bestEl.textContent=best.toFixed(1)+'s';
 function reset(){elapsed=0;frame=0;world=0;player.y=280;targetY=280;obstacles=[];bubbles=[];dragging=false;for(let i=0;i<24;i++)bubbles.push({x:Math.random()*W,y:Math.random()*H,r:1+Math.random()*3,v:.5+Math.random()});timeEl.textContent='0.0s';levelEl.textContent='1'}
 function difficulty(){return Math.min(1,(elapsed/90))}
-function spawn(){const d=difficulty(),gap=190-d*78,top=55+Math.random()*(H-gap-110);obstacles.push({x:W+18,top,gap,passed:false})}
+function spawn(){const d=difficulty(),gap=190-d*78,top=55+Math.random()*(H-gap-110),types=['rock','roots','reeds','log','weed','stones'];obstacles.push({x:W+18,top,gap,type:types[Math.floor(Math.random()*types.length)],seed:Math.random()*10})}
 function start(){cancelAnimationFrame(raf);reset();state='play';startBtn.textContent='もう一度泳ぐ';last=0;raf=requestAnimationFrame(loop)}
 function pointerY(e){const r=canvas.getBoundingClientRect();return Math.max(34,Math.min(H-34,(e.clientY-r.top)*H/r.height))}
 function down(e){e.preventDefault();if(state!=='play'){start();}dragging=true;pointerId=e.pointerId;targetY=pointerY(e);try{canvas.setPointerCapture(pointerId)}catch(_){}}
@@ -47,13 +47,19 @@ function up(e){if(pointerId!==null&&e.pointerId!==pointerId)return;dragging=fals
 function finish(){state='over';if(elapsed>best){best=elapsed;localStorage.setItem('upaSwimBestTime',String(best));bestEl.textContent=best.toFixed(1)+'s'}startBtn.textContent='もう一度泳ぐ'}
 function rounded(x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill()}
 function background(){
-const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#075d91');g.addColorStop(.55,'#078db0');g.addColorStop(1,'#19b8c1');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-ctx.fillStyle='rgba(181,244,255,.09)';for(let i=0;i<7;i++){const x=(i*73-world*.22%430+430)%430;ctx.beginPath();ctx.ellipse(x,65+i*72,35,8,0,0,Math.PI*2);ctx.fill()}
-ctx.fillStyle='rgba(255,255,255,.16)';for(const b of bubbles){ctx.beginPath();ctx.arc((b.x-world*.12%W+W)%W,b.y,b.r,0,Math.PI*2);ctx.fill()}
-ctx.fillStyle='#075b75';ctx.globalAlpha=.38;ctx.beginPath();ctx.moveTo(0,H);for(let x=0;x<=W;x+=8)ctx.lineTo(x,H-23-Math.sin(x*.025+world*.012)*12);ctx.lineTo(W,H);ctx.fill();ctx.globalAlpha=1;
+const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#83d9dc');g.addColorStop(.22,'#4bb9bd');g.addColorStop(.7,'#238f91');g.addColorStop(1,'#176d70');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ctx.fillStyle='rgba(238,255,220,.13)';for(let i=0;i<5;i++){const x=(i*92-world*.12%500+500)%500;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x+34,0);ctx.lineTo(x+105,H);ctx.lineTo(x+64,H);ctx.closePath();ctx.fill()}
+ctx.fillStyle='rgba(231,255,247,.35)';for(const b of bubbles){ctx.beginPath();ctx.arc((b.x-world*.12%W+W)%W,b.y,b.r,0,Math.PI*2);ctx.fill()}
+ctx.fillStyle='#b4a77c';ctx.globalAlpha=.55;ctx.beginPath();ctx.moveTo(0,H);for(let x=0;x<=W;x+=8)ctx.lineTo(x,H-22-Math.sin(x*.025+world*.012)*10);ctx.lineTo(W,H);ctx.fill();ctx.globalAlpha=1;
+for(let i=0;i<14;i++){const x=(i*37-world*.45%420+420)%420,y=H-17-Math.sin(i*8)*5;ctx.fillStyle=i%2?'#d3c49a':'#829d7b';ctx.beginPath();ctx.ellipse(x,y,5+(i%3)*2,2,0,0,Math.PI*2);ctx.fill()}
+for(let side=0;side<2;side++){const base=side?W-7:7;for(let j=0;j<4;j++){const sway=Math.sin(world*.025+j*1.8)*9;ctx.strokeStyle=j%2?'rgba(28,112,77,.72)':'rgba(91,157,94,.8)';ctx.lineWidth=4;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(base,H-5);ctx.quadraticCurveTo(base+sway*1.5,H-75-j*13,base+sway,H-115-j*17);ctx.stroke()}}
 }
-function coral(x,y,flip){ctx.save();ctx.translate(x,y);if(flip)ctx.scale(1,-1);ctx.fillStyle='#ff987d';ctx.strokeStyle='#e97870';ctx.lineWidth=3;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(-22,0);ctx.lineTo(-17,-25);ctx.lineTo(-7,-35);ctx.lineTo(-5,-9);ctx.lineTo(8,-47);ctx.lineTo(14,-17);ctx.lineTo(25,-30);ctx.lineTo(22,0);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle='#ffc19a';ctx.beginPath();ctx.ellipse(0,-2,26,8,0,0,Math.PI*2);ctx.fill();ctx.restore()}
-function obstacle(o){const bottom=o.top+o.gap;ctx.fillStyle='#286f72';rounded(o.x,0,46,o.top-15,10);rounded(o.x,bottom+15,46,H-bottom-15,10);ctx.fillStyle='#469c91';rounded(o.x-4,o.top-18,54,17,8);rounded(o.x-4,bottom+1,54,17,8);coral(o.x+23,o.top-17,true);coral(o.x+23,bottom+17,false)}
+function rockShape(x,y,w,h){ctx.fillStyle='#718d79';ctx.strokeStyle='#496f68';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x-w/2,y+h/2);ctx.quadraticCurveTo(x-w*.72,y,x-w*.25,y-h*.42);ctx.quadraticCurveTo(x+w*.15,y-h*.7,x+w*.43,y-h*.22);ctx.quadraticCurveTo(x+w*.75,y+h*.08,x+w/2,y+h/2);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle='rgba(220,232,180,.28)';ctx.beginPath();ctx.ellipse(x-w*.12,y-h*.2,w*.18,h*.09,-.3,0,Math.PI*2);ctx.fill()}
+function reedShape(x,y,flip,seed){ctx.save();ctx.translate(x,y);if(flip)ctx.scale(1,-1);for(let i=0;i<4;i++){const dx=(i-1.5)*9,lean=Math.sin(seed+i)*8;ctx.strokeStyle=i%2?'#367f59':'#5b9e68';ctx.lineWidth=5;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(dx,0);ctx.quadraticCurveTo(dx+lean,-18,dx+lean*.7,-38-(i%2)*9);ctx.stroke();ctx.fillStyle='#79b66e';ctx.beginPath();ctx.ellipse(dx+lean*.7,-39-(i%2)*9,4,10,.2,0,Math.PI*2);ctx.fill()}ctx.restore()}
+function rootsShape(x,y,flip,seed){ctx.save();ctx.translate(x,y);if(flip)ctx.scale(1,-1);ctx.strokeStyle='#80684a';ctx.lineWidth=7;ctx.lineCap='round';for(let i=0;i<4;i++){const dx=(i-1.5)*10;ctx.beginPath();ctx.moveTo(dx,-2);ctx.bezierCurveTo(dx-12,-18,dx+Math.sin(seed+i)*8,-28,dx+(i-1)*13,-48-(i%2)*9);ctx.stroke()}ctx.restore()}
+function logShape(x,y,flip){ctx.save();ctx.translate(x,y);if(flip)ctx.scale(1,-1);ctx.fillStyle='#8a7251';ctx.strokeStyle='#66553f';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-24,0);ctx.lineTo(-20,-27);ctx.quadraticCurveTo(0,-37,23,-25);ctx.lineTo(25,0);ctx.closePath();ctx.fill();ctx.stroke();ctx.strokeStyle='#c1a176';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(0,-26,8,4,0,0,Math.PI*2);ctx.stroke();ctx.restore()}
+function weedShape(x,y,flip,seed){ctx.save();ctx.translate(x,y);if(flip)ctx.scale(1,-1);for(let i=0;i<3;i++){ctx.fillStyle=i%2?'#4c9c72':'#70b77a';ctx.beginPath();ctx.ellipse((i-1)*12,-20-Math.sin(seed+i)*5,7,24,.3*(i-1),0,Math.PI*2);ctx.fill()}ctx.restore()}
+function obstacle(o){const bottom=o.top+o.gap;const draw=(y,flip)=>{if(o.type==='rock')rockShape(o.x+23,y,55,47);else if(o.type==='roots')rootsShape(o.x+23,y,flip,o.seed);else if(o.type==='reeds')reedShape(o.x+23,y,flip,o.seed);else if(o.type==='log')logShape(o.x+23,y,flip);else if(o.type==='weed')weedShape(o.x+23,y,flip,o.seed);else{rockShape(o.x+10,y,31,28);rockShape(o.x+34,y-5,29,24)}};draw(o.top-5,true);draw(bottom+5,false)}
 function drawPlayer(){ctx.save();ctx.translate(player.x,player.y+Math.sin(frame*.12)*2);ctx.rotate(dragging?Math.max(-.18,Math.min(.18,(targetY-player.y)*.008)):0);if(img.complete&&img.naturalWidth){const ratio=img.naturalWidth/img.naturalHeight,w=66,h=w/ratio;ctx.drawImage(img,-w/2,-h/2,w,h)}else{ctx.fillStyle='#f5a8c3';ctx.beginPath();ctx.ellipse(0,0,25,18,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#e887aa';for(let i=-1;i<=1;i++){ctx.beginPath();ctx.ellipse(-19,i*8,6,4,0,0,Math.PI*2);ctx.fill()}ctx.fillStyle='#49333e';ctx.beginPath();ctx.arc(10,-5,2.4,0,Math.PI*2);ctx.fill()}ctx.restore()}
 function overlay(title,sub){ctx.fillStyle='rgba(2,39,67,.66)';rounded(25,207,310,132,20);ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='900 25px sans-serif';ctx.fillText(title,180,251);ctx.font='bold 14px sans-serif';ctx.fillText(sub,180,281);ctx.font='12px sans-serif';ctx.fillText('下のボタンからスタート！',180,310)}
 function render(){background();obstacles.forEach(obstacle);drawPlayer();if(state==='ready')overlay('準備はいい？','指で上下に泳ごう！');if(state==='over')overlay('ゲームオーバー','生存時間 '+elapsed.toFixed(1)+' 秒')}
