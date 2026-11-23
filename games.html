@@ -12,7 +12,12 @@
 .game-card{display:flex;min-width:0;flex-direction:column;overflow:hidden;border:1px solid var(--line);border-radius:18px;background:#fff;text-decoration:none;color:var(--text);box-shadow:0 5px 16px rgba(74,31,22,.06);transition:transform .16s}
 .game-card:active{transform:scale(.98)}
 .game-card-art{display:grid;place-items:center;aspect-ratio:1.35/1;background:linear-gradient(145deg,#fff1f1,#ffe0e3);color:var(--accent);font-family:"Material Symbols Rounded";font-size:clamp(2.5rem,12vw,4rem)}
-.game-card-art img{width:100%;height:100%;object-fit:cover}
+.game-card-art{position:relative;isolation:isolate;background:linear-gradient(145deg,#fff0f2,#ffd8df)}
+.game-card-art img{width:100%;height:100%;object-fit:cover;display:block}
+.game-card-art::after{content:"";position:absolute;inset:45% 0 0;background:linear-gradient(transparent,rgba(65,0,12,.24));pointer-events:none}
+.game-card-art .game-symbol{position:absolute;z-index:2;right:10px;top:10px;width:38px;height:38px;display:grid;place-items:center;border-radius:50%;background:#ffffffdf;color:#e60012;font-family:inherit;font-size:1.35rem;box-shadow:0 2px 9px #64001822}
+.game-card-art .game-cover-fallback{font-family:inherit;font-size:4rem;filter:drop-shadow(0 5px 4px #7b243333)}
+.game-card-art:has(.game-cover-fallback){background:radial-gradient(circle at 30% 25%,#fff 0 8%,transparent 9%),linear-gradient(145deg,#ffe8ec,#ffb8c4)}
 .game-card-body{padding:12px 13px 14px}
 .game-card h2{font-size:1rem;margin:0 0 4px}
 .game-card p{font-size:.76rem;line-height:1.6;color:var(--sub);margin:0}
@@ -35,13 +40,13 @@
 <main>
 <p class="games-intro">好きなゲームを選んで遊んでね！</p>
 <div class="games-grid">
-<a class="game-card" href="quiz.html"><div class="game-card-art"><img src="https://manami-site-worker.yellowworker.workers.dev/api/menu-photo?key=photos%2F0079.webp" alt="大野愛実" loading="lazy"></div><div class="game-card-body"><h2>大野愛実王</h2><p>ブログやエピソードから出題！10問正解を目指そう。</p><span class="game-label">QUIZ GAME →</span></div></a>
-<a class="game-card" href="manami-tower.html"><div class="game-card-art">sports_esports</div><div class="game-card-body"><h2>タワーバトル</h2><p>まなみんを落として、バランスよく積み上げよう。</p><span class="game-label">PHYSICS GAME →</span></div></a>
-<a class="game-card" href="swim.html"><div class="game-card-art"><img src="axolotl.png" alt="ウーパールーパー" loading="lazy"></div><div class="game-card-body"><h2>うぱうぱスイム</h2><p>いつものウーパールーパーで海の障害物をよけよう！</p><span class="game-label">UNDERWATER GAME →</span></div></a>
-<a class="game-card" href="memory.html"><div class="game-card-art">grid_view</div><div class="game-card-body"><h2>神経衰弱</h2><p>Cloudflareの写真でペアをそろえよう。CPU対戦も！</p><span class="game-label">MEMORY GAME →</span></div></a>
+<a class="game-card" href="quiz.html"><div class="game-card-art"><img src="https://manami-site-worker.yellowworker.workers.dev/api/menu-photo?key=photos%2F0079.webp" alt="大野愛実" loading="lazy"><span class="game-symbol">👑</span></div><div class="game-card-body"><h2>大野愛実王</h2><p>ブログやエピソードから出題！10問正解を目指そう。</p><span class="game-label">QUIZ GAME →</span></div></a>
+<a class="game-card" href="manami-tower.html"><div class="game-card-art"><img src="assets/manami-piece-1.webp" alt="タワーバトルのまなみん" loading="lazy"><span class="game-symbol">🧱</span></div><div class="game-card-body"><h2>タワーバトル</h2><p>まなみんを落として、バランスよく積み上げよう。</p><span class="game-label">PHYSICS GAME →</span></div></a>
+<a class="game-card" href="swim.html"><div class="game-card-art"><img src="axolotl.png" alt="ウーパールーパー" loading="lazy"><span class="game-symbol">🏊</span></div><div class="game-card-body"><h2>うぱうぱスイム</h2><p>いつものウーパールーパーで湖の障害物をよけよう！</p><span class="game-label">UNDERWATER GAME →</span></div></a>
+<a class="game-card" href="memory.html"><div class="game-card-art" id="memoryCover"><span class="game-cover-fallback">🃏</span><span class="game-symbol">💗</span></div><div class="game-card-body"><h2>神経衰弱</h2><p>Cloudflareの写真でペアをそろえよう。CPU対戦も！</p><span class="game-label">MEMORY GAME →</span></div></a>
 </div>
 </main>
 </div>
-<script id="manami-nav-active">(()=>{const current=location.pathname.split("/").pop()||"index.html";document.querySelectorAll("nav a[href]").forEach(a=>{const target=new URL(a.getAttribute("href"),location.href).pathname.split("/").pop();if(target===current){a.classList.add("on");a.setAttribute("aria-current","page");}else{a.classList.remove("on");a.removeAttribute("aria-current");}});})();</script>
+<script>(()=>{const cover=document.getElementById("memoryCover");if(!cover)return;fetch("https://manami-site-worker.yellowworker.workers.dev/api/menu-photos?t="+Date.now(),{cache:"no-store"}).then(r=>r.json()).then(data=>{const items=Array.isArray(data.items)?data.items.filter(p=>p&&typeof p.url==="string"&&p.url.startsWith("https://")):[];if(!items.length)return;const photo=items[Math.floor(Math.random()*items.length)];const img=new Image();img.alt="神経衰弱の写真";img.loading="lazy";img.src=photo.url+(photo.url.includes("?")?"&":"?")+"v="+Date.now();img.onload=()=>{cover.querySelector(".game-cover-fallback")?.remove();cover.prepend(img)};}).catch(()=>{});})();</script>\n<script id="manami-nav-active">(()=>{const current=location.pathname.split("/").pop()||"index.html";document.querySelectorAll("nav a[href]").forEach(a=>{const target=new URL(a.getAttribute("href"),location.href).pathname.split("/").pop();if(target===current){a.classList.add("on");a.setAttribute("aria-current","page");}else{a.classList.remove("on");a.removeAttribute("aria-current");}});})();</script>
 <script src="egg.js" defer></script>
 </body></html>
