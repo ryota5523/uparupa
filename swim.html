@@ -3,81 +3,68 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ウーパールーパー泳ぎ｜大野愛実 ファンサイト</title>
+<title>うぱうぱスイム｜大野愛実 ファンサイト</title>
 <link rel="stylesheet" href="style.css?v=shared-20261118">
 <meta name="theme-color" content="#e60012">
 <style>
-.swim-intro{text-align:center;margin:4px 0 14px;color:var(--sub);font-size:.84rem}
-.swim-hud{display:flex;justify-content:space-between;gap:8px;margin:0 0 9px}
-.swim-stat{flex:1;text-align:center;padding:7px;border:1px solid var(--line);border-radius:12px;background:#fff}
-.swim-stat small{display:block;color:var(--sub);font-size:.68rem}.swim-stat strong{font-size:1.2rem;color:var(--accent);font-variant-numeric:tabular-nums}
-#swimCanvas{display:block;width:100%;height:auto;aspect-ratio:360/560;border:2px solid #f2d6d6;border-radius:20px;background:#bcefff;touch-action:none;overscroll-behavior:none;overscroll-behavior-y:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;box-shadow:0 7px 20px rgba(74,31,22,.08);-webkit-tap-highlight-color:transparent}
-.swim-controls{display:flex;justify-content:center;gap:9px;margin:13px 0 4px}
-.swim-controls button{border:0;border-radius:999px;background:var(--accent);color:#fff;padding:11px 24px;font:inherit;font-weight:800;box-shadow:0 4px 0 #b90012}
-.swim-controls button:active{transform:translateY(2px);box-shadow:0 2px 0 #b90012}
+.swim-intro{text-align:center;margin:4px 0 12px;color:var(--sub);font-size:.84rem}
+.swim-hud{display:flex;gap:8px;margin:0 0 9px}.swim-stat{flex:1;text-align:center;padding:8px 5px;border:1px solid var(--line);border-radius:12px;background:#fff}.swim-stat small{display:block;color:var(--sub);font-size:.68rem}.swim-stat strong{font-size:1.2rem;color:var(--accent);font-variant-numeric:tabular-nums}
+#swimCanvas{display:block;width:100%;height:auto;aspect-ratio:360/560;border:2px solid #b6eaf3;border-radius:20px;background:#087eaa;touch-action:none;overscroll-behavior:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;box-shadow:0 7px 20px rgba(15,70,90,.14);-webkit-tap-highlight-color:transparent}
+.swim-controls{display:flex;justify-content:center;gap:9px;margin:13px 0 4px}.swim-controls button{border:0;border-radius:999px;background:var(--accent);color:#fff;padding:11px 24px;font:inherit;font-weight:800;box-shadow:0 4px 0 #b90012}.swim-controls button:active{transform:translateY(2px);box-shadow:0 2px 0 #b90012}
 .swim-note{text-align:center;color:var(--sub);font-size:.76rem;margin:10px 0}
 </style>
 </head>
 <body>
 <div class="appbar"><a href="index.html"><img src="logo.png" alt="" class="logo"><span><b>MANAMI</b><small>大野愛実 ファンサイト（非公式）</small></span></a></div>
 <div class="wrap">
-<header><span class="badge">UNDERWATER GAME</span><h1>うぱうぱスイム</h1><p class="kana">ウーパールーパーと海の冒険！</p></header>
+<header><span class="badge">UNDERWATER GAME</span><h1>うぱうぱスイム</h1><p class="kana">海の中を、ひたすら泳ごう。</p></header>
 <nav>
 <a href="index.html"><i class="ms">home</i>Home</a><a href="profile.html"><i class="ms">person</i>Profile</a><a href="schedule.html"><i class="ms">calendar_month</i>Schedule</a><a href="news.html"><i class="ms">newspaper</i>News</a><a href="works.html"><i class="ms">movie</i>Works</a><a href="blog.html"><i class="ms">edit_note</i>Blog</a>
 </nav>
 <main class="memory-wrap">
-<p class="swim-intro">指を上下にスライド！ウーパールーパーを動かして障害物をよけよう</p>
-<div class="swim-hud"><div class="swim-stat"><small>SCORE</small><strong id="score">0</strong></div><div class="swim-stat"><small>BEST</small><strong id="best">0</strong></div><div class="swim-stat"><small>LEVEL</small><strong id="level">1</strong></div></div>
-<canvas id="swimCanvas" width="360" height="560" aria-label="ウーパールーパーの水中アクションゲーム"></canvas>
+<p class="swim-intro">指を上下に動かして泳ごう。長く泳ぐほど海がハードになるよ！</p>
+<div class="swim-hud"><div class="swim-stat"><small>TIME</small><strong id="time">0.0s</strong></div><div class="swim-stat"><small>BEST</small><strong id="best">0.0s</strong></div><div class="swim-stat"><small>LEVEL</small><strong id="level">1</strong></div></div>
+<canvas id="swimCanvas" width="360" height="560" aria-label="上下に操作して障害物を避ける横スクロールゲーム"></canvas>
 <div class="swim-controls"><button id="startBtn">泳ぎはじめる！</button></div>
-<p class="swim-note">画面を押したまま上下にスライドして操作！進むほどスピードUP＆すき間が狭くなるよ 🫧</p>
+<p class="swim-note">画面を押したまま上下にスライド。横から来るサンゴをよけてね 🫧</p>
 </main>
 </div>
 <script>
-(()=> {
-const canvas=document.getElementById('swimCanvas'),ctx=canvas.getContext('2d'),scoreEl=document.getElementById('score'),bestEl=document.getElementById('best'),levelEl=document.getElementById('level'),startBtn=document.getElementById('startBtn');
-const W=360,H=560,player={x:88,y:275,vy:0,r:19},img=new Image();img.src='axolotl.png';
-let state='ready',score=0,best=Number(localStorage.getItem('upaSwimBest')||0),frames=0,speed=2.25,obstacles=[],bubbles=[],trailBubbles=[],powerups=[],scoreTexts=[],invincible=0,last=0,raf=0,dragging=false,targetY=275,pointerId=null;
-bestEl.textContent=best;
-function reset(){score=0;frames=0;speed=2.25;player.y=275;player.vy=0;targetY=275;dragging=false;obstacles=[];bubbles=[];trailBubbles=[];powerups=[];scoreTexts=[];invincible=0;for(let i=0;i<9;i++)bubbles.push({x:Math.random()*W,y:Math.random()*H,r:2+Math.random()*4,s:.4+Math.random()*1.1});scoreEl.textContent='0'}
-function spawn(){const level=Math.min(1,frames/2400),gap=188-level*70,top=65+Math.random()*(H-gap-130);obstacles.push({x:W+20,top,baseTop:top,gap,passed:false,seed:Math.random()*Math.PI*2,amplitude:18+level*25+Math.random()*12,frequency:.018+level*.018+Math.random()*.012})}
-function start(){cancelAnimationFrame(raf);reset();state='play';startBtn.textContent='もう一度泳ぐ';player.vy=-4.6;last=0;raf=requestAnimationFrame(loop)}
+(()=>{
+const canvas=document.getElementById('swimCanvas'),ctx=canvas.getContext('2d');
+const timeEl=document.getElementById('time'),bestEl=document.getElementById('best'),levelEl=document.getElementById('level'),startBtn=document.getElementById('startBtn');
+const W=360,H=560,player={x:92,y:280,r:18},img=new Image();img.src='axolotl.png';
+let state='ready',elapsed=0,best=Number(localStorage.getItem('upaSwimBestTime')||0),obstacles=[],bubbles=[],frame=0,last=0,raf=0,dragging=false,targetY=280,pointerId=null,world=0;
+bestEl.textContent=best.toFixed(1)+'s';
+function reset(){elapsed=0;frame=0;world=0;player.y=280;targetY=280;obstacles=[];bubbles=[];dragging=false;for(let i=0;i<24;i++)bubbles.push({x:Math.random()*W,y:Math.random()*H,r:1+Math.random()*3,v:.5+Math.random()});timeEl.textContent='0.0s';levelEl.textContent='1'}
+function difficulty(){return Math.min(1,(elapsed/90))}
+function spawn(){const d=difficulty(),gap=190-d*78,top=55+Math.random()*(H-gap-110);obstacles.push({x:W+18,top,gap,passed:false})}
+function start(){cancelAnimationFrame(raf);reset();state='play';startBtn.textContent='もう一度泳ぐ';last=0;raf=requestAnimationFrame(loop)}
 function pointerY(e){const r=canvas.getBoundingClientRect();return Math.max(34,Math.min(H-34,(e.clientY-r.top)*H/r.height))}
-function beginDrag(e){e.preventDefault();if(state==='ready'||state==='over')start();if(state!=='play')return;dragging=true;pointerId=e.pointerId;targetY=pointerY(e);try{canvas.setPointerCapture(pointerId)}catch(_){} }
-function moveDrag(e){if(!dragging||e.pointerId!==pointerId)return;e.preventDefault();targetY=pointerY(e)}
-function endDrag(e){if(pointerId!==null&&e.pointerId!==pointerId)return;dragging=false;pointerId=null;}
-function end(){state='over';if(score>best){best=score;localStorage.setItem('upaSwimBest',best);bestEl.textContent=best}startBtn.textContent='もう一度泳ぐ'}
+function down(e){e.preventDefault();if(state!=='play'){start();}dragging=true;pointerId=e.pointerId;targetY=pointerY(e);try{canvas.setPointerCapture(pointerId)}catch(_){}}
+function move(e){if(!dragging||e.pointerId!==pointerId)return;e.preventDefault();targetY=pointerY(e)}
+function up(e){if(pointerId!==null&&e.pointerId!==pointerId)return;dragging=false;pointerId=null}
+function finish(){state='over';if(elapsed>best){best=elapsed;localStorage.setItem('upaSwimBestTime',String(best));bestEl.textContent=best.toFixed(1)+'s'}startBtn.textContent='もう一度泳ぐ'}
 function rounded(x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill()}
-function drawBackground(){let g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#9ce8ff');g.addColorStop(1,'#e2fbff');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-ctx.fillStyle='rgba(255,255,255,.35)';for(let i=0;i<5;i++){let x=(i*91-frames*.35%450+450)%450;ctx.beginPath();ctx.ellipse(x,90+i*77,28,7,0,0,Math.PI*2);ctx.fill()}
-ctx.fillStyle='#9bdc9b';ctx.beginPath();ctx.moveTo(0,H);for(let x=0;x<=W;x+=8)ctx.lineTo(x,H-18-Math.sin(x*.035+frames*.025)*9);ctx.lineTo(W,H);ctx.fill()}
-function drawObstacle(o){const bottom=o.top+o.gap;ctx.fillStyle='#ed9b75';ctx.strokeStyle='#d47b5d';ctx.lineWidth=3;
-rounded(o.x,0,48,o.top-22,12);ctx.strokeRect(o.x+1,0,46,o.top-23);
-rounded(o.x,bottom+22,48,H-bottom-22,12);ctx.strokeRect(o.x+1,bottom+23,46,H-bottom-24);
-ctx.fillStyle='#f8bd8e';rounded(o.x-5,o.top-31,58,18,8);rounded(o.x-5,bottom+13,58,18,8);
-ctx.fillStyle='#73c98a';for(let k=0;k<3;k++){let xx=o.x+8+k*15;ctx.beginPath();ctx.ellipse(xx,o.top-36-Math.sin(frames*.04+k)*5,5,14,.3,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(xx,bottom+39+Math.sin(frames*.04+k)*5,5,14,-.3,0,Math.PI*2);ctx.fill()}}
-function drawScoreTexts(){scoreTexts.forEach(s=>{ctx.save();ctx.globalAlpha=Math.max(0,1-s.life/42);ctx.fillStyle='#c17b00';ctx.font='bold 17px sans-serif';ctx.textAlign='center';ctx.shadowColor='#fff';ctx.shadowBlur=4;ctx.fillText(s.text,s.x,s.y-s.life*.65);ctx.restore()})}
-function drawPowerup(p){const pulse=1+Math.sin(frames*.15)*.12;ctx.save();ctx.translate(p.x,p.y);ctx.scale(pulse,pulse);ctx.shadowColor='#fff18a';ctx.shadowBlur=14;ctx.fillStyle='#ffe77a';ctx.beginPath();ctx.arc(0,0,13,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='#e5a900';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#fff';ctx.font='bold 16px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('★',0,1);ctx.restore()}
-function drawPlayer(){const swim=Math.sin(frames*.22),kick=Math.sin(frames*.34);ctx.save();ctx.translate(player.x,player.y+swim*3.5);ctx.rotate(Math.max(-.24,Math.min(.3,player.vy*.035))+Math.sin(frames*.18)*.055);const sx=1+Math.sin(frames*.34)*.045,sy=1-Math.sin(frames*.34)*.045;ctx.scale(sx,sy);
-if(img.complete&&img.naturalWidth){let ratio=img.naturalWidth/img.naturalHeight;let w=64,h=w/ratio;ctx.drawImage(img,-w/2,-h/2,w,h)}else{ctx.fillStyle='#f3a4bd';ctx.beginPath();ctx.ellipse(0,0,25,17,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ef8cab';for(let i=-1;i<=1;i++){ctx.beginPath();ctx.ellipse(-15,i*8,5,4,0,0,Math.PI*2);ctx.fill()}ctx.fillStyle='#633';ctx.beginPath();ctx.arc(9,-4,2,0,Math.PI*2);ctx.fill()}
-// えらと小さなヒレにリズムをつけて、水をかいている動きを演出
-ctx.strokeStyle='rgba(239,133,174,.78)';ctx.lineWidth=2.2;ctx.lineCap='round';for(let i=0;i<3;i++){const yy=-8+i*7,wiggle=Math.sin(frames*.34+i*.8)*3;ctx.beginPath();ctx.moveTo(-19,yy);ctx.quadraticCurveTo(-27-wiggle,yy-5,-30-wiggle,yy-10);ctx.stroke()}
-ctx.restore();if(invincible>0){ctx.save();ctx.translate(player.x,player.y);const pulse=1+Math.sin(frames*.25)*.06;ctx.scale(pulse,pulse);ctx.strokeStyle='rgba(255,225,92,.95)';ctx.lineWidth=4;ctx.shadowColor='#fff18a';ctx.shadowBlur=17;ctx.beginPath();ctx.arc(0,0,39+Math.sin(frames*.2)*2,0,Math.PI*2);ctx.stroke();ctx.shadowBlur=0;ctx.fillStyle='rgba(255,255,255,.9)';ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillText('むてき！',0,-48);ctx.restore()}}
-function drawOverlay(title,sub){ctx.fillStyle='rgba(255,255,255,.78)';rounded(27,205,306,128,20);ctx.textAlign='center';ctx.fillStyle='#b90012';ctx.font='900 25px sans-serif';ctx.fillText(title,180,250);ctx.fillStyle='#674b48';ctx.font='bold 14px sans-serif';ctx.fillText(sub,180,281);ctx.font='12px sans-serif';ctx.fillText('下のボタンからスタート！',180,307)}
-function render(){drawBackground();obstacles.forEach(drawObstacle);powerups.forEach(drawPowerup);drawScoreTexts();trailBubbles.forEach(b=>{ctx.fillStyle='rgba(255,255,255,.82)';ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(89,190,218,.45)';ctx.stroke()});bubbles.forEach(b=>{ctx.fillStyle='rgba(255,255,255,.7)';ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(74,174,207,.35)';ctx.stroke()});drawPlayer();if(state==='ready')drawOverlay('準備はいい？','画面を上下にスライド！');if(state==='over')drawOverlay('ゲームオーバー！','今回のスコア：'+score+' 点')}
-function loop(t){if(state!=='play')return;const dt=last?Math.min(2,(t-last)/16.67):1;last=t;frames+=dt;if(invincible>0)invincible=Math.max(0,invincible-dt);speed=Math.min(5.8,2.25+frames*.00125);const level=Math.min(10,1+Math.floor(frames/360));levelEl.textContent=level;if(dragging){player.y+=(targetY-player.y)*Math.min(1,.24*dt);player.vy=(targetY-player.y)*.12}else{player.vy=Math.min(5.8,player.vy+.23*dt);player.y+=player.vy*dt}
-if(frames%Math.max(68,Math.floor(112-frames*.018))<dt)spawn();
-if(frames%420<dt)powerups.push({x:W+18,y:105+Math.random()*350});
-obstacles.forEach(o=>{o.x-=speed*dt;o.top=o.baseTop+Math.sin(frames*o.frequency+o.seed)*o.amplitude;if(!o.passed&&o.x+48<player.x){o.passed=true;score++;scoreEl.textContent=score}});
-obstacles=obstacles.filter(o=>o.x>-65);
-powerups.forEach(p=>p.x-=speed*dt);powerups=powerups.filter(p=>p.x>-25);
-for(let i=powerups.length-1;i>=0;i--){const p=powerups[i];if(Math.hypot(p.x-player.x,p.y-player.y)<34){invincible=300;score+=5;scoreEl.textContent=score;scoreTexts.push({x:player.x+12,y:player.y-28,text:'+5 POINTS!',life:0});powerups.splice(i,1)}}
-bubbles.forEach(b=>{b.x-=speed*.25*dt;b.y-=b.s*dt;if(b.y< -8){b.y=H+8;b.x=Math.random()*W}if(b.x< -8)b.x=W+8});
-if(frames%7<dt)trailBubbles.push({x:player.x-24,y:player.y+(Math.random()-.5)*13,r:1.8+Math.random()*2.2,life:0});trailBubbles.forEach(b=>{b.x-=1.15*dt;b.y-=.35*dt;b.life+=dt;b.r*=.997});trailBubbles=trailBubbles.filter(b=>b.life<42);scoreTexts.forEach(s=>s.life+=dt);scoreTexts=scoreTexts.filter(s=>s.life<42);
-let hit=player.y<8||player.y>H-8;
-if(invincible<=0){for(const o of obstacles){if(player.x+player.r>o.x-3&&player.x-player.r<o.x+51&&(player.y-player.r<o.top||player.y+player.r>o.top+o.gap))hit=true}}
-if(hit){end();render();return}render();raf=requestAnimationFrame(loop)}
-canvas.addEventListener('pointerdown',beginDrag);canvas.addEventListener('pointermove',moveDrag);canvas.addEventListener('pointerup',endDrag);canvas.addEventListener('pointercancel',endDrag);canvas.addEventListener('lostpointercapture',endDrag);canvas.addEventListener('contextmenu',e=>e.preventDefault());document.addEventListener('touchmove',e=>{if(dragging)e.preventDefault()},{passive:false});canvas.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});canvas.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});canvas.addEventListener('gesturestart',e=>e.preventDefault());canvas.addEventListener('gesturechange',e=>e.preventDefault());canvas.addEventListener('gestureend',e=>e.preventDefault());startBtn.addEventListener('click',start);reset();render();
+function background(){
+const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#075d91');g.addColorStop(.55,'#078db0');g.addColorStop(1,'#19b8c1');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ctx.fillStyle='rgba(181,244,255,.09)';for(let i=0;i<7;i++){const x=(i*73-world*.22%430+430)%430;ctx.beginPath();ctx.ellipse(x,65+i*72,35,8,0,0,Math.PI*2);ctx.fill()}
+ctx.fillStyle='rgba(255,255,255,.16)';for(const b of bubbles){ctx.beginPath();ctx.arc((b.x-world*.12%W+W)%W,b.y,b.r,0,Math.PI*2);ctx.fill()}
+ctx.fillStyle='#075b75';ctx.globalAlpha=.38;ctx.beginPath();ctx.moveTo(0,H);for(let x=0;x<=W;x+=8)ctx.lineTo(x,H-23-Math.sin(x*.025+world*.012)*12);ctx.lineTo(W,H);ctx.fill();ctx.globalAlpha=1;
+}
+function coral(x,y,flip){ctx.save();ctx.translate(x,y);if(flip)ctx.scale(1,-1);ctx.fillStyle='#ff987d';ctx.strokeStyle='#e97870';ctx.lineWidth=3;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(-22,0);ctx.lineTo(-17,-25);ctx.lineTo(-7,-35);ctx.lineTo(-5,-9);ctx.lineTo(8,-47);ctx.lineTo(14,-17);ctx.lineTo(25,-30);ctx.lineTo(22,0);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle='#ffc19a';ctx.beginPath();ctx.ellipse(0,-2,26,8,0,0,Math.PI*2);ctx.fill();ctx.restore()}
+function obstacle(o){const bottom=o.top+o.gap;ctx.fillStyle='#286f72';rounded(o.x,0,46,o.top-15,10);rounded(o.x,bottom+15,46,H-bottom-15,10);ctx.fillStyle='#469c91';rounded(o.x-4,o.top-18,54,17,8);rounded(o.x-4,bottom+1,54,17,8);coral(o.x+23,o.top-17,true);coral(o.x+23,bottom+17,false)}
+function drawPlayer(){ctx.save();ctx.translate(player.x,player.y+Math.sin(frame*.12)*2);ctx.rotate(dragging?Math.max(-.18,Math.min(.18,(targetY-player.y)*.008)):0);if(img.complete&&img.naturalWidth){const ratio=img.naturalWidth/img.naturalHeight,w=66,h=w/ratio;ctx.drawImage(img,-w/2,-h/2,w,h)}else{ctx.fillStyle='#f5a8c3';ctx.beginPath();ctx.ellipse(0,0,25,18,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#e887aa';for(let i=-1;i<=1;i++){ctx.beginPath();ctx.ellipse(-19,i*8,6,4,0,0,Math.PI*2);ctx.fill()}ctx.fillStyle='#49333e';ctx.beginPath();ctx.arc(10,-5,2.4,0,Math.PI*2);ctx.fill()}ctx.restore()}
+function overlay(title,sub){ctx.fillStyle='rgba(2,39,67,.66)';rounded(25,207,310,132,20);ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='900 25px sans-serif';ctx.fillText(title,180,251);ctx.font='bold 14px sans-serif';ctx.fillText(sub,180,281);ctx.font='12px sans-serif';ctx.fillText('下のボタンからスタート！',180,310)}
+function render(){background();obstacles.forEach(obstacle);drawPlayer();if(state==='ready')overlay('準備はいい？','指で上下に泳ごう！');if(state==='over')overlay('ゲームオーバー','生存時間 '+elapsed.toFixed(1)+' 秒')}
+function loop(t){if(state!=='play')return;const dt=last?Math.min(2,(t-last)/16.667):1;last=t;elapsed+=dt/60;frame+=dt;const d=difficulty(),speed=2.2+d*3.6,level=1+Math.floor(elapsed/10);levelEl.textContent=level;timeEl.textContent=elapsed.toFixed(1)+'s';
+if(dragging){player.y+=(targetY-player.y)*Math.min(1,.27*dt)}world+=speed*dt;
+const interval=Math.max(43,Math.floor(104-d*43));if(frame%interval<dt)spawn();
+obstacles.forEach(o=>o.x-=speed*dt);obstacles=obstacles.filter(o=>o.x>-60);
+let hit=player.y<12||player.y>H-12;for(const o of obstacles){if(player.x+player.r>o.x-2&&player.x-player.r<o.x+48&&(player.y-player.r<o.top||player.y+player.r>o.top+o.gap))hit=true}
+if(hit){finish();render();return}render();raf=requestAnimationFrame(loop)}
+canvas.addEventListener('pointerdown',down);canvas.addEventListener('pointermove',move);canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);canvas.addEventListener('lostpointercapture',up);canvas.addEventListener('contextmenu',e=>e.preventDefault());canvas.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});canvas.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});document.addEventListener('touchmove',e=>{if(dragging)e.preventDefault()},{passive:false});canvas.addEventListener('gesturestart',e=>e.preventDefault());canvas.addEventListener('gesturechange',e=>e.preventDefault());canvas.addEventListener('gestureend',e=>e.preventDefault());startBtn.addEventListener('click',start);
+reset();render();
 })();
 </script>
 <script id="manami-nav-active">(()=>{const current=location.pathname.split("/").pop()||"index.html";document.querySelectorAll("nav a[href]").forEach(a=>{const target=new URL(a.getAttribute("href"),location.href).pathname.split("/").pop();if(target===current){a.classList.add("on");a.setAttribute("aria-current","page");}else{a.classList.remove("on");a.removeAttribute("aria-current");}});})();</script>
