@@ -97,7 +97,7 @@ function makeCard(photo,index){
  const img=document.createElement("img");img.src=freshImageUrl(photo.url);img.alt="大野愛実の写真";img.loading="eager";img.decoding="async";front.appendChild(img);
  inner.append(back,front);button.appendChild(inner);button.addEventListener("click",()=>{if(mode==="cpu"&&turn!=="player")return;flip(button,"player")});return button;
 }
-function reveal(button,who){button.classList.add("flipped");if(who==="player"&&mode==="cpu")cpuMemory.set(Number(button.dataset.index),button.dataset.pair)}
+function reveal(button,who){button.classList.add("flipped");if(mode==="cpu")cpuMemory.set(Number(button.dataset.index),button.dataset.pair)}
 function flip(button,who){
  if(locked||finished||button.classList.contains("flipped")||button.classList.contains("matched"))return;
  startClock();reveal(button,who);opened.push(button);
@@ -127,7 +127,7 @@ function cpuPick(exclude=[]){
  const remaining=available().filter(b=>!exclude.includes(b));
  if(remaining.length<2)return [];
  // CPUが覚えているカードだけを手がかりにする。裏向きカードのpairIdは見ない！
- const recallRate=level==="easy"?.05:level==="normal"?.30:.70;
+ const recallRate=level==="easy"?.05:level==="normal"?.30:1.0;
  const remembered=remaining.filter(b=>cpuMemory.has(Number(b.dataset.index))&&Math.random()<recallRate);
  const knownPairs=new Map();
  for(const b of remembered){
