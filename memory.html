@@ -69,7 +69,7 @@
 </div>
 <div id="memoryBoard" class="memory-board" aria-label="神経衰弱のカード一覧"><div class="memory-loading" style="grid-column:1/-1">Cloudflareの写真を読み込み中…</div></div>
 <p class="memory-message" id="message" aria-live="polite"></p>
-<div class="memory-actions"><button class="primary" id="restart" type="button">もう一度あそぶ</button></div>
+<div class="memory-actions"><button class="primary" id="restart" type="button">もう一度あそぶ</button><button id="soundToggle" type="button" aria-pressed="true">🔊 音あり</button></div>
 <p class="memory-note">写真は毎回ランダムに8種類選ばれるよ。</p>
 </main>
 </div>
@@ -86,6 +86,31 @@ let photos=[],cards=[],opened=[],moves=0,pairs=0,seconds=0,clock=null,locked=fal
 const imageVersion=Date.now();
 function freshImageUrl(url){return url+(url.includes("?")?"&":"?")+"v="+imageVersion;}
 let mode="solo",level="easy",turn="player",firstTurn="player",playerPairs=0,cpuPairs=0,playerMisses=0,cpuMisses=0,cpuMemory=new Map(),cpuTimer=null;
+let soundEnabled=true,audioContext=null;
+const soundToggle=document.getElementById("soundToggle");
+function playTone(frequency,duration=0.11,type="sine",volume=0.045,delay=0){
+ if(!soundEnabled)return;
+ try{
+  const AudioCtx=window.AudioContext||window.webkitAudioContext;if(!AudioCtx)return;
+  audioContext=audioContext||new AudioCtx();
+  if(audioContext.state==="suspended")audioContext.resume();
+  const oscillator=audioContext.createOscillator(),gain=audioContext.createGain();
+  oscillator.type=type;oscillator.frequency.setValueAtTime(frequency,audioContext.currentTime+delay);
+  gain.gain.setValueAtTime(0.0001,audioContext.currentTime+delay);
+  gain.gain.exponentialRampToValueAtTime(volume,audioContext.currentTime+delay+0.012);
+  gain.gain.exponentialRampToValueAtTime(0.0001,audioContext.currentTime+delay+duration);
+  oscillator.connect(gain);gain.connect(audioContext.destination);
+  oscillator.start(audioContext.currentTime+delay);oscillator.stop(audioContext.currentTime+delay+duration+0.02);
+ }catch(error){console.debug("Sound unavailable",error)}
+}
+function playSound(kind){
+ if(kind==="flip")playTone(520,.055,"triangle",.025);
+ if(kind==="match"){playTone(660,.12,"sine",.05);playTone(880,.17,"sine",.045,.11);playTone(1100,.2,"sine",.04,.24)}
+ if(kind==="miss"){playTone(240,.18,"triangle",.04);playTone(180,.2,"triangle",.03,.13)}
+ if(kind==="win"){[523,659,784,1047].forEach((n,i)=>playTone(n,.24,"sine",.045,i*.13))}
+}
+soundToggle.addEventListener("click",()=>{soundEnabled=!soundEnabled;soundToggle.textContent=soundEnabled?"🔊 音あり":"🔇 音なし";soundToggle.setAttribute("aria-pressed",String(soundEnabled));if(soundEnabled)playSound("flip")});
+
 const shuffle=array=>{const a=[...array];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 function formatTime(n){return String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0")}
 function updateHud(){movesEl.textContent=moves;pairsEl.textContent=pairs+" / 8";timerEl.textContent=formatTime(seconds);document.getElementById("playerScore").textContent=playerPairs;document.getElementById("cpuScore").textContent=cpuPairs;document.getElementById("playerMisses").textContent=Math.max(0,5-playerMisses);document.getElementById("cpuMisses").textContent=Math.max(0,5-cpuMisses);const playerHp=Math.max(0,5-playerMisses),cpuHp=Math.max(0,5-cpuMisses);document.getElementById("playerHealthCount").textContent=playerHp+" / 5";document.getElementById("cpuHealthCount").textContent=cpuHp+" / 5";document.getElementById("playerHealthBar").style.width=(playerHp*20)+"%";document.getElementById("cpuHealthBar").style.width=(cpuHp*20)+"%";turnLabel.textContent=turn==="player"?"あなたの番です":"CPUが考え中…"}
@@ -99,7 +124,7 @@ function makeCard(photo,index){
  const img=document.createElement("img");img.src=freshImageUrl(photo.url);img.alt="大野愛実の写真";img.loading="eager";img.decoding="async";front.appendChild(img);
  inner.append(back,front);button.appendChild(inner);button.addEventListener("click",()=>{if(mode==="cpu"&&turn!=="player")return;flip(button,"player")});return button;
 }
-function reveal(button,who){button.classList.add("flipped");if(mode==="cpu")cpuMemory.set(Number(button.dataset.index),button.dataset.pair)}
+function reveal(button,who){button.classList.add("flipped");playSound("flip");if(mode==="cpu")cpuMemory.set(Number(button.dataset.index),button.dataset.pair)}
 function flip(button,who){
  if(locked||finished||button.classList.contains("flipped")||button.classList.contains("matched"))return;
  startClock();reveal(button,who);opened.push(button);
