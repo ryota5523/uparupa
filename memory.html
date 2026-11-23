@@ -80,6 +80,8 @@ const BEST_KEY="manami-memory-best-v1";
 const modeButtons=[...document.querySelectorAll("[data-mode]")],levelButtons=[...document.querySelectorAll("[data-level]")];
 const levelBox=document.getElementById("memoryLevel"),scoreBox=document.getElementById("memoryScore"),turnLabel=document.getElementById("turnLabel");
 let photos=[],cards=[],opened=[],moves=0,pairs=0,seconds=0,clock=null,locked=false,started=false,finished=false;
+const imageVersion=Date.now();
+function freshImageUrl(url){return url+(url.includes("?")?"&":"?")+"v="+imageVersion;}
 let mode="solo",level="easy",turn="player",playerPairs=0,cpuPairs=0,cpuMemory=new Map(),cpuTimer=null;
 const shuffle=array=>{const a=[...array];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 function formatTime(n){return String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0")}
@@ -91,7 +93,7 @@ function makeCard(photo,index){
  const inner=document.createElement("span");inner.className="memory-card-inner";
  const back=document.createElement("span");back.className="memory-face memory-back";back.innerHTML="<span>♡</span>";
  const front=document.createElement("span");front.className="memory-face memory-front";
- const img=document.createElement("img");img.src=photo.url;img.alt="大野愛実の写真";img.loading="eager";img.decoding="async";front.appendChild(img);
+ const img=document.createElement("img");img.src=freshImageUrl(photo.url);img.alt="大野愛実の写真";img.loading="eager";img.decoding="async";front.appendChild(img);
  inner.append(back,front);button.appendChild(inner);button.addEventListener("click",()=>{if(mode==="cpu"&&turn!=="player")return;flip(button,"player")});return button;
 }
 function reveal(button,who){button.classList.add("flipped");if(who==="player"&&mode==="cpu")cpuMemory.set(Number(button.dataset.index),button.dataset.pair)}
@@ -157,7 +159,7 @@ async function loadPhotos(){
   const response=await fetch(API+"?t="+Date.now(),{cache:"no-store"});if(!response.ok)throw new Error("画像一覧を取得できません");
   const data=await response.json();const items=Array.isArray(data.items)?data.items:[];
   const unique=[...new Map(items.filter(p=>p&&typeof p.url==="string"&&p.url.startsWith("https://")).map(p=>[p.url,p])).values()];
-  const loaded=await Promise.all(unique.map(photo=>new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img.naturalHeight>img.naturalWidth?{...photo,width:img.naturalWidth,height:img.naturalHeight}:null);img.onerror=()=>resolve(null);img.src=photo.url;})));
+  const loaded=await Promise.all(unique.map(photo=>new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img.naturalHeight>img.naturalWidth?{...photo,width:img.naturalWidth,height:img.naturalHeight}:null);img.onerror=()=>resolve(null);img.src=freshImageUrl(photo.url);})));
   photos=loaded.filter(Boolean);if(photos.length<8)throw new Error("縦長写真が8種類見つかりませんでした（現在 "+photos.length+" 種類）");
   newGame();
  }catch(error){console.error("Memory game photo load failed:",error);board.innerHTML='<div class="memory-loading" style="grid-column:1/-1">写真を読み込めなかったみたい…<br>'+String(error.message||"時間をおいて再読み込みしてね")+'</div>';messageEl.textContent="ページを再読み込みしてね。";document.getElementById("restart").disabled=true;}
