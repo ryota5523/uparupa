@@ -184,16 +184,19 @@ modeButtons.forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
 orderButtons.forEach(b=>b.addEventListener("click",()=>{firstTurn=b.dataset.order;orderButtons.forEach(x=>x.classList.toggle("active",x===b));if(mode==="cpu"&&hasStarted)newGame()}));
 levelButtons.forEach(b=>b.addEventListener("click",()=>{level=b.dataset.level;levelButtons.forEach(x=>x.classList.toggle("active",x===b));missBox.hidden=mode!=="cpu"||level!=="hard";healthBox.hidden=mode!=="cpu"||level!=="hard";if(hasStarted)newGame()}));
 async function loadPhotos(){
- try{
-  const response=await fetch(API+"?t="+Date.now(),{cache:"no-store"});if(!response.ok)throw new Error("画像一覧を取得できません");
-  const data=await response.json();const items=Array.isArray(data.items)?data.items:[];
-  const unique=[...new Map(items.filter(p=>p&&typeof p.url==="string"&&p.url.startsWith("https://")).map(p=>[p.url,p])).values()];
-  const loaded=await Promise.all(unique.map(photo=>new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img.naturalHeight>img.naturalWidth?{...photo,width:img.naturalWidth,height:img.naturalHeight}:null);img.onerror=()=>resolve(null);img.src=freshImageUrl(photo.url);})));
-  photos=loaded.filter(Boolean);if(photos.length<8)throw new Error("縦長写真が8種類見つかりませんでした（現在 "+photos.length+" 種類）");
-  newGame();
- }catch(error){console.error("Memory game photo load failed:",error);board.innerHTML='<div class="memory-loading" style="grid-column:1/-1">写真を読み込めなかったみたい…<br>'+String(error.message||"時間をおいて再読み込みしてね")+'</div>';messageEl.textContent="ページを再読み込みしてね。";document.getElementById("restart").disabled=true;}
-}
-document.getElementById("restart").addEventListener("click",()=>{if(photos.length>=8)newGame()});
+  const readyText=document.getElementById("memoryReadyText"),startButton=document.getElementById("memoryStart");
+  try{
+   const response=await fetch(API+"?t="+Date.now(),{cache:"no-store"});if(!response.ok)throw new Error("写真一覧を取得できませんでした（"+response.status+"）");
+   const data=await response.json();const items=Array.isArray(data.items)?data.items:[];
+   const unique=[...new Map(items.filter(p=>p&&typeof p.url==="string"&&p.url.startsWith("https://")).map(p=>[p.url,p])).values()];
+   if(!unique.length)throw new Error("写真が見つかりませんでした");
+   const loaded=await Promise.all(unique.slice(0,48).map(photo=>new Promise(resolve=>{const img=new Image();let done=false;const finish=value=>{if(done)return;done=true;clearTimeout(timer);resolve(value)};const timer=setTimeout(()=>finish(null),9000);img.onload=()=>finish(img.naturalHeight>img.naturalWidth?{...photo,width:img.naturalWidth,height:img.naturalHeight}:null);img.onerror=()=>finish(null);img.src=freshImageUrl(photo.url);})));
+   photos=loaded.filter(Boolean);if(photos.length<8)throw new Error("使える縦長写真が8枚未満でした（"+photos.length+"枚）。再読み込みしてね");
+   readyText.textContent=photos.length+"枚の写真を準備できたよ！";startButton.disabled=false;
+  }catch(error){console.error("Memory game photo load failed:",error);readyText.textContent="写真を準備できなかったみたい… "+String(error.message||"再読み込みしてね");startButton.disabled=true;messageEl.textContent="ページを再読み込みしてね。";}
+ }
+ document.getElementById("memoryStart").addEventListener("click",()=>{if(photos.length<8)return;hasStarted=true;document.getElementById("memoryStartArea").hidden=true;board.hidden=false;document.getElementById("memoryHud").hidden=false;document.getElementById("memoryActions").hidden=false;newGame()});
+ document.getElementById("restart").addEventListener("click",()=>{if(photos.length>=8)newGame()});
 loadPhotos();
 })();
 </script>
