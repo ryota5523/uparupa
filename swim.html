@@ -24,16 +24,16 @@
 <main class="memory-wrap">
 <p class="swim-intro">坂道やでこぼこ道を駆け抜けよう！タップでジャンプして障害物を回避！</p>
 <div class="swim-hud"><div class="swim-stat"><small>TIME</small><strong id="time">0.0s</strong></div><div class="swim-stat"><small>BEST</small><strong id="best">0.0s</strong></div><div class="swim-stat"><small>LEVEL</small><strong id="level">1</strong></div></div>
-<canvas id="swimCanvas" width="360" height="560" aria-label="上下に操作して障害物を避ける横スクロールゲーム"></canvas>
+<canvas id="swimCanvas" width="360" height="560" aria-label="ウーパールーパーをジャンプさせて障害物を避けるゲーム"></canvas>
 <div class="swim-controls"><button id="startBtn">泳ぎはじめる！</button></div>
-<p class="swim-note">画面タップでジャンプ！連続タップで二段ジャンプはできないよ。タイミングを見極めてね 🫧</p>
+<p class="swim-note">キャラクターの白い枠が当たり判定だよ！画面タップでジャンプ。二段ジャンプはできないよ 🫧</p>
 </main>
 </div>
 <script>
 (()=>{
 const canvas=document.getElementById('swimCanvas'),ctx=canvas.getContext('2d');
 const timeEl=document.getElementById('time'),bestEl=document.getElementById('best'),levelEl=document.getElementById('level'),startBtn=document.getElementById('startBtn');
-const W=360,H=560,GROUND=456,player={x:88,y:GROUND-24,r:18,vy:0,onGround:true},img=new Image();img.src='axolotl.png';
+const W=360,H=560,GROUND=456,player={x:88,y:GROUND-24,r:18,vy:0,onGround:true};
 let state='ready',elapsed=0,best=Number(localStorage.getItem('upaSwimBestTime')||0),obstacles=[],bubbles=[],frame=0,last=0,raf=0,world=0,jumpHeld=false;
 bestEl.textContent=best.toFixed(1)+'s';
 function reset(){elapsed=0;frame=0;world=0;player.y=groundAt(player.x)-24;player.vy=0;player.onGround=true;obstacles=[];bubbles=[];for(let i=0;i<24;i++)bubbles.push({x:Math.random()*W,y:Math.random()*(GROUND-35),r:1+Math.random()*3,v:.5+Math.random()});timeEl.textContent='0.0s';levelEl.textContent='1'}
@@ -59,7 +59,13 @@ function rootsShape(x,y,flip,seed){ctx.save();ctx.translate(x,y);if(flip)ctx.sca
 function logShape(x,y,flip){ctx.save();ctx.translate(x,y);if(flip)ctx.scale(1,-1);ctx.fillStyle='#8a7251';ctx.strokeStyle='#66553f';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-24,0);ctx.lineTo(-20,-27);ctx.quadraticCurveTo(0,-37,23,-25);ctx.lineTo(25,0);ctx.closePath();ctx.fill();ctx.stroke();ctx.strokeStyle='#c1a176';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(0,-26,8,4,0,0,Math.PI*2);ctx.stroke();ctx.restore()}
 function weedShape(x,y,flip,seed){ctx.save();ctx.translate(x,y);if(flip)ctx.scale(1,-1);for(let i=0;i<3;i++){ctx.fillStyle=i%2?'#4c9c72':'#70b77a';ctx.beginPath();ctx.ellipse((i-1)*12,-20-Math.sin(seed+i)*5,7,24,.3*(i-1),0,Math.PI*2);ctx.fill()}ctx.restore()}
 function obstacle(o){const bob=Math.sin(frame*.055+o.phase)*o.amp,x=o.x+24,floor=groundAt(x);if(o.overhead){if(o.type==='roots')rootsShape(x,o.y+48+bob,false,o.seed);else if(o.type==='reeds')reedShape(x,o.y+42+bob,false,o.seed);else if(o.type==='weed')weedShape(x,o.y+40+bob,false,o.seed);else rockShape(x,o.y+12+bob,48,32)}else{if(o.type==='rock')rockShape(x,floor-7,55,43);else if(o.type==='roots'||o.type==='reeds')rockShape(x,floor-8,48,34);else if(o.type==='log')logShape(x,floor-3,true);else if(o.type==='weed')weedShape(x,floor+1,true,o.seed);else{rockShape(o.x+11,floor-7,31,28);rockShape(o.x+36,floor-11,29,24)}}}
-function drawPlayer(){ctx.save();ctx.translate(player.x,player.y+Math.sin(frame*.12)*2);ctx.rotate(player.onGround?Math.sin(frame*.45)*.035:Math.max(-.28,Math.min(.28,player.vy*.025)));if(img.complete&&img.naturalWidth){const ratio=img.naturalWidth/img.naturalHeight,w=66,h=w/ratio;ctx.drawImage(img,-w/2,-h/2,w,h)}else{ctx.fillStyle='#f5a8c3';ctx.beginPath();ctx.ellipse(0,0,25,18,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#e887aa';for(let i=-1;i<=1;i++){ctx.beginPath();ctx.ellipse(-19,i*8,6,4,0,0,Math.PI*2);ctx.fill()}ctx.fillStyle='#49333e';ctx.beginPath();ctx.arc(10,-5,2.4,0,Math.PI*2);ctx.fill()}ctx.restore()}
+function drawPlayer(){ctx.save();ctx.translate(player.x,player.y+Math.sin(frame*.12)*1.2);ctx.rotate(player.onGround?Math.sin(frame*.45)*.025:Math.max(-.16,Math.min(.16,player.vy*.014)));
+// 判定範囲をキャラクターの輪郭に合わせて表示
+ctx.fillStyle='rgba(255,244,173,.18)';ctx.strokeStyle='rgba(255,248,205,.9)';ctx.lineWidth=1.5;ctx.beginPath();ctx.roundRect(-13,-14,26,28,9);ctx.fill();ctx.stroke();
+// 小さく丸いウーパールーパー。装飾も判定範囲からはみ出さない
+ctx.fillStyle='#f5a8c3';ctx.strokeStyle='#a9577c';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(0,1,10,10,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+ctx.fillStyle='#e887aa';for(let side of [-1,1]){for(let i=-1;i<=1;i++){ctx.beginPath();ctx.ellipse(side*9,-5+i*5,3,2.5,side*.25,0,Math.PI*2);ctx.fill();}}
+ctx.fillStyle='#49333e';ctx.beginPath();ctx.arc(-4,-1,1.5,0,Math.PI*2);ctx.arc(4,-1,1.5,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#9b526e';ctx.lineWidth=1;ctx.beginPath();ctx.arc(0,3,2.5,.15,Math.PI-.15);ctx.stroke();ctx.restore()}
 function overlay(title,sub){ctx.fillStyle='rgba(2,39,67,.66)';rounded(25,207,310,132,20);ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='900 25px sans-serif';ctx.fillText(title,180,251);ctx.font='bold 14px sans-serif';ctx.fillText(sub,180,281);ctx.font='12px sans-serif';ctx.fillText('画面タップでもスタート！',180,310)}
 function render(){background();ctx.beginPath();ctx.moveTo(0,H);for(let x=0;x<=W;x+=6)ctx.lineTo(x,groundAt(x));ctx.lineTo(W,H);ctx.closePath();ctx.fillStyle='rgba(226,255,235,.16)';ctx.fill();ctx.beginPath();for(let x=0;x<=W;x+=6){const y=groundAt(x);if(x===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.lineTo(W,groundAt(W)+5);for(let x=W;x>=0;x-=6)ctx.lineTo(x,groundAt(x)+5);ctx.closePath();ctx.fillStyle='#c5b98c';ctx.fill();ctx.beginPath();for(let x=0;x<=W;x+=18){const y=groundAt(x);if(x===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.strokeStyle='#6e956f';ctx.lineWidth=5;ctx.stroke();for(let x=0;x<W;x+=18){const y=groundAt(x);ctx.strokeStyle='#6e956f';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+5,y-7-Math.sin(x*.2+world*.04)*3);ctx.stroke()}obstacles.forEach(obstacle);drawPlayer();if(state==='ready')overlay('準備はいい？','坂道をジャンプで進もう！');if(state==='over')overlay('ゲームオーバー','生存時間 '+elapsed.toFixed(1)+' 秒')}
 function loop(t){if(state!=='play')return;const dt=last?Math.min(2,(t-last)/16.667):1;last=t;elapsed+=dt/60;frame+=dt;const d=difficulty(),speed=2.2+d*3.6,level=1+Math.floor(elapsed/10);levelEl.textContent=level;timeEl.textContent=elapsed.toFixed(1)+'s';
