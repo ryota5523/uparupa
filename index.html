@@ -395,7 +395,7 @@
     const name=document.createElement(url?"a":"div");name.textContent=title;
     if(url){name.href=url;name.target="_blank";name.rel="noopener";}
     el.append(dt,name);
-    if(title==="ミート＆グリート"){
+    if(/ミート＆グリート/.test(title)){
       const report=document.createElement("a");
       report.className="meet-report-link";
       report.href="memo.html?date="+encodeURIComponent(date)+"&type="+encodeURIComponent("ミーグリ");
@@ -431,7 +431,7 @@
     weeklyEvents.forEach(x=>uniqueWeekly.set(x.event_date+"|"+x.title,x));
     const thisWeek=[...uniqueWeekly.values()].sort((a,b)=>a.event_date.localeCompare(b.event_date));
     weekly.innerHTML="";
-    if(thisWeek.length)thisWeek.forEach(x=>row(weekly,x.event_date,x.title,x.url));
+    if(thisWeek.length)thisWeek.slice(0,3).forEach(x=>row(weekly,x.event_date,x.title,x.url));
     else empty(weekly,"今週の出演予定はありません。");
 
     // API登録分とScheduleページの手動登録分をまとめてHOMEのミーグリ欄へ表示
@@ -443,7 +443,7 @@
     const sortedMeet=[...uniqueMeet.values()].sort((a,b)=>a.event_date.localeCompare(b.event_date));
     meet.innerHTML="";
     if(sortedMeet.length){
-      sortedMeet.forEach(x=>{
+      sortedMeet.slice(0,3).forEach(x=>{
         const title=/ミート＆グリート/.test(String(x.title||""))?"オンラインミート＆グリート（WEB）":x.title;
         row(meet,x.event_date,title,x.url);
       });
@@ -455,7 +455,7 @@
     empty(weekly,"出演情報を読み込めませんでした。時間をおいて再度お試しください。");
     meet.innerHTML="";
     const fallback=officialMeetDates.filter(date=>date>=todayKey).sort();
-    if(fallback.length)fallback.forEach(date=>row(meet,date,"オンラインミート＆グリート（WEB）",date>="2027-01-01"?"https://fortunemusic.jp/hinatazaka_202701/":"https://fortunemusic.jp/hinatazaka_202609/"));
+    if(fallback.length)fallback.slice(0,3).forEach(date=>row(meet,date,"オンラインミート＆グリート（WEB）",date>="2027-01-01"?"https://fortunemusic.jp/hinatazaka_202701/":"https://fortunemusic.jp/hinatazaka_202609/"));
     else empty(meet,"今後のミーグリ開催予定はありません。");
   });
 })();
