@@ -164,13 +164,17 @@ function cpuPick(exclude=[]){
  }
  // 2枚とも覚えているペアがあれば、それを優先する
  for(const list of knownPairs.values())if(list.length>=2)return shuffle(list).slice(0,2);
- // 1枚だけ覚えている場合、相方も覚えているときだけ狙う
- let first=remembered[0]||remaining[Math.floor(Math.random()*remaining.length)];
- const rememberedMate=remembered.find(b=>b!==first&&b.dataset.pair===first.dataset.pair);
- if(rememberedMate)return [first,rememberedMate];
- // 相方を覚えていなければ完全にランダム。隠れた正解情報は使わない
- const pool=remaining.filter(b=>b!==first);
- return [first,pool[Math.floor(Math.random()*pool.length)]];
+ // 確定ペアがない場合は、まだ見ていないカードを優先して情報を集める
+ // 既知カード1枚＋適当なカード、という無駄打ちはしない
+ const unknown=remaining.filter(b=>!cpuMemory.has(Number(b.dataset.index)));
+ if(unknown.length>=2)return shuffle(unknown).slice(0,2);
+ // 未知カードが1枚だけなら、それと相方未確認の既知カードを組み合わせる
+ if(unknown.length===1){
+  const candidates=remembered.filter(b=>!remembered.some(m=>m!==b&&m.dataset.pair===b.dataset.pair));
+  if(candidates.length)return [unknown[0],candidates[Math.floor(Math.random()*candidates.length)]];
+ }
+ // 念のためのフォールバック
+ return shuffle(remaining).slice(0,2);
 }
 function scheduleCpu(delay=700){if(finished||mode!=="cpu")return;turn="cpu";locked=true;updateHud();cpuTimer=setTimeout(()=>{locked=false;const picks=cpuPick();if(!picks||picks.length<2)return;flip(picks[0],"cpu");setTimeout(()=>{if(!finished)flip(picks[1],"cpu")},650)},delay)}
 function newGame(){
