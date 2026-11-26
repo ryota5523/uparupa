@@ -132,6 +132,10 @@ body{touch-action:pan-x pan-y}
  .memory-face{border-radius:6px!important}
 }
 
+/* Solo mode has fewer HUD rows, so cap the board height to avoid overly tall cards */
+body.mode-solo .memory-board{flex:0 1 auto!important;height:min(64vh,620px)!important;max-height:min(64vh,620px)!important;grid-template-rows:repeat(4,minmax(0,1fr))!important}
+body.mode-solo .memory-card{height:100%!important;aspect-ratio:auto!important}
+
 /* Remove non-essential chrome: let the cards own the screen */
 .wrap>header,.game-help,.memory-start-area,.memory-note{display:none!important}
 .wrap{padding:2px 8px 4px!important}
@@ -207,7 +211,7 @@ const healthBox=document.getElementById("memoryHealth");
  const levelBox=document.getElementById("memoryLevel"),scoreBox=document.getElementById("memoryScore"),turnLabel=document.getElementById("turnLabel"),orderBox=document.getElementById("memoryOrder"),missBox=document.getElementById("memoryMisses");
 const orderButtons=[...document.querySelectorAll("[data-order]")];
 const settingsModal=document.getElementById("settingsModal"),cpuSettings=document.getElementById("cpuSettings"),settingsSummary=document.getElementById("settingsSummary"),settingsReadyText=document.getElementById("settingsReadyText"),settingsDone=document.getElementById("settingsDone");
-document.body.classList.add("settings-open");
+document.body.classList.add("settings-open","mode-solo");
 function updateSettingsSummary(){settingsSummary.textContent=mode==="solo"?"ひとりで遊ぶ":("CPU対戦・"+({easy:"初級",normal:"中級",hard:"ハード"}[level])+"・"+(firstTurn==="player"?"あなた先攻":"CPU先攻"));cpuSettings.hidden=mode!=="cpu";}
 function closeSettings(){settingsModal.hidden=true;document.body.classList.remove("settings-open");}
 document.getElementById("openSettings").addEventListener("click",()=>{updateSettingsSummary();settingsModal.hidden=false;document.body.classList.add("settings-open");});
@@ -317,7 +321,7 @@ function newGame(){
  cards=shuffle(chosen.flatMap(photo=>[{...photo},{...photo}]));
  board.innerHTML="";cards.forEach((photo,i)=>board.appendChild(makeCard(photo,i)));if(mode==="cpu"&&firstTurn==="cpu")scheduleCpu(650);
 }
-function setMode(next){mode=next;modeButtons.forEach(b=>b.classList.toggle("active",b.dataset.mode===mode));scoreBox.hidden=mode!=="cpu";turnLabel.hidden=mode!=="cpu";missBox.hidden=mode!=="cpu"||level!=="hard";healthBox.hidden=mode!=="cpu"||level!=="hard";document.querySelector(".memory-hud .memory-stat:nth-child(1) small").textContent=mode==="cpu"?"合計ターン":"手数";updateSettingsSummary();if(hasStarted)newGame()}
+function setMode(next){mode=next;document.body.classList.toggle("mode-solo",mode==="solo");modeButtons.forEach(b=>b.classList.toggle("active",b.dataset.mode===mode));scoreBox.hidden=mode!=="cpu";turnLabel.hidden=mode!=="cpu";missBox.hidden=mode!=="cpu"||level!=="hard";healthBox.hidden=mode!=="cpu"||level!=="hard";document.querySelector(".memory-hud .memory-stat:nth-child(1) small").textContent=mode==="cpu"?"合計ターン":"手数";updateSettingsSummary();if(hasStarted)newGame()}
 modeButtons.forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
 orderButtons.forEach(b=>b.addEventListener("click",()=>{firstTurn=b.dataset.order;orderButtons.forEach(x=>x.classList.toggle("active",x.dataset.order===firstTurn));updateSettingsSummary();if(mode==="cpu"&&hasStarted)newGame()}));
 levelButtons.forEach(b=>b.addEventListener("click",()=>{level=b.dataset.level;levelButtons.forEach(x=>x.classList.toggle("active",x.dataset.level===level));missBox.hidden=mode!=="cpu"||level!=="hard";healthBox.hidden=mode!=="cpu"||level!=="hard";updateSettingsSummary();if(hasStarted)newGame()}));
