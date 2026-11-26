@@ -159,6 +159,21 @@ body.mode-solo .memory-card{height:100%!important;aspect-ratio:auto!important}
 .memory-actions{margin:2px 0 0!important}
 .memory-actions button{padding:5px 10px!important;font-size:.7rem!important}
 .memory-settings-bar{display:flex;justify-content:space-between!important;align-items:center;gap:8px;width:100%}.sound-compact{flex:0 0 auto;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--text);padding:5px 10px;font:inherit;font-size:.7rem;font-weight:800;white-space:nowrap}.memory-settings-bar .settings-trigger{min-width:0}
+
+.result-overlay{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:18px;background:rgba(28,25,35,.58);backdrop-filter:blur(5px)}
+.result-overlay[hidden]{display:none!important}
+.result-dialog{width:min(100%,360px);padding:23px 18px 18px;border:1px solid #f4d6da;border-radius:22px;background:#fff;text-align:center;box-shadow:0 18px 60px #0003;animation:result-pop .24s ease-out}
+.result-mark{font-size:2.6rem;line-height:1.2;margin-bottom:7px}
+.result-dialog h2{margin:0;color:#e60012;font-size:1.35rem}
+.result-subtitle{margin:7px 0 15px;color:var(--sub);font-size:.88rem;font-weight:700}
+.result-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 17px}
+.result-stat{padding:10px 6px;border-radius:12px;background:#fff5f6}
+.result-stat small{display:block;color:var(--sub);font-size:.68rem}
+.result-stat strong{display:block;margin-top:3px;color:var(--text);font-size:1.08rem;font-variant-numeric:tabular-nums}
+.result-buttons{display:grid;gap:8px}
+.result-buttons button{border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--text);padding:10px 16px;font:inherit;font-weight:800}
+.result-buttons .primary{border-color:#e60012;background:#e60012;color:#fff}
+@keyframes result-pop{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 </style>
 </head>
 <body>
@@ -201,6 +216,7 @@ body.mode-solo .memory-card{height:100%!important;aspect-ratio:auto!important}
 <div id="memoryBoard" class="memory-board" aria-label="神経衰弱のカード一覧" hidden><div class="memory-loading" style="grid-column:1/-1">写真を準備中…</div></div>
 <p class="memory-message" id="message" aria-live="polite"></p>
 <div class="memory-actions" id="memoryActions" hidden><button class="primary" id="restart" type="button">もう一度あそぶ</button></div>
+<div class="result-overlay" id="resultOverlay" hidden><section class="result-dialog" role="dialog" aria-modal="true" aria-labelledby="resultTitle"><div class="result-mark" id="resultMark">🎉</div><h2 id="resultTitle">ゲームクリア！</h2><p class="result-subtitle" id="resultSubtitle"></p><div class="result-stats" id="resultStats"></div><div class="result-buttons"><button class="primary" id="resultRetry" type="button">もう一度あそぶ</button><button id="resultSettings" type="button">設定を変える</button></div></section></div>
 <p class="memory-note">写真は毎回ランダムに8種類選ばれるよ。</p>
 </main>
 </div>
@@ -280,14 +296,31 @@ function flip(button,who){
    if(mode==="cpu"){turn=(level!=="hard"||available().length<=4)?who:(who==="cpu"?"player":"cpu");updateHud();if(turn==="cpu")scheduleCpu(650)}
   }else{
    locked=true;if(mode==="cpu"&&level==="hard"){if(who==="cpu")cpuMisses++;else playerMisses++;updateHud();messageEl.textContent=(who==="cpu"?"CPU":"あなた")+"のミス！";}else{messageEl.textContent=who==="cpu"?"CPUもおしい！":"おしい！もう一度チャレンジ";}
-   setTimeout(()=>{a.classList.remove("flipped");b.classList.remove("flipped");opened=[];locked=false;if(mode==="cpu"&&level==="hard"&&(playerMisses>=5||cpuMisses>=5)){finished=true;stopClock();if(cpuTimer)clearTimeout(cpuTimer);board.querySelectorAll(".memory-card").forEach(card=>{card.classList.add("flipped");card.disabled=true;});messageEl.textContent=playerMisses>=5?"あなたは5回ミス！CPUの勝ち…":"CPUが5回ミス！あなたの勝ち！！";turnLabel.textContent="ゲーム終了！";return;}if(mode==="cpu"){turn=who==="cpu"?"player":"cpu";updateHud();if(turn==="cpu")scheduleCpu(650)}},850);
+   setTimeout(()=>{a.classList.remove("flipped");b.classList.remove("flipped");opened=[];locked=false;if(mode==="cpu"&&level==="hard"&&(playerMisses>=5||cpuMisses>=5)){finished=true;stopClock();if(cpuTimer)clearTimeout(cpuTimer);board.querySelectorAll(".memory-card").forEach(card=>{card.classList.add("flipped");card.disabled=true;});messageEl.textContent=playerMisses>=5?"あなたは5回ミス！CPUの勝ち…":"CPUが5回ミス！あなたの勝ち！！";turnLabel.textContent="ゲーム終了！";showResult(playerMisses>=5?"CPUの勝ち！":"あなたの勝ち！",playerMisses>=5?"ミスが5回になっちゃった…":"CPUが5回ミス！",playerMisses>=5?"😢":"🏆");return;}if(mode==="cpu"){turn=who==="cpu"?"player":"cpu";updateHud();if(turn==="cpu")scheduleCpu(650)}},850);
   }
  }
 }
+function showResult(title,subtitle,mark="🎉",statsHtml=""){
+ const overlay=document.getElementById("resultOverlay");
+ document.getElementById("resultTitle").textContent=title;
+ document.getElementById("resultSubtitle").textContent=subtitle;
+ document.getElementById("resultMark").textContent=mark;
+ document.getElementById("resultStats").innerHTML=statsHtml;
+ overlay.hidden=false;
+}
+function resultStat(label,value){return '<div class="result-stat"><small>'+label+'</small><strong>'+value+'</strong></div>'}
 function finishGame(){
  finished=true;stopClock();if(cpuTimer)clearTimeout(cpuTimer);
- if(mode==="cpu"){const result=playerPairs>cpuPairs?"あなたの勝ち！":playerPairs<cpuPairs?"CPUの勝ち！":"引き分け！";messageEl.textContent=result+" "+playerPairs+" 対 "+cpuPairs+" 💗"}
- else{const best=Number(localStorage.getItem(BEST_KEY))||0;let note="全ペア発見！おめでとう！！";if(!best||seconds<best){try{localStorage.setItem(BEST_KEY,String(seconds))}catch(e){}note+=" 新記録！";}messageEl.textContent=note+" "+formatTime(seconds)+" / "+moves+"手";}
+ if(mode==="cpu"){
+  const result=playerPairs>cpuPairs?"あなたの勝ち！":playerPairs<cpuPairs?"CPUの勝ち！":"引き分け！";
+  messageEl.textContent=result+" "+playerPairs+" 対 "+cpuPairs+" 💗";
+  showResult(result,playerPairs+" 対 "+cpuPairs+" ペア",playerPairs>cpuPairs?"🏆":playerPairs<cpuPairs?"🤖":"🤝",resultStat("あなた",playerPairs+" ペア")+resultStat("CPU",cpuPairs+" ペア")+resultStat("プレイ時間",formatTime(seconds))+resultStat("合計ターン",moves));
+ }else{
+  const best=Number(localStorage.getItem(BEST_KEY))||0;let note="全ペア発見！おめでとう！！",record=false;
+  if(!best||seconds<best){try{localStorage.setItem(BEST_KEY,String(seconds))}catch(e){}note+=" 新記録！";record=true;}
+  messageEl.textContent=note+" "+formatTime(seconds)+" / "+moves+"手";
+  showResult(record?"新記録！！":"ゲームクリア！",note,record?"🏆":"🎉",resultStat("タイム",formatTime(seconds))+resultStat("手数",moves+" 手"));
+ }
  turnLabel.textContent="ゲーム終了！";
 }
 function available(){return [...board.querySelectorAll(".memory-card:not(.matched)")]}
@@ -319,6 +352,7 @@ function cpuPick(exclude=[]){
 }
 function scheduleCpu(delay=700){if(finished||mode!=="cpu")return;turn="cpu";locked=true;updateHud();cpuTimer=setTimeout(()=>{locked=false;const picks=cpuPick();if(!picks||picks.length<2)return;flip(picks[0],"cpu");setTimeout(()=>{if(!finished)flip(picks[1],"cpu")},650)},delay)}
 function newGame(){
+ document.getElementById("resultOverlay").hidden=true;
  stopClock();if(cpuTimer)clearTimeout(cpuTimer);moves=0;pairs=0;seconds=0;opened=[];locked=false;started=false;finished=false;turn=firstTurn;playerPairs=0;cpuPairs=0;playerMisses=0;cpuMisses=0;cpuMemory=new Map();messageEl.textContent="";updateHud();
  const chosen=shuffle(photos).slice(0,8).map((photo,i)=>({...photo,pairId:String(i)}));
  cards=shuffle(chosen.flatMap(photo=>[{...photo},{...photo}]));
@@ -342,6 +376,8 @@ async function loadPhotos(){
  }
  document.getElementById("memoryStart").addEventListener("click",()=>{if(photos.length<8)return;hasStarted=true;document.getElementById("memoryStartArea").hidden=true;board.hidden=false;document.getElementById("memoryHud").hidden=false;document.getElementById("memoryActions").hidden=false;newGame()});
  document.getElementById("restart").addEventListener("click",()=>{if(photos.length>=8)newGame()});
+ document.getElementById("resultRetry").addEventListener("click",()=>{if(photos.length>=8)newGame()});
+ document.getElementById("resultSettings").addEventListener("click",()=>{document.getElementById("resultOverlay").hidden=true;updateSettingsSummary();document.getElementById("settingsModal").hidden=false;document.body.classList.add("settings-open")});
 loadPhotos();
 })();
 </script>
