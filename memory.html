@@ -111,7 +111,7 @@ body.settings-open{overflow:hidden}
    <p class="settings-label">先攻・後攻</p>
    <div class="memory-order" id="memoryOrder"><button type="button" class="active" data-order="player">あなたが先攻</button><button type="button" data-order="cpu">CPUが先攻</button></div>
   </div>
-  <button type="button" class="primary settings-done" id="settingsDone">決定</button>
+  <button type="button" class="primary settings-done" id="settingsDone">ゲームスタート</button>
  </section>
 </div><p class="memory-misses" id="memoryMisses" hidden>ミス残り：あなた <strong id="playerMisses">5</strong> 回 ／ CPU <strong id="cpuMisses">5</strong> 回</p><div class="memory-health" id="memoryHealth" hidden><div class="health-player"><div class="health-head"><span>あなた</span><span class="health-count" id="playerHealthCount">5 / 5</span></div><div class="health-track"><div class="health-fill" id="playerHealthBar"></div></div></div><div class="health-player cpu"><div class="health-head"><span>CPU</span><span class="health-count" id="cpuHealthCount">5 / 5</span></div><div class="health-track"><div class="health-fill" id="cpuHealthBar"></div></div></div></div><div class="memory-score" id="memoryScore" hidden><div><small>あなた</small><strong id="playerScore">0</strong></div><div><small>CPU</small><strong id="cpuScore">0</strong></div></div><p class="memory-turn" id="turnLabel" hidden>あなたの番です</p><div class="memory-start-area" id="memoryStartArea"><p id="memoryReadyText">写真を準備中…</p><button class="primary" id="memoryStart" type="button" disabled>ゲームスタート！</button></div><div class="memory-hud" id="memoryHud" hidden>
 <div class="memory-stat"><small>手数</small><strong id="moves">0</strong></div>
@@ -138,7 +138,7 @@ function updateSettingsSummary(){settingsSummary.textContent=mode==="solo"?"ひ�
 function closeSettings(){settingsModal.hidden=true;document.body.classList.remove("settings-open");}
 document.getElementById("openSettings").addEventListener("click",()=>{updateSettingsSummary();settingsModal.hidden=false;document.body.classList.add("settings-open");});
 document.getElementById("closeSettings").addEventListener("click",closeSettings);
-document.getElementById("settingsDone").addEventListener("click",closeSettings);
+document.getElementById("settingsDone").addEventListener("click",()=>{const start=document.getElementById("memoryStart");if(start.disabled){document.getElementById("memoryReadyText").textContent="写真を準備中だよ。もう少し待ってね！";return;}closeSettings();start.click();});
 settingsModal.querySelectorAll("[data-close-settings]").forEach(el=>el.addEventListener("click",closeSettings));
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!settingsModal.hidden)closeSettings();});
 let photos=[],cards=[],opened=[],moves=0,pairs=0,seconds=0,clock=null,locked=false,started=false,finished=false,hasStarted=false;
