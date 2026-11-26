@@ -26,6 +26,7 @@
 .memory-front{transform:rotateY(180deg);background:#fff;border:1px solid var(--line);padding:4px}
 .memory-front img{width:100%;height:100%;object-fit:contain;display:block}
 .memory-card.matched .memory-front{border:2px solid #e60012;box-shadow:0 0 0 2px #e6001222}
+.memory-card.matched-cpu .memory-front{border-color:#ed8b00;box-shadow:0 0 0 2px #ed8b0022}
 .memory-card:disabled{cursor:default}
 .memory-actions{display:flex;justify-content:center;gap:8px;margin:9px 0 4px}
 .memory-actions button{border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--text);padding:10px 19px;font:inherit;font-size:.84rem;font-weight:700}
@@ -264,7 +265,7 @@ function flip(button,who){
  if(opened.length===2){
   moves++;updateHud();const [a,b]=opened;
   if(a.dataset.pair===b.dataset.pair){
-   a.classList.add("matched");b.classList.add("matched");a.disabled=true;b.disabled=true;opened=[];pairs++;
+   a.classList.add("matched",who==="cpu"?"matched-cpu":"matched-player");b.classList.add("matched",who==="cpu"?"matched-cpu":"matched-player");a.disabled=true;b.disabled=true;opened=[];pairs++;
    if(mode==="cpu"){if(who==="cpu")cpuPairs++;else playerPairs++;}
    updateHud();
    if(pairs===8){finishGame();return}
