@@ -135,9 +135,9 @@ body{touch-action:pan-x pan-y}
  .memory-face{border-radius:6px!important}
 }
 
-/* Solo mode has fewer HUD rows, so cap the board height to avoid overly tall cards */
-body.mode-solo .memory-board{flex:0 1 auto!important;height:min(64vh,620px)!important;max-height:min(64vh,620px)!important;grid-template-rows:repeat(4,minmax(0,1fr))!important}
-body.mode-solo .memory-card{height:100%!important;aspect-ratio:auto!important}
+/* Keep the board dimensions fixed throughout the game, regardless of flips or turn changes */
+.memory-board{flex:0 0 auto!important;height:min(64vh,620px)!important;max-height:min(64vh,620px)!important;grid-template-rows:repeat(4,minmax(0,1fr))!important}
+.memory-card{height:100%!important;aspect-ratio:auto!important}
 
 /* Remove non-essential chrome: let the cards own the screen */
 .wrap>header,.game-help,.memory-start-area,.memory-note{display:none!important}
