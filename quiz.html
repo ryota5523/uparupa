@@ -42,6 +42,22 @@
 .quiz-small{font-size:.75rem;color:var(--sub);text-align:center;margin:13px 0 0;line-height:1.6}
 [hidden]{display:none!important}
 @media(max-width:520px){.quiz-panel{padding:17px 13px}.quiz-question{font-size:1rem}}
+
+/* Compact game layout */
+.wrap{padding-top:8px}
+header{margin:8px 0 10px}
+header h1{margin:4px 0;font-size:clamp(1.25rem,4vw,1.65rem)}
+header .kana{margin:2px 0;font-size:.76rem}
+nav{margin:8px 0 12px;padding:5px 7px;gap:5px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav a{padding:6px 9px;font-size:.76rem}
+main{padding-top:0}
+.game-help{margin:0 auto 9px;max-width:680px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.game-help summary{padding:8px 12px;color:var(--accent);font-size:.8rem;font-weight:800;cursor:pointer;list-style:none;text-align:center}
+.game-help summary::-webkit-details-marker{display:none}
+.game-help summary::after{content:" ＋";font-weight:900}
+.game-help[open] summary::after{content:" −"}
+.game-help .memory-intro,.game-help .tower-intro,.game-help .swim-intro{margin:0;padding:5px 12px 10px;font-size:.78rem}
 </style>
 </head>
 <body>
