@@ -7,14 +7,14 @@
 <link rel="stylesheet" href="style.css?v=shared-20261118">
 <meta name="theme-color" content="#e60012">
 <style>
-.tower-wrap{padding:18px 0 28px}
+.tower-wrap{padding:5px 0 16px}
 .tower-intro{text-align:center;margin:0 0 16px}
 .tower-intro h2{font-size:1.2rem;margin:0 0 5px;color:var(--text)}
 .tower-intro p{font-size:.85rem;color:var(--sub);margin:0;line-height:1.7}
-.tower-hud{display:flex;justify-content:space-between;gap:10px;margin:14px 0}
-.tower-stat{flex:1;text-align:center;padding:10px;border:1px solid var(--line);border-radius:13px;background:#fff}
+.tower-hud{display:flex;justify-content:space-between;gap:7px;margin:7px 0}
+.tower-stat{flex:1;text-align:center;padding:6px;border:1px solid var(--line);border-radius:13px;background:#fff}
 .tower-stat small{display:block;color:var(--sub);font-size:.72rem}.tower-stat strong{font-size:1.25rem;color:var(--accent);font-variant-numeric:tabular-nums}
-#towerCanvas{display:block;width:100%;height:min(62vh,570px);min-height:390px;background:linear-gradient(#fffafa,#fff);border:1px solid var(--line);border-radius:18px;touch-action:pan-y}
+#towerCanvas{display:block;width:100%;height:min(48vh,440px);min-height:290px;background:linear-gradient(#fffafa,#fff);border:1px solid var(--line);border-radius:18px;touch-action:pan-y}
 .tower-controls{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
 .tower-controls button,.tower-start{border:0;border-radius:12px;padding:13px 8px;font:inherit;font-weight:800;cursor:pointer;background:#fff1f1;color:#e60012}
 .tower-controls .drop{background:#e60012;color:#fff}
@@ -29,7 +29,23 @@
 .tower-overlay-card h3{margin:0 0 7px;color:var(--accent)}
 .tower-overlay-card p{margin:0;color:var(--sub);font-size:.86rem;line-height:1.7}
 .tower-start{width:100%;margin-top:15px;background:#e60012;color:#fff}
-@media(max-width:520px){#towerCanvas{height:58vh;min-height:360px}.tower-controls button{font-size:.88rem}}
+@media(max-width:520px){#towerCanvas{height:46vh;min-height:280px}.tower-controls button{font-size:.88rem}}
+
+/* Compact game layout */
+.wrap{padding-top:8px}
+header{margin:8px 0 10px}
+header h1{margin:4px 0;font-size:clamp(1.25rem,4vw,1.65rem)}
+header .kana{margin:2px 0;font-size:.76rem}
+nav{margin:8px 0 12px;padding:5px 7px;gap:5px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav a{padding:6px 9px;font-size:.76rem}
+main{padding-top:0}
+.game-help{margin:0 auto 9px;max-width:680px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.game-help summary{padding:8px 12px;color:var(--accent);font-size:.8rem;font-weight:800;cursor:pointer;list-style:none;text-align:center}
+.game-help summary::-webkit-details-marker{display:none}
+.game-help summary::after{content:" ＋";font-weight:900}
+.game-help[open] summary::after{content:" −"}
+.game-help .memory-intro,.game-help .tower-intro,.game-help .swim-intro{margin:0;padding:5px 12px 10px;font-size:.78rem}
 </style>
 </head>
 <body>
@@ -45,14 +61,14 @@
 <a href="blog.html"><i class="ms">edit_note</i>Blog</a>
 </nav>
 <main class="tower-wrap">
-<div class="tower-intro"><h2>落とす位置を見きわめて…！</h2><p>ピースをスワイプで左右に動かして、回転と落下を操作！<br>まなみんタワーを崩さず高く積み上げよう。</p></div>
+<details class="game-help"><summary>遊び方</summary><div class="tower-intro"><h2>落とす位置を見きわめて…！</h2><p>ピースをスワイプで左右に動かして、回転と落下を操作！<br>まなみんタワーを崩さず高く積み上げよう。</p></div></details>
 <div class="tower-hud"><div class="tower-stat"><small>今回の記録</small><strong id="towerScore">0</strong></div><div class="tower-stat"><small>ベスト記録</small><strong id="towerBest">0</strong></div><div class="tower-stat"><small>次のピース</small><strong id="towerNext">1 / 4</strong></div></div>
 <div class="tower-stage">
 <canvas id="towerCanvas" aria-label="まなみんを積み上げるゲーム画面"></canvas>
 <div class="tower-overlay" id="towerOverlay"><div class="tower-overlay-card"><h3 id="overlayTitle">まなみんタワーバトル（仮）</h3><p id="overlayText">全身写真のピースをスワイプで動かして、落として積もう！<br>タワーが崩れたらゲームオーバー。</p><button class="tower-start" id="towerStart">ゲームスタート！</button></div></div>
 </div>
 <div class="tower-controls"><button id="towerRotate">↻ 回転</button><button class="drop" id="towerDrop">落とす！</button></div>
-<p class="tower-hint">全身まなみんのピースを左右にスワイプ。回転と落下はボタンで操作！</p>
+
 <div class="tower-bottom"><button id="towerReset">最初からやり直す</button></div>
 </main>
 </div>
