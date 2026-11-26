@@ -13,6 +13,8 @@
 .memory-intro p{font-size:.84rem;color:var(--sub);margin:0;line-height:1.7}
 .memory-hud{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:8px 0}
 .memory-hud.cpu-mode .memory-stat:nth-child(2){display:none}
+/* プレイ中は記録系の数字を隠し、結果画面だけで確認 */
+.memory-hud{grid-template-columns:1fr}.memory-hud .memory-stat:nth-child(1),.memory-hud .memory-stat:nth-child(3){display:none!important}.memory-hud.cpu-mode{display:none!important}
 .memory-stat{text-align:center;padding:6px 4px;border:1px solid var(--line);border-radius:13px;background:#fff}
 .memory-stat small{display:block;color:var(--sub);font-size:.7rem}
 .memory-stat strong{font-size:1.18rem;color:var(--accent);font-variant-numeric:tabular-nums}
