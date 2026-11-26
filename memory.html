@@ -7,12 +7,12 @@
 <link rel="stylesheet" href="style.css?v=shared-20261118">
 <meta name="theme-color" content="#e60012">
 <style>
-.memory-wrap{padding:18px 0 30px}
-.memory-intro{text-align:center;margin:0 0 18px}
+.memory-wrap{padding:5px 0 18px}
+.memory-intro{text-align:center;margin:0 0 4px}
 .memory-intro h2{font-size:1.2rem;margin:0 0 5px}
 .memory-intro p{font-size:.84rem;color:var(--sub);margin:0;line-height:1.7}
-.memory-hud{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0 14px}
-.memory-stat{text-align:center;padding:10px 5px;border:1px solid var(--line);border-radius:13px;background:#fff}
+.memory-hud{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:8px 0}
+.memory-stat{text-align:center;padding:6px 4px;border:1px solid var(--line);border-radius:13px;background:#fff}
 .memory-stat small{display:block;color:var(--sub);font-size:.7rem}
 .memory-stat strong{font-size:1.18rem;color:var(--accent);font-variant-numeric:tabular-nums}
 .memory-board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;perspective:900px}
@@ -27,11 +27,11 @@
 .memory-front img{width:100%;height:100%;object-fit:contain;display:block}
 .memory-card.matched .memory-front{border:2px solid #e60012;box-shadow:0 0 0 2px #e6001222}
 .memory-card:disabled{cursor:default}
-.memory-actions{display:flex;justify-content:center;gap:10px;margin:17px 0 4px}
+.memory-actions{display:flex;justify-content:center;gap:8px;margin:9px 0 4px}
 .memory-actions button{border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--text);padding:10px 19px;font:inherit;font-size:.84rem;font-weight:700}
 .memory-actions .primary{background:#e60012;color:#fff;border-color:#e60012}
 .memory-message{min-height:2em;text-align:center;color:var(--accent);font-size:.9rem;font-weight:800;margin:12px 0 0}
-.memory-note{text-align:center;color:var(--sub);font-size:.75rem;margin:10px 0}
+.memory-note{display:none}
 .memory-mode,.memory-level{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:12px 0}
 .memory-mode button,.memory-level button{border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--text);padding:9px 15px;font:inherit;font-size:.82rem;font-weight:700}
 .memory-mode button.active,.memory-level button.active{background:#e60012;color:#fff;border-color:#e60012}
@@ -50,6 +50,22 @@
 /* The blue-sky card back is a real generated image asset */
 .memory-back{background-image:url("data:image/webp;base64,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")!important;background-position:center!important;background-size:100% 100%!important;background-repeat:no-repeat!important;background-color:#79bdeb!important;border:0!important;outline:0!important;box-shadow:none!important}
 .memory-back::before,.memory-back::after,.memory-back>*{display:none!important;content:none!important}
+
+/* Compact game layout */
+.wrap{padding-top:8px}
+header{margin:8px 0 10px}
+header h1{margin:4px 0;font-size:clamp(1.25rem,4vw,1.65rem)}
+header .kana{margin:2px 0;font-size:.76rem}
+nav{margin:8px 0 12px;padding:5px 7px;gap:5px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav a{padding:6px 9px;font-size:.76rem}
+main{padding-top:0}
+.game-help{margin:0 auto 9px;max-width:680px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.game-help summary{padding:8px 12px;color:var(--accent);font-size:.8rem;font-weight:800;cursor:pointer;list-style:none;text-align:center}
+.game-help summary::-webkit-details-marker{display:none}
+.game-help summary::after{content:" ＋";font-weight:900}
+.game-help[open] summary::after{content:" −"}
+.game-help .memory-intro,.game-help .tower-intro,.game-help .swim-intro{margin:0;padding:5px 12px 10px;font-size:.78rem}
 </style>
 </head>
 <body>
@@ -65,7 +81,7 @@
 <a href="blog.html"><i class="ms">edit_note</i>Blog</a>
 </nav>
 <main class="memory-wrap">
-<div class="memory-intro"><h2>16枚のカードから、8ペアを見つけよう！</h2><p>大野愛実の写真を使った神経衰弱ゲーム！<br>同じ写真を2枚めくるとペア成立 💗</p></div>
+<details class="game-help"><summary>遊び方・ルール</summary><div class="memory-intro"><h2>16枚のカードから、8ペアを見つけよう！</h2><p>大野愛実の写真を使った神経衰弱ゲーム！<br>同じ写真を2枚めくるとペア成立 💗</p></div></details>
 <div class="memory-mode" aria-label="ゲームモード"><button type="button" class="active" data-mode="solo">ひとりで遊ぶ</button><button type="button" data-mode="cpu">CPUと対戦</button></div><div class="memory-level" id="memoryLevel" hidden><button type="button" class="active" data-level="easy">初級</button><button type="button" data-level="normal">中級</button><button type="button" data-level="hard">ハード</button></div><div class="memory-order" id="memoryOrder" hidden><span>順番</span><button type="button" class="active" data-order="player">先攻</button><button type="button" data-order="cpu">後攻</button></div><p class="memory-misses" id="memoryMisses" hidden>ミス残り：あなた <strong id="playerMisses">5</strong> 回 ／ CPU <strong id="cpuMisses">5</strong> 回</p><div class="memory-health" id="memoryHealth" hidden><div class="health-player"><div class="health-head"><span>あなた</span><span class="health-count" id="playerHealthCount">5 / 5</span></div><div class="health-track"><div class="health-fill" id="playerHealthBar"></div></div></div><div class="health-player cpu"><div class="health-head"><span>CPU</span><span class="health-count" id="cpuHealthCount">5 / 5</span></div><div class="health-track"><div class="health-fill" id="cpuHealthBar"></div></div></div></div><div class="memory-score" id="memoryScore" hidden><div><small>あなた</small><strong id="playerScore">0</strong></div><div><small>CPU</small><strong id="cpuScore">0</strong></div></div><p class="memory-turn" id="turnLabel" hidden>あなたの番です</p><div class="memory-start-area" id="memoryStartArea"><p id="memoryReadyText">写真を準備中…</p><button class="primary" id="memoryStart" type="button" disabled>ゲームスタート！</button></div><div class="memory-hud" id="memoryHud" hidden>
 <div class="memory-stat"><small>手数</small><strong id="moves">0</strong></div>
 <div class="memory-stat"><small>そろえたペア</small><strong id="pairs">0 / 8</strong></div>
