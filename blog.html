@@ -323,29 +323,50 @@
   }
   async function findArticleImages(post){
     if(!post.url)return [];
-    if(readerCache.has(post.url+"#all"))return readerCache.get(post.url+"#all");
+    const cacheKey=post.url+"#all";
+    if(readerCache.has(cacheKey))return readerCache.get(cacheKey);
     const task=(async()=>{
-      try{
-        const readerUrl="https://r.jina.ai/"+safeUrl(post.url);
-        const response=await fetch(readerUrl,{headers:{"Accept":"text/plain"}});
-        if(!response.ok)throw new Error("reader unavailable");
-        const body=await response.text();
-        const matches=[...body.matchAll(/!\[[^\]]*\]\(<?(https:\/\/[^\s)>]+)>?\)/g)].map(m=>m[1]);
-        const htmlMatches=[...body.matchAll(/<img[^>]+src=["'](https:\/\/[^"']+)["']/gi)].map(m=>m[1]);
-        const unique=[...new Set([...matches,...htmlMatches])];
-        return unique.filter(src=>{
+      for(let attempt=0;attempt<3;attempt++){
+        try{
+          const controller=new AbortController();
+          const timeout=setTimeout(()=>controller.abort(),15000);
+          let response;
           try{
-            const u=new URL(src);
-            return u.hostname==="cdn.hinatazaka46.com"
-              && /\/diary\/official\/member\//i.test(u.pathname)
-              && /\.(jpe?g|png|webp)$/i.test(u.pathname)
-              && !/(logo|icon|avatar|banner|header)/i.test(u.pathname);
-          }catch(e){return false;}
-        });
-      }catch(e){return [];}
+            response=await fetch("https://r.jina.ai/"+safeUrl(post.url),{
+              headers:{"Accept":"text/plain"},
+              signal:controller.signal,
+              cache:"no-store"
+            });
+          }finally{clearTimeout(timeout);}
+          if(!response.ok)throw new Error("reader unavailable: "+response.status);
+          const body=await response.text();
+          const candidates=[];
+          const markdown=/!\[[^\]]*\]\(<?(https?:\/\/[^\s)>]+)>?\)/g;
+          const html=/<(?:img|source)\b[^>]*(?:src|data-src|data-original|srcset)=["']([^"']+)["']/gi;
+          const absolute=/https?:\/\/cdn\.hinatazaka46\.com\/[^\s"'<>]+/gi;
+          for(const match of body.matchAll(markdown))candidates.push(match[1]);
+          for(const match of body.matchAll(html))candidates.push(match[1].split(",")[0].trim());
+          for(const match of body.matchAll(absolute))candidates.push(match[0]);
+          const unique=[...new Set(candidates.map(src=>src.replace(/[)\]>,.;]+$/,"")))].filter(src=>{
+            try{
+              const u=new URL(src);
+              return u.hostname==="cdn.hinatazaka46.com"
+                && /\.(jpe?g|png|webp)$/i.test(u.pathname)
+                && !/(logo|icon|avatar|banner|header)/i.test(u.pathname);
+            }catch(e){return false;}
+          });
+          if(unique.length)return unique;
+          throw new Error("no article images found");
+        }catch(error){
+          if(attempt<2)await new Promise(resolve=>setTimeout(resolve,500*(attempt+1)));
+        }
+      }
+      return [];
     })();
-    readerCache.set(post.url+"#all",task);
-    return task;
+    readerCache.set(cacheKey,task);
+    const images=await task;
+    if(!images.length&&readerCache.get(cacheKey)===task)readerCache.delete(cacheKey);
+    return images;
   }
   async function findArticleImage(post){
     const cached=imageCache.get(post.url);
