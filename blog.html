@@ -410,12 +410,26 @@
     });
     container.appendChild(button);
   }
+  async function recoverImage(img,post,onFail){
+    const images=await findArticleImages(post);
+    for(const src of images){
+      if(!src||src===img.src)continue;
+      const loaded=await new Promise(resolve=>{
+        img.onload=()=>resolve(true);
+        img.onerror=()=>resolve(false);
+        img.src=src;
+      });
+      if(loaded){img.onload=null;img.onerror=null;imageCache.set(post.url,src);return;}
+    }
+    img.onload=null;img.onerror=null;
+    if(typeof onFail==="function")onFail();
+  }
   function renderFeatured(){
     if(!posts.length){featured.innerHTML='<div class="blog-empty">記事はまだ見つかりませんでした。公式ブログ一覧をご確認ください。</div>';return;}
     const p=posts[0],d=safeDate(p.published_at);
     featured.innerHTML="";
     const src=articleImage(p);
-    if(src){const imageWrap=document.createElement("div");imageWrap.className="blog-image-wrap";const img=document.createElement("img");img.className="feature-image";img.src=src;img.alt="ブログ記事の写真";img.loading="lazy";img.referrerPolicy="no-referrer";img.onerror=()=>{imageWrap.remove();};imageWrap.appendChild(img);featured.appendChild(imageWrap);}
+    if(src){const imageWrap=document.createElement("div");imageWrap.className="blog-image-wrap";const img=document.createElement("img");img.className="feature-image";img.src=src;img.alt="ブログ記事の写真";img.loading="lazy";img.referrerPolicy="no-referrer";img.onerror=()=>recoverImage(img,p,()=>imageWrap.remove());imageWrap.appendChild(img);featured.appendChild(imageWrap);}
     const body=document.createElement("div");body.className="feature-body";
     const label=document.createElement("span");label.className="feature-label";label.textContent="✦ LATEST POST";
     const date=document.createElement("div");date.className="feature-date";date.textContent=d.full;
@@ -462,7 +476,7 @@
       const day=document.createElement("span");day.className="thumb";
       const image=articleImage(p);
       const showDateTile=()=>{day.innerHTML="";const fallback=document.createElement("span");fallback.className="thumb-date";const mo=document.createElement("span");mo.className="month";mo.textContent=d.month;const da=document.createElement("span");da.className="day";da.textContent=d.day;fallback.append(mo,da);day.appendChild(fallback);};
-      if(image){const img=document.createElement("img");img.src=image;img.alt="";img.loading="lazy";img.referrerPolicy="no-referrer";img.onerror=showDateTile;day.appendChild(img);}
+      if(image){const img=document.createElement("img");img.src=image;img.alt="";img.loading="lazy";img.referrerPolicy="no-referrer";img.onerror=()=>recoverImage(img,p,showDateTile);day.appendChild(img);}
       else{showDateTile();}
       const copy=document.createElement("span");copy.className="card-copy";
       const title=document.createElement("span");title.className="card-title";title.textContent=p.title||"タイトル未設定";
