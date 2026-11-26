@@ -331,27 +331,37 @@ function available(){return [...board.querySelectorAll(".memory-card:not(.matche
 function cpuPick(exclude=[]){
  const remaining=available().filter(b=>!exclude.includes(b));
  if(remaining.length<2)return [];
- // CPUが覚えているカードだけを手がかりにする。裏向きカードのpairIdは見ない！
- const recallRate=level==="easy"?.05:level==="normal"?.30:1.0;
- const remembered=remaining.filter(b=>cpuMemory.has(Number(b.dataset.index))&&Math.random()<recallRate);
+ // ハードは一度見たカードを完全に記憶。確定ペアがあれば、他のカードを選ばず必ず取る。
  const knownPairs=new Map();
- for(const b of remembered){
-  const pair=b.dataset.pair;
+ for(const b of remaining){
+  const index=Number(b.dataset.index);
+  if(!cpuMemory.has(index))continue;
+  const pair=cpuMemory.get(index);
   if(!knownPairs.has(pair))knownPairs.set(pair,[]);
   knownPairs.get(pair).push(b);
  }
- // 2枚とも覚えているペアがあれば、それを優先する
- for(const list of knownPairs.values())if(list.length>=2)return shuffle(list).slice(0,2);
+ if(level==="hard"){
+  for(const list of knownPairs.values()){
+   if(list.length>=2)return list.slice(0,2);
+  }
+ }
+ // 初級・中級は記憶の正確さに確率を設ける。ハードにはこの抽選を適用しない。
+ const recallRate=level==="easy"?.05:.30;
+ const remembered=remaining.filter(b=>cpuMemory.has(Number(b.dataset.index))&&Math.random()<recallRate);
+ const partialPairs=new Map();
+ for(const b of remembered){
+  const pair=cpuMemory.get(Number(b.dataset.index));
+  if(!partialPairs.has(pair))partialPairs.set(pair,[]);
+  partialPairs.get(pair).push(b);
+ }
+ for(const list of partialPairs.values())if(list.length>=2)return list.slice(0,2);
  // 確定ペアがない場合は、まだ見ていないカードを優先して情報を集める
- // 既知カード1枚＋適当なカード、という無駄打ちはしない
  const unknown=remaining.filter(b=>!cpuMemory.has(Number(b.dataset.index)));
  if(unknown.length>=2)return shuffle(unknown).slice(0,2);
- // 未知カードが1枚だけなら、それと相方未確認の既知カードを組み合わせる
  if(unknown.length===1){
-  const candidates=remembered.filter(b=>!remembered.some(m=>m!==b&&m.dataset.pair===b.dataset.pair));
+  const candidates=remembered.filter(b=>!remembered.some(m=>m!==b&&cpuMemory.get(Number(m.dataset.index))===cpuMemory.get(Number(b.dataset.index))));
   if(candidates.length)return [unknown[0],candidates[Math.floor(Math.random()*candidates.length)]];
  }
- // 念のためのフォールバック
  return shuffle(remaining).slice(0,2);
 }
 function scheduleCpu(delay=700){if(finished||mode!=="cpu")return;turn="cpu";locked=true;updateHud();cpuTimer=setTimeout(()=>{locked=false;const picks=cpuPick();if(!picks||picks.length<2)return;flip(picks[0],"cpu");setTimeout(()=>{if(!finished)flip(picks[1],"cpu")},650)},delay)}
