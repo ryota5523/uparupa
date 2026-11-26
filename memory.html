@@ -67,9 +67,13 @@
  font-weight:900;letter-spacing:.22em;text-shadow:0 1px 4px rgba(125,20,61,.25)
 }
 .memory-back span{position:relative;z-index:1;width:clamp(38px,13vw,62px);height:clamp(38px,13vw,62px);display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.78);font-size:clamp(1.4rem,7vw,2.25rem);text-shadow:0 2px 5px rgba(125,20,61,.25)}
-.memory-front{padding:6px;background:linear-gradient(145deg,#fff,#ffeaf1);border:2px solid #f5bfd0}
-.memory-front::before{content:"";position:absolute;inset:3px;border:1px solid rgba(224,105,145,.35);border-radius:11px;pointer-events:none;z-index:1}
-.memory-front img{border-radius:9px}
+.memory-front{display:flex;flex-direction:column;justify-content:flex-start;gap:3px;padding:5px;background:linear-gradient(155deg,#fff 0%,#fff5f8 100%);border:2px solid #f2a9c1}
+.memory-front::before{content:"";position:absolute;inset:3px;border:1px solid rgba(224,105,145,.38);border-radius:11px;pointer-events:none;z-index:2}
+.memory-front img{width:100%;height:calc(100% - 29px);min-height:0;object-fit:cover;object-position:center;border-radius:8px;margin-top:1px}
+.memory-card-head{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:2px;padding:1px 3px 0;color:#d94e82;font-size:clamp(.39rem,1.8vw,.62rem);font-weight:900;letter-spacing:.06em;white-space:nowrap}
+.memory-card-head .card-mark{font-size:clamp(.48rem,2.1vw,.7rem)}
+.memory-card-foot{position:relative;z-index:3;display:flex;align-items:center;justify-content:center;gap:3px;min-height:19px;color:#d94e82;font-size:clamp(.55rem,2.6vw,.82rem);font-weight:800;letter-spacing:.04em;white-space:nowrap}
+.memory-card-foot span{font-size:.8em}
 .memory-card.matched .memory-front{border:2px solid #e34c83;box-shadow:0 0 0 3px rgba(227,76,131,.18),0 5px 15px rgba(227,76,131,.22)}
 .memory-card.matched .memory-front::before{border-color:rgba(227,76,131,.75)}
 .memory-card:focus-visible{outline:3px solid #e34c83;outline-offset:3px;border-radius:16px}
@@ -149,7 +153,10 @@ function makeCard(photo,index){
  const inner=document.createElement("span");inner.className="memory-card-inner";
  const back=document.createElement("span");back.className="memory-face memory-back";back.innerHTML="<span>♡</span>";
  const front=document.createElement("span");front.className="memory-face memory-front";
- const img=document.createElement("img");img.src=freshImageUrl(photo.url);img.alt="大野愛実の写真";img.loading="eager";img.decoding="async";front.appendChild(img);
+ const cardHead=document.createElement("span");cardHead.className="memory-card-head";cardHead.innerHTML='<span>♡ MANAMI ONO</span><span class="card-mark">♡</span>';
+ const img=document.createElement("img");img.src=freshImageUrl(photo.url);img.alt="大野愛実の写真";img.loading="eager";img.decoding="async";
+ const cardFoot=document.createElement("span");cardFoot.className="memory-card-foot";cardFoot.innerHTML='<span>♡</span> まなみん <span>♡</span>';
+ front.append(cardHead,img,cardFoot);
  inner.append(back,front);button.appendChild(inner);button.addEventListener("click",()=>{if(mode==="cpu"&&turn!=="player")return;flip(button,"player")});return button;
 }
 function reveal(button,who){button.classList.add("flipped");playSound("flip");if(mode==="cpu")cpuMemory.set(Number(button.dataset.index),button.dataset.pair)}
