@@ -61,7 +61,7 @@
 }
 .memory-back::before{inset:6px;border:1px solid rgba(255,255,255,.9);border-radius:11px}
 .memory-back::after{content:"MANAMI ONO";position:absolute;bottom:13%;left:0;right:0;text-align:center;color:#fff;font-size:clamp(.48rem,2.1vw,.68rem);font-weight:900;letter-spacing:.2em;text-shadow:0 1px 4px rgba(28,91,139,.25)}
-.memory-back span{position:relative;z-index:1;width:clamp(38px,13vw,62px);height:clamp(38px,13vw,62px);display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.85);font-size:clamp(1.4rem,7vw,2.25rem);text-shadow:0 2px 5px rgba(28,91,139,.25)}
+.memory-back span{position:relative;z-index:1;display:grid;place-items:center;width:clamp(48px,16vw,70px);height:clamp(48px,16vw,70px);border:2px solid rgba(255,255,255,.9);background:rgba(255,255,255,.12);clip-path:polygon(50% 0,100% 100%,0 100%);padding-top:14px;color:#fff;font-size:clamp(1.1rem,5.5vw,1.8rem);font-weight:900;letter-spacing:-.08em;text-shadow:0 2px 5px rgba(28,91,139,.25)}
 .memory-front{display:flex;flex-direction:column;justify-content:flex-start;gap:3px;padding:5px;background:linear-gradient(155deg,#fff 0%,#f0f9ff 100%);border:2px solid #8bc9ef}
 .memory-front::before{content:"";position:absolute;inset:3px;border:1px solid rgba(77,157,211,.4);border-radius:11px;pointer-events:none;z-index:2}
 .memory-front img{width:100%;height:calc(100% - 29px);min-height:0;object-fit:cover;object-position:center;border-radius:8px;margin-top:1px}
@@ -146,11 +146,11 @@ function startClock(){if(clock||started)return;started=true;clock=setInterval(()
 function makeCard(photo,index){
  const button=document.createElement("button");button.type="button";button.className="memory-card";button.setAttribute("aria-label","カード "+(index+1));button.dataset.pair=photo.pairId;button.dataset.index=index;
  const inner=document.createElement("span");inner.className="memory-card-inner";
- const back=document.createElement("span");back.className="memory-face memory-back";back.innerHTML="<span>♡</span>";
+ const back=document.createElement("span");back.className="memory-face memory-back";back.innerHTML="<span>46</span>";
  const front=document.createElement("span");front.className="memory-face memory-front";
- const cardHead=document.createElement("span");cardHead.className="memory-card-head";cardHead.innerHTML='<span>♡ MANAMI ONO</span><span class="card-mark">♡</span>';
+ const cardHead=document.createElement("span");cardHead.className="memory-card-head";cardHead.innerHTML='<span>MANAMI ONO</span><span class="card-mark">46</span>';
  const img=document.createElement("img");img.src=freshImageUrl(photo.url);img.alt="大野愛実の写真";img.loading="eager";img.decoding="async";
- const cardFoot=document.createElement("span");cardFoot.className="memory-card-foot";cardFoot.innerHTML='<span>♡</span> まなみん <span>♡</span>';
+ const cardFoot=document.createElement("span");cardFoot.className="memory-card-foot";cardFoot.innerHTML='<span>✦</span> まなみん <span>✦</span>';
  front.append(cardHead,img,cardFoot);
  inner.append(back,front);button.appendChild(inner);button.addEventListener("click",()=>{if(mode==="cpu"&&turn!=="player")return;flip(button,"player")});return button;
 }
