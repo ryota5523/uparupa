@@ -47,32 +47,31 @@
 @media(max-width:360px){.memory-board{gap:6px}.memory-face{border-radius:9px}}
 @media(prefers-reduced-motion:reduce){.memory-card-inner{transition:none}}
 
-/* Blue-sky trading-card design */
+/* Faithful blue-sky 46 card design */
 .memory-board{gap:10px}
-.memory-card{border-radius:16px;filter:drop-shadow(0 4px 5px rgba(40,104,153,.13))}
-.memory-card-inner{border-radius:16px}
-.memory-face{border-radius:16px;box-shadow:0 5px 13px rgba(40,104,153,.13)}
-.memory-back{
- background:
-  radial-gradient(ellipse at 18% 24%,rgba(255,255,255,.96) 0 7%,transparent 7.5%),
-  radial-gradient(ellipse at 78% 73%,rgba(255,255,255,.9) 0 8%,transparent 8.5%),
-  linear-gradient(145deg,#a8e2ff 0%,#68b9ec 55%,#378bd0 100%);
- border:2px solid #f5fcff;outline:1px solid #67addd;color:#fff;
-}
-.memory-back::before{inset:6px;border:1px solid rgba(255,255,255,.9);border-radius:11px}
-.memory-back::after{content:"MANAMI ONO";position:absolute;bottom:13%;left:0;right:0;text-align:center;color:#fff;font-size:clamp(.48rem,2.1vw,.68rem);font-weight:900;letter-spacing:.2em;text-shadow:0 1px 4px rgba(28,91,139,.25)}
-.memory-back span{position:relative;z-index:1;display:grid;place-items:center;width:clamp(48px,16vw,70px);height:clamp(48px,16vw,70px);border:2px solid rgba(255,255,255,.9);background:rgba(255,255,255,.12);clip-path:polygon(50% 0,100% 100%,0 100%);padding-top:14px;color:#fff;font-size:clamp(1.1rem,5.5vw,1.8rem);font-weight:900;letter-spacing:-.08em;text-shadow:0 2px 5px rgba(28,91,139,.25)}
-.memory-front{display:flex;flex-direction:column;justify-content:flex-start;gap:3px;padding:5px;background:linear-gradient(155deg,#fff 0%,#f0f9ff 100%);border:2px solid #8bc9ef}
-.memory-front::before{content:"";position:absolute;inset:3px;border:1px solid rgba(77,157,211,.4);border-radius:11px;pointer-events:none;z-index:2}
-.memory-front img{width:100%;height:calc(100% - 29px);min-height:0;object-fit:cover;object-position:center;border-radius:8px;margin-top:1px}
-.memory-card-head{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:2px;padding:1px 3px 0;color:#2785c2;font-size:clamp(.39rem,1.8vw,.62rem);font-weight:900;letter-spacing:.06em;white-space:nowrap}
-.memory-card-head .card-mark{font-size:clamp(.48rem,2.1vw,.7rem)}
-.memory-card-foot{position:relative;z-index:3;display:flex;align-items:center;justify-content:center;gap:3px;min-height:19px;color:#2785c2;font-size:clamp(.55rem,2.6vw,.82rem);font-weight:800;letter-spacing:.04em;white-space:nowrap}
-.memory-card-foot span{font-size:.8em}
-.memory-card.matched .memory-front{border:2px solid #379bd8;box-shadow:0 0 0 3px rgba(55,155,216,.18),0 5px 15px rgba(55,155,216,.22)}
-.memory-card.matched .memory-front::before{border-color:rgba(55,155,216,.8)}
-.memory-card:focus-visible{outline:3px solid #379bd8;outline-offset:3px;border-radius:16px}
-@media(max-width:360px){.memory-face{border-radius:12px}.memory-front{padding:4px}}
+.memory-card{border-radius:13px;filter:drop-shadow(0 3px 5px rgba(35,92,137,.16))}
+.memory-card-inner{border-radius:13px}
+.memory-face{border-radius:13px;overflow:hidden;box-shadow:0 3px 9px rgba(35,92,137,.12)}
+.memory-back{position:absolute;background:linear-gradient(155deg,#8bcdf4 0%,#65b2e5 58%,#4b9bd6 100%);border:2px solid #f8fdff;outline:1px solid #69add9;color:#fff}
+.memory-back::before{content:"";position:absolute;inset:6px;border:1px solid rgba(255,255,255,.95);border-radius:5px;pointer-events:none}
+.memory-back::after{content:"";position:absolute;inset:10px;background:linear-gradient(#fff,#fff) left top/10px 1px no-repeat,linear-gradient(#fff,#fff) left top/1px 10px no-repeat,linear-gradient(#fff,#fff) right top/10px 1px no-repeat,linear-gradient(#fff,#fff) right top/1px 10px no-repeat,linear-gradient(#fff,#fff) left bottom/10px 1px no-repeat,linear-gradient(#fff,#fff) left bottom/1px 10px no-repeat,linear-gradient(#fff,#fff) right bottom/10px 1px no-repeat,linear-gradient(#fff,#fff) right bottom/1px 10px no-repeat;opacity:.9;pointer-events:none}
+.memory-back-content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;z-index:1}
+.memory-back-cloud{position:absolute;width:29px;height:12px;border-radius:20px;background:rgba(255,255,255,.9);filter:drop-shadow(0 1px 1px rgba(45,112,160,.08))}
+.memory-back-cloud::before,.memory-back-cloud::after{content:"";position:absolute;bottom:3px;border-radius:50%;background:inherit}
+.memory-back-cloud::before{width:15px;height:15px;left:4px}
+.memory-back-cloud::after{width:11px;height:11px;right:3px}
+.memory-back-cloud.top{top:17%;left:-5px}
+.memory-back-cloud.bottom{right:-5px;bottom:17%;transform:scale(1.12)}
+.memory-back-logo{width:clamp(37px,13vw,54px);height:auto;display:block;overflow:visible}
+.memory-back-name{font-size:clamp(.48rem,2vw,.66rem);font-weight:900;letter-spacing:.2em;line-height:1.2;text-align:center;color:#fff;text-shadow:0 1px 2px rgba(30,90,140,.18)}
+.memory-back-number{font-size:clamp(.35rem,1.3vw,.46rem);letter-spacing:.18em;color:rgba(255,255,255,.9);line-height:1}
+.memory-front{padding:5px;background:#fff;border:2px solid #9acced}
+.memory-front::before{content:"";position:absolute;inset:3px;border:1px solid rgba(90,160,205,.5);border-radius:8px;pointer-events:none;z-index:2}
+.memory-front img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;border-radius:7px;background:#eef8ff}
+.memory-card.matched .memory-front{border:2px solid #379bd8;box-shadow:0 0 0 3px rgba(55,155,216,.18),0 5px 15px rgba(55,155,216,.2)}
+.memory-card.matched .memory-front::before{border-color:rgba(55,155,216,.85)}
+.memory-card:focus-visible{outline:3px solid #379bd8;outline-offset:3px;border-radius:13px}
+@media(max-width:360px){.memory-face{border-radius:10px}.memory-front{padding:4px}}
 </style>
 </head>
 <body>
@@ -146,12 +145,10 @@ function startClock(){if(clock||started)return;started=true;clock=setInterval(()
 function makeCard(photo,index){
  const button=document.createElement("button");button.type="button";button.className="memory-card";button.setAttribute("aria-label","カード "+(index+1));button.dataset.pair=photo.pairId;button.dataset.index=index;
  const inner=document.createElement("span");inner.className="memory-card-inner";
- const back=document.createElement("span");back.className="memory-face memory-back";back.innerHTML="<span>46</span>";
+ const back=document.createElement("span");back.className="memory-face memory-back";
+ back.innerHTML='<span class="memory-back-cloud top"></span><span class="memory-back-cloud bottom"></span><span class="memory-back-content"><svg class="memory-back-logo" viewBox="0 0 60 52" aria-hidden="true"><path d="M5 47 L55 47 L55 5 Z" fill="rgba(255,255,255,.94)"/><path d="M10 43 L50 43 L50 11 Z" fill="#65b2e5"/><text x="31" y="38" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">46</text></svg><span class="memory-back-name">MANAMI<br>ONO</span><span class="memory-back-number">46</span></span>';
  const front=document.createElement("span");front.className="memory-face memory-front";
- const cardHead=document.createElement("span");cardHead.className="memory-card-head";cardHead.innerHTML='<span>MANAMI ONO</span><span class="card-mark">46</span>';
- const img=document.createElement("img");img.src=freshImageUrl(photo.url);img.alt="大野愛実の写真";img.loading="eager";img.decoding="async";
- const cardFoot=document.createElement("span");cardFoot.className="memory-card-foot";cardFoot.innerHTML='<span>✦</span> まなみん <span>✦</span>';
- front.append(cardHead,img,cardFoot);
+ const img=document.createElement("img");img.src=freshImageUrl(photo.url);img.alt="大野愛実の写真";img.loading="eager";img.decoding="async";front.appendChild(img);
  inner.append(back,front);button.appendChild(inner);button.addEventListener("click",()=>{if(mode==="cpu"&&turn!=="player")return;flip(button,"player")});return button;
 }
 function reveal(button,who){button.classList.add("flipped");playSound("flip");if(mode==="cpu")cpuMemory.set(Number(button.dataset.index),button.dataset.pair)}
