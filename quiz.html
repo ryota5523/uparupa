@@ -22,7 +22,10 @@
 .quiz-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--sub);font-size:.8rem;font-weight:700;margin-bottom:12px}.quiz-score-live{padding:6px 11px;border-radius:99px;background:var(--accent2);color:var(--accent);font-weight:900;font-variant-numeric:tabular-nums}.quiz-record{margin:13px auto 0;padding:9px 14px;width:fit-content;border-radius:10px;background:var(--soft);color:var(--sub);font-size:.84rem;font-weight:800}.quiz-record strong{color:var(--accent);font-variant-numeric:tabular-nums}
 .quiz-progress{height:7px;background:var(--accent2);border-radius:99px;overflow:hidden;margin-bottom:20px}
 .quiz-progress span{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .2s}
-.quiz-question{font-size:1.08rem;line-height:1.65;color:var(--text);font-weight:800;margin:0 0 17px;animation:questionPop .32s ease both}\n@keyframes questionPop{from{opacity:0;transform:translateY(9px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}\n@keyframes correctPop{0%{transform:scale(.96)}55%{transform:scale(1.025)}100%{transform:scale(1)}}\n@keyframes gentleShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}50%{transform:translateX(4px)}75%{transform:translateX(-2px)}}
+.quiz-question{font-size:1.08rem;line-height:1.65;color:var(--text);font-weight:800;margin:0 0 17px;animation:questionPop .32s ease both}
+@keyframes questionPop{from{opacity:0;transform:translateY(9px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes correctPop{0%{transform:scale(.96)}55%{transform:scale(1.025)}100%{transform:scale(1)}}
+@keyframes gentleShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}50%{transform:translateX(4px)}75%{transform:translateX(-2px)}}
 .quiz-options{display:grid;gap:10px}
 .quiz-option{width:100%;display:flex;align-items:flex-start;gap:11px;text-align:left;padding:13px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--text);font:inherit;line-height:1.5;cursor:pointer}
 .quiz-option .quiz-letter{flex:0 0 26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--accent2);color:var(--accent);font-size:.78rem;font-weight:900}
@@ -33,7 +36,11 @@
 .quiz-option.is-wrong .quiz-letter{background:#d96b6b;color:#fff}
 .quiz-feedback{display:none;margin-top:15px;padding:14px;border-radius:12px;background:var(--soft);color:var(--text);font-size:.88rem;line-height:1.75}
 .quiz-feedback.show{display:block;animation:questionPop .25s ease both}
-.quiz-feedback strong{display:block;margin-bottom:5px;font-size:1rem;color:var(--accent)}\n.quiz-combo{display:none;margin:-5px 0 12px;text-align:center;color:#d28a16;font-weight:900;font-size:.88rem;letter-spacing:.04em}\n.quiz-combo.show{display:block;animation:correctPop .35s ease both}\n.quiz-result{animation:questionPop .4s ease both}\n.quiz-result .result-icon{display:inline-block;animation:correctPop .55s ease both}
+.quiz-feedback strong{display:block;margin-bottom:5px;font-size:1rem;color:var(--accent)}
+.quiz-combo{display:none;margin:-5px 0 12px;text-align:center;color:#d28a16;font-weight:900;font-size:.88rem;letter-spacing:.04em}
+.quiz-combo.show{display:block;animation:correctPop .35s ease both}
+.quiz-result{animation:questionPop .4s ease both}
+.quiz-result .result-icon{display:inline-block;animation:correctPop .55s ease both}
 .quiz-result{text-align:center;padding:12px 2px}
 .quiz-result .result-icon{font-size:3rem}
 .quiz-result h2{font-size:1.45rem;margin:8px 0;color:var(--text)}
@@ -146,7 +153,8 @@ function start(selectedMode){
  renderBest();showQuestion();
 }
 function showQuestion(){
- locked=false;const item=questions[index];\n $("quizCombo").className="quiz-combo";$("quizCombo").textContent="";
+ locked=false;const item=questions[index];
+ $("quizCombo").className="quiz-combo";$("quizCombo").textContent="";
  $("quizCount").textContent=mode==="endless"?"連続正解 第"+(index+1)+"問":"第"+(index+1)+"問 / 10問";
  renderBest();
  $("quizProgress").style.width=(mode==="endless"?0:index/10*100)+"%";
@@ -170,7 +178,8 @@ function answer(choice){
  const ok=choice===currentCorrect;if(ok){score++;streak++;}else{streak=0;}
  renderBest();
  $("quizFeedback").className="quiz-feedback show";
- const heading=document.createElement("strong");heading.textContent=ok?(streak>=2?"正解！ "+streak+"連続正解！":"正解！"):"残念！正解は「"+item.a[item.c]+"」";\n if(ok&&streak>=2){$("quizCombo").textContent="🔥 "+streak+" COMBO!";$("quizCombo").className="quiz-combo show";}
+ const heading=document.createElement("strong");heading.textContent=ok?(streak>=2?"正解！ "+streak+"連続正解！":"正解！"):"残念！正解は「"+item.a[item.c]+"」";
+ if(ok&&streak>=2){$("quizCombo").textContent="🔥 "+streak+" COMBO!";$("quizCombo").className="quiz-combo show";}
  const detail=document.createElement("span");detail.textContent=item.e;
  $("quizFeedback").append(heading,detail);
  const ended=mode==="endless"&&!ok;
@@ -190,10 +199,13 @@ function finish(){
  else writeBest(BEST_KEY,Math.max(readBest(BEST_KEY),score));
  renderBest();$("quizGame").hidden=true;$("quizResult").hidden=false;
  const perfect=mode==="standard"&&score===10;
+ const rank=mode==="endless"?(score>=10?"まなみん博士":score>=5?"まなみん通":"まなみん見習い"):score>=8?"まなみん博士":score>=5?"まなみん通":"まなみん見習い";
  $("quizFinalScore").textContent=mode==="endless"?score+"問連続正解":score+" / 10";
  $("quizResultIcon").textContent=perfect?"👑":mode==="endless"?"🔥":"🌸";
  $("quizResultTitle").textContent=perfect?"大野愛実王 認定！":rank+"！";
- $("quizResultMessage").textContent=mode==="endless"?"不正解になるまで "+score+" 問連続正解！"+(score>=10?" すごい記録！":"")+"\n"+rank+"の称号を獲得！":perfect?"おめでとう！全10問正解です。あなたは大野愛実王！":"正解数 "+score+" 問！\n今回の称号は「"+rank+"」！もう一度挑戦して、大野愛実王を目指そう。";
+ $("quizResultMessage").textContent=mode==="endless"?"不正解になるまで "+score+" 問連続正解！"+(score>=10?" すごい記録！":"")+"
+"+rank+"の称号を獲得！":perfect?"おめでとう！全10問正解です。あなたは大野愛実王！":"正解数 "+score+" 問！
+今回の称号は「"+rank+"」！もう一度挑戦して、大野愛実王を目指そう。";
  $("quizProgress").style.width="100%";
 }
 $("quizStart").addEventListener("click",()=>start("standard"));
