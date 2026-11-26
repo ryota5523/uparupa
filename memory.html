@@ -47,10 +47,20 @@
 @media(max-width:360px){.memory-board{gap:6px}.memory-face{border-radius:9px}}
 @media(prefers-reduced-motion:reduce){.memory-card-inner{transition:none}}
 
-/* Image-based blue-sky card back */
-.memory-back{background:linear-gradient(155deg,#83c8f1,#5aa5dc);background-image:var(--memory-back-image,linear-gradient(155deg,#83c8f1,#5aa5dc));background-position:center;background-size:100% 100%;background-repeat:no-repeat;border:0;outline:0;box-shadow:none}
-.memory-back::before,.memory-back::after{display:none!important}
-.memory-back-content,.memory-back-cloud{display:none!important}
+/* Restore visible blue-sky card back while image asset is prepared */
+.memory-back{background:linear-gradient(155deg,#8bcdf4 0%,#69b5e6 58%,#4b9bd6 100%)!important;background-image:none!important;border:2px solid #fff!important;outline:1px solid #69add9!important;box-shadow:0 3px 9px rgba(35,92,137,.14)!important;color:#fff}
+.memory-back::before{display:block!important;content:"";position:absolute;inset:6px;border:1px solid rgba(255,255,255,.95);border-radius:5px;pointer-events:none}
+.memory-back::after{display:block!important;content:"";position:absolute;inset:10px;background:linear-gradient(#fff,#fff) left top/9px 1px no-repeat,linear-gradient(#fff,#fff) left top/1px 9px no-repeat,linear-gradient(#fff,#fff) right top/9px 1px no-repeat,linear-gradient(#fff,#fff) right top/1px 9px no-repeat,linear-gradient(#fff,#fff) left bottom/9px 1px no-repeat,linear-gradient(#fff,#fff) left bottom/1px 9px no-repeat,linear-gradient(#fff,#fff) right bottom/9px 1px no-repeat,linear-gradient(#fff,#fff) right bottom/1px 9px no-repeat;pointer-events:none;opacity:.95}
+.memory-back-content{position:absolute!important;inset:0;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:2px;z-index:2}
+.memory-back-cloud{display:block!important;position:absolute;width:28px;height:13px;border-radius:14px;background:#fff;z-index:1;opacity:.96}
+.memory-back-cloud::before,.memory-back-cloud::after{content:"";position:absolute;bottom:3px;border-radius:50%;background:#fff}
+.memory-back-cloud::before{width:15px;height:15px;left:3px}
+.memory-back-cloud::after{width:11px;height:11px;right:3px}
+.memory-back-cloud.top{top:17%;left:-11px}
+.memory-back-cloud.bottom{right:-10px;bottom:16%;transform:scale(1.2)}
+.memory-back-logo{width:clamp(34px,12vw,48px);height:auto;display:block}
+.memory-back-name{font-size:clamp(.48rem,1.9vw,.62rem);font-weight:800;letter-spacing:.16em;line-height:1.25;text-align:center;color:#fff}
+.memory-back-number{font-size:clamp(.32rem,1.2vw,.42rem);letter-spacing:.16em;color:rgba(255,255,255,.95);line-height:1}
 </style>
 </head>
 <body>
@@ -79,12 +89,6 @@
 </main>
 </div>
 <script>
-/* Load the illustrated card-back artwork as an image asset. */
-fetch("assets/manami-memory-back-blue.webp.b64",{cache:"force-cache"})
- .then(r=>{if(!r.ok)throw new Error("card image unavailable");return r.text();})
- .then(b64=>document.documentElement.style.setProperty("--memory-back-image",'url("data:image/webp;base64,'+b64.trim()+'")'))
- .catch(()=>{});
-
 (()=>{
 const API="https://manami-site-worker.yellowworker.workers.dev/api/menu-photos";
 const board=document.getElementById("memoryBoard"),movesEl=document.getElementById("moves"),pairsEl=document.getElementById("pairs"),timerEl=document.getElementById("timer"),messageEl=document.getElementById("message");
