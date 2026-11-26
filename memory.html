@@ -215,7 +215,6 @@ body.mode-solo .memory-card{height:100%!important;aspect-ratio:auto!important}
 <div class="memory-score" id="memoryScore" hidden><div class="player-score"><small>あなた</small><strong id="playerScore">0</strong><span>ペア</span></div><div class="cpu-score"><small>CPU</small><strong id="cpuScore">0</strong><span>ペア</span></div></div>
 <div id="memoryBoard" class="memory-board" aria-label="神経衰弱のカード一覧" hidden><div class="memory-loading" style="grid-column:1/-1">写真を準備中…</div></div>
 <p class="memory-message" id="message" aria-live="polite"></p>
-<div class="memory-actions" id="memoryActions" hidden><button class="primary" id="restart" type="button">もう一度あそぶ</button></div>
 <div class="result-overlay" id="resultOverlay" hidden><section class="result-dialog" role="dialog" aria-modal="true" aria-labelledby="resultTitle"><div class="result-mark" id="resultMark">🎉</div><h2 id="resultTitle">ゲームクリア！</h2><p class="result-subtitle" id="resultSubtitle"></p><div class="result-stats" id="resultStats"></div><div class="result-buttons"><button class="primary" id="resultRetry" type="button">もう一度あそぶ</button><button id="resultSettings" type="button">設定を変える</button></div></section></div>
 <p class="memory-note">写真は毎回ランダムに8種類選ばれるよ。</p>
 </main>
@@ -374,8 +373,7 @@ async function loadPhotos(){
    readyText.textContent=photos.length+"枚の写真を準備できたよ！";settingsReadyText.textContent="写真の準備ができたよ！";settingsDone.disabled=false;startButton.disabled=false;
   }catch(error){console.error("Memory game photo load failed:",error);readyText.textContent="写真を準備できなかったみたい… "+String(error.message||"再読み込みしてね");settingsReadyText.textContent="写真を読み込めなかったよ。ページを再読み込みしてね。";settingsDone.disabled=true;startButton.disabled=true;messageEl.textContent="ページを再読み込みしてね。";}
  }
- document.getElementById("memoryStart").addEventListener("click",()=>{if(photos.length<8)return;hasStarted=true;document.getElementById("memoryStartArea").hidden=true;board.hidden=false;document.getElementById("memoryHud").hidden=false;document.getElementById("memoryActions").hidden=false;newGame()});
- document.getElementById("restart").addEventListener("click",()=>{if(photos.length>=8)newGame()});
+ document.getElementById("memoryStart").addEventListener("click",()=>{if(photos.length<8)return;hasStarted=true;document.getElementById("memoryStartArea").hidden=true;board.hidden=false;document.getElementById("memoryHud").hidden=false;newGame()});
  document.getElementById("resultRetry").addEventListener("click",()=>{if(photos.length>=8)newGame()});
  document.getElementById("resultSettings").addEventListener("click",()=>{document.getElementById("resultOverlay").hidden=true;updateSettingsSummary();document.getElementById("settingsModal").hidden=false;document.body.classList.add("settings-open")});
 loadPhotos();
