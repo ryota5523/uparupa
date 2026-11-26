@@ -130,6 +130,28 @@ body{touch-action:pan-x pan-y}
  .memory-board{gap:4px!important}
  .memory-face{border-radius:6px!important}
 }
+
+/* Remove non-essential chrome: let the cards own the screen */
+.wrap>header,.game-help,.memory-start-area,.memory-note{display:none!important}
+.wrap{padding:2px 8px 4px!important}
+.memory-wrap{padding:0!important}
+.memory-settings-bar{margin:2px 0 4px!important}
+.settings-trigger{padding:5px 11px!important;font-size:.7rem!important;gap:6px}
+.memory-hud{margin:2px 0 5px!important;gap:5px!important}
+.memory-stat{padding:3px 2px!important;border-radius:9px!important}
+.memory-stat small{font-size:.58rem!important}
+.memory-stat strong{font-size:.92rem!important}
+.memory-turn{margin:0 0 3px!important;font-size:.72rem!important}
+.memory-misses{display:none!important}
+.memory-health{margin:2px 0 4px!important;gap:5px!important}
+.health-player{padding:3px 6px!important}
+.health-head{font-size:.6rem!important;margin-bottom:2px!important}
+.health-track{height:5px!important}
+.memory-score{margin:2px auto!important}
+.memory-board{margin:0 auto!important;gap:clamp(3px,.8vh,7px)!important}
+.memory-message{margin:2px 0!important;min-height:1em!important;font-size:.7rem!important}
+.memory-actions{margin:2px 0 0!important}
+.memory-actions button{padding:5px 10px!important;font-size:.7rem!important}
 </style>
 </head>
 <body>
