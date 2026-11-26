@@ -8,10 +8,26 @@
 <meta name="theme-color" content="#e60012">
 <style>
 .swim-intro{text-align:center;margin:4px 0 12px;color:var(--sub);font-size:.84rem}
-.swim-hud{display:flex;gap:8px;margin:0 0 9px}.swim-stat{flex:1;text-align:center;padding:8px 5px;border:1px solid var(--line);border-radius:12px;background:#fff}.swim-stat small{display:block;color:var(--sub);font-size:.68rem}.swim-stat strong{font-size:1.2rem;color:var(--accent);font-variant-numeric:tabular-nums}
-#swimCanvas{display:block;width:100%;height:auto;aspect-ratio:360/560;border:2px solid #b6eaf3;border-radius:20px;background:#087eaa;touch-action:none;overscroll-behavior:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;box-shadow:0 7px 20px rgba(15,70,90,.14);-webkit-tap-highlight-color:transparent}
-.swim-controls{display:flex;justify-content:center;gap:9px;margin:13px 0 4px}.swim-controls button{border:0;border-radius:999px;background:var(--accent);color:#fff;padding:11px 24px;font:inherit;font-weight:800;box-shadow:0 4px 0 #b90012}.swim-controls button:active{transform:translateY(2px);box-shadow:0 2px 0 #b90012}
+.swim-hud{display:flex;gap:7px;margin:0 0 7px}.swim-stat{flex:1;text-align:center;padding:5px 4px;border:1px solid var(--line);border-radius:12px;background:#fff}.swim-stat small{display:block;color:var(--sub);font-size:.68rem}.swim-stat strong{font-size:1.2rem;color:var(--accent);font-variant-numeric:tabular-nums}
+#swimCanvas{display:block;width:100%;height:auto;aspect-ratio:360/430;max-height:62vh;border:2px solid #b6eaf3;border-radius:20px;background:#087eaa;touch-action:none;overscroll-behavior:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;box-shadow:0 7px 20px rgba(15,70,90,.14);-webkit-tap-highlight-color:transparent}
+.swim-controls{display:flex;justify-content:center;gap:9px;margin:8px 0 4px}.swim-controls button{border:0;border-radius:999px;background:var(--accent);color:#fff;padding:11px 24px;font:inherit;font-weight:800;box-shadow:0 4px 0 #b90012}.swim-controls button:active{transform:translateY(2px);box-shadow:0 2px 0 #b90012}
 .swim-note{text-align:center;color:var(--sub);font-size:.76rem;margin:10px 0}
+
+/* Compact game layout */
+.wrap{padding-top:8px}
+header{margin:8px 0 10px}
+header h1{margin:4px 0;font-size:clamp(1.25rem,4vw,1.65rem)}
+header .kana{margin:2px 0;font-size:.76rem}
+nav{margin:8px 0 12px;padding:5px 7px;gap:5px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav a{padding:6px 9px;font-size:.76rem}
+main{padding-top:0}
+.game-help{margin:0 auto 9px;max-width:680px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.game-help summary{padding:8px 12px;color:var(--accent);font-size:.8rem;font-weight:800;cursor:pointer;list-style:none;text-align:center}
+.game-help summary::-webkit-details-marker{display:none}
+.game-help summary::after{content:" ＋";font-weight:900}
+.game-help[open] summary::after{content:" −"}
+.game-help .memory-intro,.game-help .tower-intro,.game-help .swim-intro{margin:0;padding:5px 12px 10px;font-size:.78rem}
 </style>
 </head>
 <body>
@@ -22,11 +38,11 @@
 <a href="index.html"><i class="ms">home</i>Home</a><a href="profile.html"><i class="ms">person</i>Profile</a><a href="schedule.html"><i class="ms">calendar_month</i>Schedule</a><a href="news.html"><i class="ms">newspaper</i>News</a><a href="works.html"><i class="ms">movie</i>Works</a><a href="blog.html"><i class="ms">edit_note</i>Blog</a>
 </nav>
 <main class="memory-wrap">
-<p class="swim-intro">坂道やでこぼこ道を駆け抜けよう！タップでジャンプして障害物を回避！</p>
+<details class="game-help"><summary>遊び方</summary><p class="swim-intro">坂道やでこぼこ道を駆け抜けよう！タップでジャンプして障害物を回避！白い枠が当たり判定だよ。二段ジャンプはできないよ 🫧</p></details>
 <div class="swim-hud"><div class="swim-stat"><small>TIME</small><strong id="time">0.0s</strong></div><div class="swim-stat"><small>BEST</small><strong id="best">0.0s</strong></div><div class="swim-stat"><small>LEVEL</small><strong id="level">1</strong></div></div>
 <canvas id="swimCanvas" width="360" height="560" aria-label="ウーパールーパーをジャンプさせて障害物を避けるゲーム"></canvas>
 <div class="swim-controls"><button id="startBtn">泳ぎはじめる！</button></div>
-<p class="swim-note">キャラクターの白い枠が当たり判定だよ！画面タップでジャンプ。二段ジャンプはできないよ 🫧</p>
+
 </main>
 </div>
 <script>
