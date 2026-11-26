@@ -326,10 +326,10 @@
     const cacheKey=post.url+"#all";
     if(readerCache.has(cacheKey))return readerCache.get(cacheKey);
     const task=(async()=>{
-      for(let attempt=0;attempt<3;attempt++){
+      for(let attempt=0;attempt<4;attempt++){
         try{
           const controller=new AbortController();
-          const timeout=setTimeout(()=>controller.abort(),15000);
+          const timeout=setTimeout(()=>controller.abort(),30000);
           let response;
           try{
             response=await fetch("https://r.jina.ai/"+safeUrl(post.url),{
@@ -358,7 +358,7 @@
           if(unique.length)return unique;
           throw new Error("no article images found");
         }catch(error){
-          if(attempt<2)await new Promise(resolve=>setTimeout(resolve,500*(attempt+1)));
+          if(attempt<3)await new Promise(resolve=>setTimeout(resolve,800*(attempt+1)));
         }
       }
       return [];
@@ -375,14 +375,28 @@
     if(images.length)imageCache.set(post.url,images[0]);
     return images[0]||"";
   }
-  function loadVisibleImages(){
-    posts.slice(0,18).forEach(async post=>{
-      if(articleImage(post))return;
-      const src=await findArticleImage(post);
-      if(!src)return;
-      if(posts[0]===post)renderFeatured();
-      renderList();
-    });
+  let imageQueueRunning=false;
+  async function loadVisibleImages(){
+    if(imageQueueRunning)return;
+    imageQueueRunning=true;
+    const queue=posts.filter(post=>!articleImage(post));
+    let cursor=0;
+    const worker=async()=>{
+      while(cursor<queue.length){
+        const post=queue[cursor++];
+        try{
+          const src=await findArticleImage(post);
+          if(src){
+            imageCache.set(post.url,src);
+            if(posts[0]===post)renderFeatured();
+            renderList();
+          }
+        }catch(error){}
+        await new Promise(resolve=>setTimeout(resolve,350));
+      }
+    };
+    await Promise.all([worker(),worker()]);
+    imageQueueRunning=false;
   }
   function safeDate(value){
     const s=String(value||"");
