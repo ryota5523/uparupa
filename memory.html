@@ -138,6 +138,9 @@ body{touch-action:pan-x pan-y}
 /* Keep the board dimensions fixed throughout the game, regardless of flips or turn changes */
 .memory-board{flex:0 0 auto!important;height:min(64vh,620px)!important;max-height:min(64vh,620px)!important;grid-template-rows:repeat(4,minmax(0,1fr))!important}
 .memory-card{height:100%!important;aspect-ratio:auto!important}
+/* Keep the 4x4 board proportional on wide screens so cards stay portrait, not stretched sideways */
+@media(min-width:560px){.memory-board{width:min(100%,48vh)!important;max-width:min(100%,48vh)!important}}
+@media(max-width:559px){.memory-board{width:100%!important;max-width:100%!important}}
 
 /* Remove non-essential chrome: let the cards own the screen */
 .wrap>header,.game-help,.memory-start-area,.memory-note{display:none!important}
