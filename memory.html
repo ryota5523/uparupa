@@ -47,36 +47,31 @@
 @media(max-width:360px){.memory-board{gap:6px}.memory-face{border-radius:9px}}
 @media(prefers-reduced-motion:reduce){.memory-card-inner{transition:none}}
 
-/* Collectible-card redesign */
+/* Blue-sky trading-card design */
 .memory-board{gap:10px}
-.memory-card{border-radius:16px;filter:drop-shadow(0 4px 5px rgba(112,37,65,.12))}
+.memory-card{border-radius:16px;filter:drop-shadow(0 4px 5px rgba(40,104,153,.13))}
 .memory-card-inner{border-radius:16px}
-.memory-face{border-radius:16px;box-shadow:0 5px 13px rgba(112,37,65,.13)}
+.memory-face{border-radius:16px;box-shadow:0 5px 13px rgba(40,104,153,.13)}
 .memory-back{
  background:
-  radial-gradient(circle at 15% 15%,rgba(255,255,255,.38) 0 2px,transparent 3px),
-  radial-gradient(circle at 85% 82%,rgba(255,255,255,.3) 0 2px,transparent 3px),
-  linear-gradient(145deg,#ffd9e6 0%,#f58eae 48%,#dc477c 100%);
- border:2px solid #fff8fb;outline:1px solid #e78aaa;color:#fff;
+  radial-gradient(ellipse at 18% 24%,rgba(255,255,255,.96) 0 7%,transparent 7.5%),
+  radial-gradient(ellipse at 78% 73%,rgba(255,255,255,.9) 0 8%,transparent 8.5%),
+  linear-gradient(145deg,#a8e2ff 0%,#68b9ec 55%,#378bd0 100%);
+ border:2px solid #f5fcff;outline:1px solid #67addd;color:#fff;
 }
-.memory-back::before{inset:6px;border:1px solid rgba(255,255,255,.85);border-radius:11px}
-.memory-back::after{
- content:"MANAMI";
- position:absolute;bottom:13%;left:0;right:0;text-align:center;
- color:rgba(255,255,255,.96);font-size:clamp(.48rem,2.1vw,.68rem);
- font-weight:900;letter-spacing:.22em;text-shadow:0 1px 4px rgba(125,20,61,.25)
-}
-.memory-back span{position:relative;z-index:1;width:clamp(38px,13vw,62px);height:clamp(38px,13vw,62px);display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.78);font-size:clamp(1.4rem,7vw,2.25rem);text-shadow:0 2px 5px rgba(125,20,61,.25)}
-.memory-front{display:flex;flex-direction:column;justify-content:flex-start;gap:3px;padding:5px;background:linear-gradient(155deg,#fff 0%,#fff5f8 100%);border:2px solid #f2a9c1}
-.memory-front::before{content:"";position:absolute;inset:3px;border:1px solid rgba(224,105,145,.38);border-radius:11px;pointer-events:none;z-index:2}
+.memory-back::before{inset:6px;border:1px solid rgba(255,255,255,.9);border-radius:11px}
+.memory-back::after{content:"MANAMI ONO";position:absolute;bottom:13%;left:0;right:0;text-align:center;color:#fff;font-size:clamp(.48rem,2.1vw,.68rem);font-weight:900;letter-spacing:.2em;text-shadow:0 1px 4px rgba(28,91,139,.25)}
+.memory-back span{position:relative;z-index:1;width:clamp(38px,13vw,62px);height:clamp(38px,13vw,62px);display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.85);font-size:clamp(1.4rem,7vw,2.25rem);text-shadow:0 2px 5px rgba(28,91,139,.25)}
+.memory-front{display:flex;flex-direction:column;justify-content:flex-start;gap:3px;padding:5px;background:linear-gradient(155deg,#fff 0%,#f0f9ff 100%);border:2px solid #8bc9ef}
+.memory-front::before{content:"";position:absolute;inset:3px;border:1px solid rgba(77,157,211,.4);border-radius:11px;pointer-events:none;z-index:2}
 .memory-front img{width:100%;height:calc(100% - 29px);min-height:0;object-fit:cover;object-position:center;border-radius:8px;margin-top:1px}
-.memory-card-head{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:2px;padding:1px 3px 0;color:#d94e82;font-size:clamp(.39rem,1.8vw,.62rem);font-weight:900;letter-spacing:.06em;white-space:nowrap}
+.memory-card-head{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:2px;padding:1px 3px 0;color:#2785c2;font-size:clamp(.39rem,1.8vw,.62rem);font-weight:900;letter-spacing:.06em;white-space:nowrap}
 .memory-card-head .card-mark{font-size:clamp(.48rem,2.1vw,.7rem)}
-.memory-card-foot{position:relative;z-index:3;display:flex;align-items:center;justify-content:center;gap:3px;min-height:19px;color:#d94e82;font-size:clamp(.55rem,2.6vw,.82rem);font-weight:800;letter-spacing:.04em;white-space:nowrap}
+.memory-card-foot{position:relative;z-index:3;display:flex;align-items:center;justify-content:center;gap:3px;min-height:19px;color:#2785c2;font-size:clamp(.55rem,2.6vw,.82rem);font-weight:800;letter-spacing:.04em;white-space:nowrap}
 .memory-card-foot span{font-size:.8em}
-.memory-card.matched .memory-front{border:2px solid #e34c83;box-shadow:0 0 0 3px rgba(227,76,131,.18),0 5px 15px rgba(227,76,131,.22)}
-.memory-card.matched .memory-front::before{border-color:rgba(227,76,131,.75)}
-.memory-card:focus-visible{outline:3px solid #e34c83;outline-offset:3px;border-radius:16px}
+.memory-card.matched .memory-front{border:2px solid #379bd8;box-shadow:0 0 0 3px rgba(55,155,216,.18),0 5px 15px rgba(55,155,216,.22)}
+.memory-card.matched .memory-front::before{border-color:rgba(55,155,216,.8)}
+.memory-card:focus-visible{outline:3px solid #379bd8;outline-offset:3px;border-radius:16px}
 @media(max-width:360px){.memory-face{border-radius:12px}.memory-front{padding:4px}}
 </style>
 </head>
